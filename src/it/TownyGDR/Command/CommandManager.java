@@ -1,0 +1,28 @@
+/**
+ * 
+ */
+package it.TownyGDR.Command;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+
+/*********************************************************************
+ * @author: Elsalamander
+ * @data: 3 mar 2021
+ * @version: v1.0
+ * 
+ *
+ * @text
+ * Descrizione:
+ * 
+ *********************************************************************/
+public class CommandManager implements CommandExecutor{
+
+	@Override
+	public boolean onCommand(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}
