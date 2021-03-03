@@ -7,12 +7,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import it.Library;
 import it.MySQL.MySQL;
 import it.TownyGDR.Command.CommandManager;
 import it.TownyGDR.Event.EventPlayerManager;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -42,8 +46,6 @@ import it.TownyGDR.Event.EventPlayerManager;
  * La economia è supportata dalla vault
  * Come i permessi e la Chat.
  * 
- * E' presente il DataBase, il salvataggio dei dati è regolato come
- * scritto nella classe MySQL e MySQLConnection
  * 
  * #Gestione del Lavoro-----------------------------------------------
  * Scelta obbiettivi, se volete fare uno dei seguenti obbiettivi, scrivere il proprio nome affianco alla classe scelta
@@ -99,6 +101,9 @@ public class TownyGDR extends JavaPlugin{
 	 **********************************/
 	protected MySQL mySQL;
 	protected boolean debug;
+	public static Economy econ = null;
+    public static Permission perms = null;
+    public static Chat chat = null;
 	
 	
 	/**********************************
@@ -132,6 +137,16 @@ public class TownyGDR extends JavaPlugin{
 		}catch(RuntimeException e) {
 			getServer().getPluginManager().disablePlugin(this);
 		}
+		
+		send.sendMessage(ChatColor.GRAY + "Load Vault...");
+		if(!setupEconomy()){
+			send.sendMessage(ChatColor.GRAY + String.format("[%s] - Disabilitazione perchè non è stata trovata la dipenza Vault!", getDescription().getName()));
+			getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+		
+        if(!setupPermissions()) getServer().getPluginManager().disablePlugin(this);
+        if(!setupChat()) getServer().getPluginManager().disablePlugin(this);
 		
 		//prendi l'oggetto mySQL
 		this.database = this.library.getMySQL();
@@ -209,4 +224,41 @@ public class TownyGDR extends JavaPlugin{
 		this.getCommand("Towny").setExecutor(new CommandManager());
 	}
 
+	/**
+	 * Carica la vault e prni la classe Economy
+	 * @return
+	 */
+	private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        send.sendMessage(ChatColor.GRAY + "Load Economy class...");
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+ 
+	/**
+	 * Carica la classe Chat della vault
+	 * @return
+	 */
+    private boolean setupChat() {
+        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        chat = rsp.getProvider();
+        return chat != null;
+    }
+ 
+    /**
+     * Carica la classe Permission della vault
+     * @return
+     */
+    private boolean setupPermissions() {
+    	send.sendMessage(ChatColor.GRAY + "Load Permission class...");
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        perms = rsp.getProvider();
+        return perms != null;
+    }
 }
