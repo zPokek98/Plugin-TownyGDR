@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City.Impostazioni.set;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.City.Impostazioni.Settings;
@@ -23,13 +24,13 @@ import it.TownyGDR.Towny.City.Impostazioni.Settings;
 public class PvpOnCity extends Settings{
 
 	@Override
-	public void save(FileConfiguration database) {
+	public void save(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
+	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}

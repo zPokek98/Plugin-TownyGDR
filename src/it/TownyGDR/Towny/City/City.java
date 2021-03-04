@@ -3,11 +3,20 @@
  */
 package it.TownyGDR.Towny.City;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import it.CustomConfig.CustomConfig;
 import it.TownyGDR.Tag.Taggable;
+import it.TownyGDR.Towny.City.Area.Area;
+import it.TownyGDR.Towny.City.Edifici.Municipio.Municipio;
+import it.TownyGDR.Towny.City.Impostazioni.Impostazioni;
+import it.TownyGDR.Towny.City.Membri.Membro;
+import it.TownyGDR.Towny.City.Regole.Regole;
+import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -28,36 +37,244 @@ import it.TownyGDR.Util.Save.Salva;
  * - Nazione
  * 
  *********************************************************************/
-public class City implements Salva<FileConfiguration>, Taggable{
-
-	@Override
-	public void save(FileConfiguration database) {
-		// TODO Auto-generated method stub
-		
+public class City implements Salva<CustomConfig>, Taggable{
+	
+	//Variabile di cache per le città per ottimizzare tempi e memoria
+	private static ArrayList<City> ListCity = new ArrayList<City>();
+	
+	//Contenitore dei Tag per il player
+	private static ArrayList<String> TagList = new ArrayList<String>();
+	static{		//Immetti i tag nel contenitore dei Tag
+		TagList.add("%City.name%");
+		TagList.add("%City.id%");
+		TagList.add("%...%");
+	}
+	
+	//Variabili oggetto
+	private int id;
+	private String name;
+	private String descrizione;
+	
+	//Membri città
+	private ArrayList<Membro> membri;
+	
+	//Area della città
+	private Area area;
+	
+	//Edifici
+	private Municipio municipio;
+	
+	//Impostazioni
+	private Impostazioni impostazioni;
+	
+	//Regole
+	private Regole regole;
+	
+	/**
+	 * Costruttore PRIVATO per il caricamento della città,
+	 * la costruzione della città e demandato a una funzione
+	 * "createCity"
+	 */
+	private City() {
+		this.id 		 = -1;
+		this.name 		 = null;
+		this.descrizione = null;
+		this.membri 	 = null;
+		this.area 		 = new Area();
+		this.municipio	 = new Municipio();
+		this.impostazioni= new Impostazioni();
+		this.regole		 = new Regole();
+	}
+	
+	/**
+	 * Ritorna se 2 città sono uguali in base all'id
+	 * @param city
+	 * @return
+	 */
+	public boolean equals(City city) {
+		return this.id == city.getId();
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
-		// TODO Auto-generated method stub
+	public void save(CustomConfig database) throws IOException {
+		//prendi
+		CustomConfig customConfig;
+		FileConfiguration config;
+		if(database == null) {
+			customConfig = new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true);
+			config = customConfig.getConfig();
+		}else{
+			customConfig = database;
+			config = customConfig.getConfig();
+		}
 		
+		config.set("ID", this.id);
+		config.set("Nome", this.getName());
+		config.set("Descrizione", this.descrizione);
+		
+		this.saveArea(config.getConfigurationSection("Area"));
+		this.saveMembri(config.getConfigurationSection("Membri"));
+		this.saveEdifici(config.getConfigurationSection("Edifici"));
+		
+		this.impostazioni.save(config.getConfigurationSection("Impostazioni"));
+		this.regole.save(config.getConfigurationSection("Regole"));
+		
+		//Salva i dati nel file.
+		if(!customConfig.save()) {
+			throw new IOException(); //Errore nel salvataggio!
+		}	
 	}
 
+	/**
+	 * Salva solo i vari edifici della città
+	 * @param configurationSection
+	 */
+	private void saveEdifici(ConfigurationSection config) {
+		this.municipio.save(config);
+	}
+
+	/**
+	 * Salva solo i membri della città
+	 * Ci sono più ruoli, l'idea è quella i salvare raggruppando i ruoli e mettere ad esso una lista
+	 * degli uuid che hanno quel ruolo, dato che si posso avere più ruoli questi si ripetono
+	 * su più campi eventualmente.
+	 * @param configurationSection
+	 */
+	private void saveMembri(ConfigurationSection config) {
+		for(Membro mem : this.membri) {
+			mem.save(config);
+		}
+	}
+
+	/**
+	 * Salva solo l'area della città
+	 * @param configurationSection
+	 */
+	private void saveArea(ConfigurationSection config) {
+		this.area.save(config);
+	}
+
+	@Override
+	public void load(CustomConfig database) throws IOException {
+		//prendi
+		CustomConfig customConfig;
+		FileConfiguration config;
+		if(database == null) {
+			customConfig = new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true);
+			config = customConfig.getConfig();
+		}else{
+			customConfig = database;
+			config = customConfig.getConfig();
+		}
+		
+		this.id   			= config.getInt("ID", -1);
+		if(this.id == -1) throw new IOException(); //Gestione errore.
+		this.name 			= config.getString("Nome", "ErrorGetName");
+		this.descrizione	= config.getString("Descrizione");
+		
+		this.membri = Membro.loadMembri(config.getConfigurationSection("Membri"));
+		
+		this.area.load(config.getConfigurationSection("Area"));
+		this.municipio.load(config.getConfigurationSection("Municipio"));
+		this.impostazioni.load(config.getConfigurationSection("Impostazioni"));
+		this.regole.load(config.getConfigurationSection("Regole"));
+	}
+	
+	/**
+	 * Carica la citta sapendo il suo customConfig, se non esiste il file
+	 * ritorna null, se è avvenuto un errore di lettura lanca una eccezione, e ritorna null.
+	 * @param config
+	 * @return
+	 */
+	public static City loadCityByCustomConfig(CustomConfig config) {
+		City city = new City();
+		try{
+			city.load(config);
+		}catch(IOException e){
+			e.printStackTrace();
+			return null;
+		}
+		if(!ListCity.contains(city)) {
+			ListCity.add(city);
+		}
+		return null;
+	}
+	
+	/**
+	 * Carica la città sapendo solo il suo id.
+	 * Da evitare poichè ha complessità elevata
+	 * @param id
+	 * @return
+	 */
+	public static City loadCityByID(long id) {
+		String[] files = Util.getListNameFile("City");
+		for(String str : files) {
+			CustomConfig customConfig = new CustomConfig("City/" + str);
+			FileConfiguration config = customConfig.getConfig();
+			if(config.getInt("ID") == id) {
+				return City.loadCityByCustomConfig(customConfig);
+			}
+		}
+		return null;
+	}
+	
+	
+	//************************************************************************************* Funzioni city
+	/**
+	 * @return
+	 */
+	private String getName() {
+		return this.name;
+	}
+
+	/**
+	 * @param idCity
+	 * @return
+	 */
+	public static City getByID(long idCity) {
+		for(City tmp : ListCity) {
+			if(tmp.getId() == idCity) {
+				return tmp;
+			}
+		}
+		//Non ho trovato una città con quel id nella cache cerca ora fra tutti i file di salvataggio
+		return City.loadCityByID(idCity);
+	}
+
+	/**
+	 * @return
+	 */
+	public long getId() {
+		return this.id;
+	}
+
+	//******************************************************************************************* TAG
 	@Override
 	public boolean hasTag(String tag) {
-		// TODO Auto-generated method stub
-		return false;
+		return City.TagList.contains(tag);
 	}
 
 	@Override
 	public ArrayList<String> getTagList() {
-		// TODO Auto-generated method stub
-		return null;
+		return City.TagList;
 	}
 
 	@Override
 	public String getValueFromTag(String str) {
-		// TODO Auto-generated method stub
-		return null;
+		if(str == null || str.length() <= 2) return "(Error Invalid code: " + str + ")";
+		switch(str) {
+			case "%City.name%":{
+				return this.getName();
+			}
+			case "%City.uuid%":{
+				return this.getId() + "";
+			}
+			//...
+			
+		}
+		
+		return "(Error Invalid code: " + str + ")";
 	}
+
 
 }

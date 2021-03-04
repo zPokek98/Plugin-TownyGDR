@@ -2,6 +2,7 @@ package it.TownyGDR.Towny.Nazioni.Politici;
 
 import java.util.UUID;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Util.Save.Salva;
@@ -26,7 +27,7 @@ import it.TownyGDR.Util.Save.Salva;
  * offline.
  ********************************************************************/
 
-public abstract class Politico implements Salva<FileConfiguration>{
+public abstract class Politico implements Salva<ConfigurationSection>{
 	
 	public Politico(UUID uuid) {
 		

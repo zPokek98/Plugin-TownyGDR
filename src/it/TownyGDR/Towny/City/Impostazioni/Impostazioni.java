@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City.Impostazioni;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Util.Save.Salva;
@@ -19,16 +20,16 @@ import it.TownyGDR.Util.Save.Salva;
  * dal sindaco.
  * 
  *********************************************************************/
-public class Impostazioni implements Salva<FileConfiguration>{
+public class Impostazioni implements Salva<ConfigurationSection>{
 
 	@Override
-	public void save(FileConfiguration database) {
+	public void save(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
+	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}

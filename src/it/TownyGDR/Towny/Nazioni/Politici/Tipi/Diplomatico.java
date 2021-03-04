@@ -5,6 +5,7 @@ package it.TownyGDR.Towny.Nazioni.Politici.Tipi;
 
 import java.util.UUID;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.Nazioni.Politici.Politico;
@@ -31,13 +32,13 @@ public class Diplomatico extends Politico{
 	}
 
 	@Override
-	public void save(FileConfiguration database) {
+	public void save(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
+	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}

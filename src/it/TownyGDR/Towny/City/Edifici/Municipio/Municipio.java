@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City.Edifici.Municipio;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.City.Edifici.Edifici;
@@ -22,13 +23,13 @@ import it.TownyGDR.Towny.City.Edifici.Edifici;
 public class Municipio extends Edifici{
 
 	@Override
-	public void save(FileConfiguration database) {
+	public void save(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
+	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}

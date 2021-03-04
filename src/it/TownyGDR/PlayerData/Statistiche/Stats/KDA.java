@@ -3,6 +3,9 @@
  */
 package it.TownyGDR.PlayerData.Statistiche.Stats;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+
 import it.MySQL.MySQL;
 import it.TownyGDR.PlayerData.Statistiche.Statistiche;
 
@@ -19,13 +22,13 @@ import it.TownyGDR.PlayerData.Statistiche.Statistiche;
 public class KDA extends Statistiche{
 
 	@Override
-	public void save(MySQL database) {
+	public void save(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(MySQL database) {
+	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}

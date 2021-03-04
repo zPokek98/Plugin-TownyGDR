@@ -1,5 +1,6 @@
 package it.TownyGDR.Util.Save;
 
+import java.io.IOException;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -22,13 +23,14 @@ public interface Salva<T> {
 	
 	/**
 	 * Salva i dati.
+	 * @throws IOException 
 	 */
-	public void save(T database);
+	public void save(T database) throws IOException;
 	
 	/**
 	 * Carica i dati
 	 */
-	public void load(T database);
+	public void load(T database) throws IOException;
 	
 
 }

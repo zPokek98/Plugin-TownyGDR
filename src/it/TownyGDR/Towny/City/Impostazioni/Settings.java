@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City.Impostazioni;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Util.Save.Salva;
@@ -19,6 +20,6 @@ import it.TownyGDR.Util.Save.Salva;
  * elementari per la città.
  * 
  *********************************************************************/
-public abstract class Settings implements Salva<FileConfiguration>{
+public abstract class Settings implements Salva<ConfigurationSection>{
 
 }

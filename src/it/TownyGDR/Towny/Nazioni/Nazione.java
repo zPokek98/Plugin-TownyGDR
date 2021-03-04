@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import it.CustomConfig.CustomConfig;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Util.Save.Salva;
 
@@ -41,16 +42,16 @@ import it.TownyGDR.Util.Save.Salva;
  *   loro, di defult è neutro.
  * 
  ********************************************************************/
-public class Nazione implements Salva<FileConfiguration>, Taggable{
+public class Nazione implements Salva<CustomConfig>, Taggable{
 
 	@Override
-	public void save(FileConfiguration database) {
+	public void save(CustomConfig database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
+	public void load(CustomConfig database) {
 		// TODO Auto-generated method stub
 		
 	}

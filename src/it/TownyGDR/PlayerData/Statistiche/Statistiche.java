@@ -3,6 +3,9 @@
  */
 package it.TownyGDR.PlayerData.Statistiche;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+
 import it.MySQL.MySQL;
 import it.TownyGDR.Util.Save.Salva;
 
@@ -17,6 +20,6 @@ import it.TownyGDR.Util.Save.Salva;
  * Classe astratta che generalizza le statistiche in generale
  * 
  *********************************************************************/
-public abstract class Statistiche implements Salva<MySQL>{
+public abstract class Statistiche implements Salva<ConfigurationSection>{
 
 }

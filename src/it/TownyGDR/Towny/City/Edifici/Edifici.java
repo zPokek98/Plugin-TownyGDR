@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City.Edifici;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Util.Save.Salva;
@@ -20,6 +21,6 @@ import it.TownyGDR.Util.Save.Salva;
  * Ci sono vari edifici ma tutti in comune certe charatteristiche.
  * 
  *********************************************************************/
-public abstract class Edifici implements Salva<FileConfiguration>{
+public abstract class Edifici implements Salva<ConfigurationSection>{
 
 }

@@ -6,6 +6,7 @@ package it.TownyGDR.Towny.City.Area;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Util.Save.Salva;
@@ -25,7 +26,7 @@ import it.TownyGDR.Util.Save.Salva;
  * adiacente all'area gia presente se c'è.
  * 
  *********************************************************************/
-public class Area implements Salva<FileConfiguration>{
+public class Area implements Salva<ConfigurationSection>{
 	
 	//Variabili oggetto
 	private ArrayList<Lotto> lotti; //Array di Lotto per comodità(comporta di creare la funzione "equals" in Lotto
@@ -97,13 +98,13 @@ public class Area implements Salva<FileConfiguration>{
 	}
 
 	@Override
-	public void save(FileConfiguration database) {
+	public void save(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void load(FileConfiguration database) {
+	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
 	}

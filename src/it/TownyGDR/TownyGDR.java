@@ -57,9 +57,9 @@ import net.milkbowl.vault.permission.Permission;
  * Scaletta Obbiettivi: (Leggenda: "[ ]": non toccato | "[-]":Iniziato | "[x]":Finito | "[+]": Da controllare)
  * - [x]: Taggable
  * - [-]: Util
- * - [ ]: PlayerData
- * 		- [-]: Statistiche
- * 			- [ ]: KDA
+ * - [-]: PlayerData			("Elsalamander")
+ * 		- [-]: Statistiche		("Elsalamander")
+ * 			- [ ]: KDA			("Elsalamander")
  * 
  * - [ ]: Casata
  * - [ ]: Eventi
@@ -67,10 +67,10 @@ import net.milkbowl.vault.permission.Permission;
  * 		- [-]: City
  * 			- [ ]: Area
  * 				- [ ]: Lotto
- * 			- [-]: Membro
- * 				- [x]: MembroType "Enumerazione"
- * 				- [ ]: Sindaco
- * 				- [ ]: Cittadino
+ * 			- [-]: Membro							("Elsalamander")
+ * 				- [x]: MembroType "Enumerazione"	("Elsalamander")
+ * 				- [-]: Sindaco						("Elsalamander")
+ * 				- [-]: Cittadino					("Elsalamander")
  * 			- [ ]: Edifici
  * 				- [ ]: Municipio
  * 			- [ ]: Impostazioni
@@ -90,7 +90,8 @@ import net.milkbowl.vault.permission.Permission;
  * Per evoluzioni e capire cosa si è fatto, solo per cose rilevnti o completamento
  * scriver cosa si è fatto e chi l'ha fatto in modo da capire chi e cosa ha fatto
  * 
- * - Elsalamander 27/2/2020: Fatto Scheletro Plugin
+ * - Elsalamander 27/02/2021: Fatto Scheletro Plugin
+ * - Elsalamander 04/03/2021: Iniziato PlayerData, City, Membri.
  * 
  ********************************************************************/
 
