@@ -5,16 +5,19 @@ package it.TownyGDR.Towny.City;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.CustomConfig.CustomConfig;
+import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.City.Area.Area;
 import it.TownyGDR.Towny.City.Edifici.Municipio.Municipio;
 import it.TownyGDR.Towny.City.Impostazioni.Impostazioni;
 import it.TownyGDR.Towny.City.Membri.Membro;
+import it.TownyGDR.Towny.City.Membri.Ruoli.Sindaco;
 import it.TownyGDR.Towny.City.Regole.Regole;
 import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Save.Salva;
@@ -42,7 +45,7 @@ public class City implements Salva<CustomConfig>, Taggable{
 	//Variabile di cache per le città per ottimizzare tempi e memoria
 	private static ArrayList<City> ListCity = new ArrayList<City>();
 	
-	//Contenitore dei Tag per il player
+	//Contenitore dei Tag per la city
 	private static ArrayList<String> TagList = new ArrayList<String>();
 	static{		//Immetti i tag nel contenitore dei Tag
 		TagList.add("%City.name%");
@@ -78,14 +81,60 @@ public class City implements Salva<CustomConfig>, Taggable{
 	private City() {
 		this.id 		 = -1;
 		this.name 		 = null;
-		this.descrizione = null;
-		this.membri 	 = null;
+		this.descrizione = "";
+		this.membri 	 = new ArrayList<Membro>();
 		this.area 		 = new Area();
 		this.municipio	 = new Municipio();
 		this.impostazioni= new Impostazioni();
 		this.regole		 = new Regole();
 	}
 	
+	/**
+	 * Creare una città da zero
+	 * Tutte le impostazioni della città saranno quelle di default
+	 * Il fondatore è il primo sindaco, è l'unico membro iniziale
+	 * @param pd
+	 * @return
+	 */
+	public City createCity(PlayerData pd, String nomeCittà) {
+		City city = new City();
+		//Prendi l'id massimo fra le città
+		city.id = City.getMaxID() + 1;
+		
+		//Il fondatore è automaticamente il sindaco
+		city.membri.add(new Sindaco(pd.getUUID()));
+		city.name = nomeCittà;
+		
+		//Area inizliale? Al momento non c'è claim ??????????????
+		//...
+		
+		try{
+			city.save(null); //può anche essere null l'argomento
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		return city;
+	}
+	
+	/**
+	 * Ritorna il massimo id raggiunto.
+	 * Nel caso per fondare una nuova città bisogna sommare +1 dopo.
+	 * @return
+	 */
+	private static int getMaxID() {
+		//Dato che le città posso anche non essere cariche nella RAM cerco in tutti i file di salvataggio
+		int tmp = 0;
+		String[] files = Util.getListNameFile("City");
+		for(String str : files) {
+			CustomConfig customConfig = new CustomConfig("City/" + str);
+			FileConfiguration config = customConfig.getConfig();
+			if(config.getInt("ID") > tmp) {
+				tmp = config.getInt("ID");
+			}
+		}
+		return tmp;
+	}
+
 	/**
 	 * Ritorna se 2 città sono uguali in base all'id
 	 * @param city
@@ -274,6 +323,29 @@ public class City implements Salva<CustomConfig>, Taggable{
 		}
 		
 		return "(Error Invalid code: " + str + ")";
+	}
+
+	//************************************************************************************* Funzioni città
+	/**
+	 * Ritorna le impostazioni della città
+	 * @return
+	 */
+	public Impostazioni getImpostazioni() {
+		return this.impostazioni;
+	}
+
+	/**
+	 * Ritorna se questo UUID è di un player che appartiene alla città
+	 * @param uniqueId
+	 * @return
+	 */
+	public boolean hasMembro(UUID uniqueId) {
+		for(Membro mem : this.membri) {
+			if(mem.getUUID().equals(uniqueId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

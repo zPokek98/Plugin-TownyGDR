@@ -3,8 +3,11 @@
  */
 package it.TownyGDR.Towny.City.Impostazioni;
 
+import java.util.ArrayList;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import it.TownyGDR.Util.Save.Salva;
 
@@ -21,5 +24,28 @@ import it.TownyGDR.Util.Save.Salva;
  * 
  *********************************************************************/
 public abstract class Settings implements Salva<ConfigurationSection>{
+
+	/**
+	 * Nome dell'impostazione
+	 * @return
+	 */
+	public abstract String getName();
+	
+	/**
+	 * Descrizione divisa in righe per essere impostata come lore
+	 * @return
+	 */
+	public abstract ArrayList<String> getDescription();
+	
+	/**
+	 * Imposta il valore standard
+	 */
+	public abstract void setDefault();
+	
+	/**
+	 * Item di rappresentazione per la GUI
+	 * @return
+	 */
+	public abstract ItemStack getItemShow();
 
 }

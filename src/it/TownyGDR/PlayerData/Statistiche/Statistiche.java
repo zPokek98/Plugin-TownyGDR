@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.MySQL.MySQL;
+import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -17,9 +18,28 @@ import it.TownyGDR.Util.Save.Salva;
  *
  * @text
  * Descrizione:
- * Classe astratta che generalizza le statistiche in generale
+ * Classe astratta che generalizza le statistiche.
+ * Le statistiche per lo più avranno un Tag.
+ * Esse saranno salvate in un file specificato dal ConfigurationSection.
  * 
  *********************************************************************/
-public abstract class Statistiche implements Salva<ConfigurationSection>{
+public abstract class Statistiche implements Salva<ConfigurationSection>, Taggable{
 
+	/**
+	 * Imposta tutti i valori della statistica a ZERO o
+	 * ad un valore definito DEFAULT
+	 */
+	public abstract void reset();
+	
+	/**
+	 * Riporta in una Stringa i valori della statistica
+	 */
+	public abstract String toString();
+	
+	/**
+	 * Ritorna il nome della Statistica
+	 * @return
+	 */
+	public abstract String getName();
+	
 }

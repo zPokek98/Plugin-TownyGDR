@@ -5,10 +5,12 @@ package it.TownyGDR.Towny.City.Area;
 
 import java.util.ArrayList;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -107,6 +109,15 @@ public class Area implements Salva<ConfigurationSection>{
 	public void load(ConfigurationSection database) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * @param chunk
+	 * @return
+	 */
+	public static City getCityFromArea(Chunk chunk) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

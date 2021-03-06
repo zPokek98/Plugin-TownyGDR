@@ -273,6 +273,16 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	@Override
 	public String getValueFromTag(String str) {
 		if(str == null || str.length() <= 2) return "(Error Invalid code: " + str + ")";
+		
+		//Si riferisce al KDA?
+		if(str.contains("KDA")) {
+			//mantieni solo la parte dal KDA in poi
+			return this.kda.getValueFromTag(str.replaceFirst("Player.", ""));
+		}
+		//...
+		
+		
+		//non ha che fare con le statistiche, cerca il valore...
 		switch(str) {
 			case "%Player.name%":{
 				return this.player.getName();
