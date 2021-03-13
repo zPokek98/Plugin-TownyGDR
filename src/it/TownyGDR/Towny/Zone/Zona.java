@@ -123,17 +123,6 @@ public abstract class Zona implements Salva<CustomConfig>{
 		return id;
 	}
 	
-	
-	/**
-	 * Controlla se la location è dentro l'area della zona
-	 * @param loc
-	 * @return
-	 */
-	public boolean checkIsOnArea(Location loc) {
-		//TODO
-		return false;
-	}
-	
 	/**
 	 * Aggiungi l'elemento d'area alla zona, serve quando si setterà la zona
 	 * @param elementoArea
@@ -185,6 +174,19 @@ public abstract class Zona implements Salva<CustomConfig>{
 	 */
 	public int getID() {
 		return this.id;
+	}
+	
+	/**
+	 * Controlla se l'elemento d'area dato è dentro la zona
+	 * @param ele
+	 * @return
+	 */
+	public boolean contain(ElementoArea ele) {
+		for(Sector sec : this.area.keySet()) {
+			ArrayList<ElementoArea> list = this.area.get(sec);
+			return list.contains(ele);
+		}
+		return false;
 	}
 	
 	/**
@@ -298,6 +300,15 @@ public abstract class Zona implements Salva<CustomConfig>{
 	public static Zona getZonaByLocation(Location loc) {
 		int x = loc.getChunk().getX();
 		int z = loc.getChunk().getZ();
+		return getZonaByLocation(x, z);
+	}
+	
+	/**
+	 * Ritorna la Zona data una posizione se esiste
+	 * @param loc
+	 * @return
+	 */
+	public static Zona getZonaByLocation(int x, int z) {
 		Sector sec = Sector.getSectorByLocation(x, z); //Prendi il settore
 		return sec.getZonaByArea(x, z);
 	}

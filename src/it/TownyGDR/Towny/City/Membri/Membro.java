@@ -3,12 +3,15 @@
  */
 package it.TownyGDR.Towny.City.Membri;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Area.Lotto;
 import it.TownyGDR.Util.Save.Salva;
 
@@ -28,7 +31,7 @@ import it.TownyGDR.Util.Save.Salva;
  * Ogni membro ha dei appezzamenti di terra assegnati DA FARE ! *****************************########
  * 
  *********************************************************************/
-public class Membro implements Salva<ConfigurationSection>{
+public class Membro{
 	
 	//Identificatore per il player, poichè potrebbe essere offline
 	private UUID uuid;
@@ -63,29 +66,22 @@ public class Membro implements Salva<ConfigurationSection>{
 		return this.type;
 	}
 	
-	@Override
-	public void save(ConfigurationSection config) {
-		//devo salvare il singolo membro sotto la sezione/ruolo assegnatosi
-		for(MembroType ty : this.type) {
-			config.set(ty.toString(), this.uuid);
-		}
-	}
-
-	@Override
 	/**
-	 * Load un po' fasullo ma facciamoli fare qualcosa xD
-	 * Sapendo almeno l'uuid, carica i ruoli del membro dato il file di salvataggio.
+	 * Salva tutti i giocatori nella sezione data
+	 * @param config
+	 * @param list
+	 * @throws IOException 
 	 */
-	public void load(ConfigurationSection config) {
-		//Array che contiene la lista dei ruoli presenti sotto "Membri" nel file di salvtaggio
-		String[] ruoli = config.getKeys(false).stream().toArray(String[] :: new);
-		for(String str : ruoli) {
-			//controlla se c'è l'uuid
-			@SuppressWarnings("unchecked")
-			List<String> list = (List<String>) config.getList(str);
-			if(list.contains(this.uuid.toString())) {
-				this.type.add(MembroType.valueOf(str));
+	public static void save(ConfigurationSection config, ArrayList<Membro> list) throws IOException {
+		//devo salvare il singolo membro sotto la sezione/ruolo assegnatosi
+		for(Membro mem : list) {
+			String str = "";
+			for(MembroType ty : mem.getType()) {
+				str += ty.toString() + ";";
 			}
+			str = str.substring(0, str.length() - 1);
+			config.set(mem.getUUID() + ".Ruolo", str);
+			config.set(mem.getUUID() + ".Lotto", mem.lotto.getId());
 		}
 	}
 	
@@ -95,30 +91,40 @@ public class Membro implements Salva<ConfigurationSection>{
 	 * @param configurationSection
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static ArrayList<Membro> loadMembri(ConfigurationSection config) {
+	public static ArrayList<Membro> loadMembri(ConfigurationSection config, City city) {
 		ArrayList<Membro> mem = new ArrayList<Membro>();
 		//Array che contiene la lista dei ruoli presenti sotto "Membri" nel file di salvtaggio
 		String[] ruoli = config.getKeys(false).stream().toArray(String[] :: new);
+		
 		for(String str : ruoli) {
-			List<String> list = (List<String>) config.getList(str);
-			for(String strUuid : list) {
-				switch(MembroType.valueOf(str)) {
-					case Sindaco:{
-						mem.add(new Membro(UUID.fromString(strUuid), MembroType.Sindaco));
-					}break;
-						
-					case Cittadino:{
-						mem.add(new Membro(UUID.fromString(strUuid), MembroType.Cittadino));
-					}break;
-					
-					case ND:
-					default:
-						break;
-				}
+			UUID uuid = UUID.fromString(str);
+			String ty = config.getString(str + ".Ruolo");
+			
+			ArrayList<MembroType> type = new ArrayList<MembroType>();
+			Scanner scan = new Scanner(ty);
+			scan.useDelimiter(";");
+			while(scan.hasNext()) {
+				type.add(MembroType.valueOf(scan.next()));
 			}
+			scan.close();
+			
+			Membro membro = new Membro(uuid, null);
+			membro.type   = type;
+			
+			//ottieni i lotti del player
+			membro.lotto  = Lotto.loadDataById(config.getInt(".Lotto"), city);
+			membro.lotto.addMembro(membro);
+			
+			mem.add(membro);
 		}
 		return mem;
+	}
+
+	/**
+	 * 
+	 */
+	public Lotto getLotto() {
+		return this.lotto;
 	}
 
 }

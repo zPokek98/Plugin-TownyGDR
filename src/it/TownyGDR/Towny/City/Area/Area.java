@@ -10,7 +10,9 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.City.Membri.Membro;
 import it.TownyGDR.Towny.Zone.ElementoArea;
 import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Save.Salva;
@@ -32,6 +34,9 @@ import it.TownyGDR.Util.Save.Salva;
  *********************************************************************/
 public class Area implements Salva<ConfigurationSection>{
 	
+	private static final int CostoSoldi = 100;
+	private static final int ChunkSuMembri = 5;
+	
 	//Variabili oggetto
 	private Zona zona;	//Zona in cui si costrirà la città
 	private ArrayList<ElementoArea> area; //Elementi area claimati dalla città
@@ -42,8 +47,9 @@ public class Area implements Salva<ConfigurationSection>{
 	/**
 	 * Costruttore Area Vuota
 	 */
-	public Area() {
-		
+	public Area(Zona zona) {
+		this.zona = zona;
+		this.area = new ArrayList<ElementoArea>();
 	}
 	
 	//*********************************************************************** Funzioni Oggetto
@@ -52,18 +58,51 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @return
 	 */
 	public int getSize() {
-		return 0;
+		return this.area.size();
 	}
-	
 	
 	/**
-	 * @param lotto
+	 * Funzione per aggiungere l'elemento d'area alla città
+	 * @param loc
 	 * @return
 	 */
-	public static boolean checkIsFree(Lotto lotto) {
-		// TODO Auto-generated method stub
+	public boolean claim(Location loc, City city, PlayerData pd) {
+		Chunk chunk = loc.getChunk();
+		int x = chunk.getX();
+		int z = chunk.getZ();
+		ElementoArea ele = new ElementoArea(x, z);
+		if(this.checkAdiacenza(ele)) {
+			//Claimabile
+			//Ha i requisiti per claimarlo
+			
+			//E' un sindaco?
+			boolean check = false;
+			for(Membro mem : city.getSindaco()) {
+				if(mem.getUUID().equals(pd.getUUID())) {
+					check = true;
+					break;
+				}
+			}
+			if(!check) return false;
+			
+			//ha i soldi?
+			if(pd.getBalance() >= Area.CostoSoldi) {
+				//Ha i soldi
+				//Ha un minimo di player?
+				if(city.getMembri().size() * Area.ChunkSuMembri < this.getSize()) {
+					//ha abbastanza membri
+					
+					//Togli i soldi
+					pd.withdrawMoney(Area.CostoSoldi);
+					
+					//Aggiungi l'area
+					this.area.add(ele);
+				}
+			}
+		}
 		return false;
 	}
+	
 
 	/**
 	 * Controlla se una parte del lotto è contenuto nella città, se anche un suo pezzo
@@ -71,9 +110,8 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @param lot
 	 * @return
 	 */
-	public boolean containLotto(Lotto lot) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean containLotto(ElementoArea lot) {
+		return this.area.contains(lot);
 	}
 	
 	/**
@@ -85,7 +123,14 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @return
 	 */
 	public boolean containLocation(Location loc) {
-		//TODO
+		Chunk chunk = loc.getChunk();
+		int x = chunk.getX();
+		int z = chunk.getZ();
+		for(ElementoArea ele : this.area) {
+			if(ele.getX() == x && ele.getZ() == z) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -94,8 +139,24 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @param lot
 	 * @return 
 	 */
-	public boolean checkAdiacenza(Lotto lot) {
-		//TODO
+	public boolean checkAdiacenza(ElementoArea area) {
+		if(!this.area.contains(area)) {
+			//Controlla se è entro la zona
+			if(!this.zona.contain(area)) return false;
+			
+			//Vari elementi aree affianco all'area
+			ArrayList<ElementoArea> list = new ArrayList<ElementoArea>();
+			list.add(new ElementoArea(area.getX() + 1 , area.getZ() + 1));
+			list.add(new ElementoArea(area.getX() + 1 , area.getZ() - 1));
+			list.add(new ElementoArea(area.getX() - 1 , area.getZ() + 1));
+			list.add(new ElementoArea(area.getX() - 1 , area.getZ() - 1));
+			
+			for(ElementoArea ele : list) {
+				if(this.area.contains(ele)) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -112,12 +173,32 @@ public class Area implements Salva<ConfigurationSection>{
 	}
 
 	/**
+	 * Ritorna la città dato un chunk
 	 * @param chunk
 	 * @return
 	 */
 	public static City getCityFromArea(Chunk chunk) {
-		// TODO Auto-generated method stub
+		Zona zon = Zona.getZonaByLocation(chunk.getX() , chunk.getZ());
+		if(zon != null) {
+			if(zon.getLuogo() instanceof City) {
+				return (City) zon.getLuogo();
+			}
+		}
 		return null;
 	}
 
+	/**
+	 * @return
+	 */
+	public ArrayList<ElementoArea> getClaimato() {
+		return this.area;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

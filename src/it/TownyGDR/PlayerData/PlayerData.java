@@ -17,6 +17,7 @@ import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Save.Salva;
+import net.milkbowl.vault.economy.EconomyResponse;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -216,6 +217,33 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	public double getBalance() {
 		return TownyGDR.econ.getBalance(player);
 	}
+	
+	/**
+	 * Aggiungi i soldi al player
+	 * @param val
+	 * @return
+	 */
+	public boolean addMoney(double val) {
+		if(val > 0) {
+			/*EconomyResponse result = */TownyGDR.econ.depositPlayer(player, val);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Togli soldi al player
+	 * @param val
+	 * @return
+	 */
+	public boolean withdrawMoney(double val) {
+		if(val > 0) {
+			TownyGDR.econ.withdrawPlayer(player, val);
+			return true;
+		}
+		return false;
+	}
+	
 	
 	//...operare con la vault
 	

@@ -3,17 +3,17 @@
  */
 package it.TownyGDR.Towny.Zone;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.Scanner;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import it.CustomConfig.CustomConfig;
-import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -40,7 +40,7 @@ import it.TownyGDR.Util.Save.Salva;
  * Manca il salvataggio e il load per i settori anche nelle zone ******************
  * 
  *********************************************************************/
-public class Sector implements Salva<CustomConfig>,Comparable<Sector>{
+public class Sector implements Comparable<Sector>{
 	//Vaariabile di cache per i settori
 	private static ArrayList<Sector> ListSector_pos_pos = new ArrayList<Sector>();
 	private static ArrayList<Sector> ListSector_pos_neg = new ArrayList<Sector>();
@@ -243,16 +243,30 @@ public class Sector implements Salva<CustomConfig>,Comparable<Sector>{
 		return this.coord_z;
 	}
 
-	@Override
+	
 	public void save(CustomConfig database) throws IOException {
-		// TODO Auto-generated method stub
+		FileConfiguration config;
+		if(database == null) {
+			database = this.getCustomConfig();
+		}
+		config = database.getConfig();
+		config.set("X", this.coord_x);
+		config.set("Z", this.coord_z);
 		
+		//le zone che ha all'interno
+		//Riga
+		String tmp = "";
+		for(Zona zon : this.zoneInSector) {
+			tmp += zon.getID() + ";";
+		}
+		tmp = tmp.substring(0, tmp.length() - 1);
+		config.set("Zone", tmp);
+		
+		database.save();		
 	}
-
-	@Override
-	public void load(CustomConfig database) throws IOException {
-		// TODO Auto-generated method stub
-		
+	
+	private CustomConfig getCustomConfig() {
+		return new CustomConfig("Settori" + File.pathSeparator + this.coord_x + ";" + this.coord_z);
 	}
 
 	@Override
@@ -304,7 +318,7 @@ public class Sector implements Salva<CustomConfig>,Comparable<Sector>{
 				return sec;
 			}
 		}
-		return Sector.createSector(x, z);
+		return new Sector(x, z);
 	}
 	
 	/**

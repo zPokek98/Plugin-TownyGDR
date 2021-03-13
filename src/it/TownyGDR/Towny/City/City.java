@@ -21,6 +21,7 @@ import it.TownyGDR.Towny.City.Impostazioni.Impostazioni;
 import it.TownyGDR.Towny.City.Membri.Membro;
 import it.TownyGDR.Towny.City.Membri.MembroType;
 import it.TownyGDR.Towny.City.Regole.Regole;
+import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Save.Salva;
 
@@ -80,12 +81,30 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * la costruzione della città e demandato a una funzione
 	 * "createCity"
 	 */
+	private City(String nome, PlayerData pd, Zona zon) {
+		this.id 		 = -1;
+		this.name 		 = nome;
+		this.descrizione = "";
+		this.membri 	 = new ArrayList<Membro>();
+		this.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
+		
+		this.area 		 = new Area(zon);
+		this.municipio	 = new Municipio();
+		this.impostazioni= new Impostazioni();
+		this.regole		 = new Regole();
+	}
+	
+	/**
+	 * Costruttore PRIVATO per il caricamento della città,
+	 * la costruzione della città e demandato a una funzione
+	 * "createCity"
+	 */
 	private City() {
 		this.id 		 = -1;
 		this.name 		 = null;
 		this.descrizione = "";
 		this.membri 	 = new ArrayList<Membro>();
-		this.area 		 = new Area();
+		this.area 		 = new Area(null);
 		this.municipio	 = new Municipio();
 		this.impostazioni= new Impostazioni();
 		this.regole		 = new Regole();
@@ -98,14 +117,14 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @param pd
 	 * @return
 	 */
-	public City createCity(PlayerData pd, String nomeCittà) {
-		City city = new City();
+	public City createCity(PlayerData pd, String nomeCitta, Zona zon) {
+		City city = new City(nomeCitta, pd, zon);
 		//Prendi l'id massimo fra le città
 		city.id = City.getMaxID() + 1;
 		
 		//Il fondatore è automaticamente il sindaco
-		city.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
-		city.name = nomeCittà;
+		//city.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
+		//city.name = nomeCitta;
 		
 		//Area inizliale? Al momento non c'è claim ??????????????
 		//...
@@ -192,8 +211,11 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @param configurationSection
 	 */
 	private void saveMembri(ConfigurationSection config) {
-		for(Membro mem : this.membri) {
-			mem.save(config);
+		try {
+			Membro.save(config.getConfigurationSection("Membri"), this.membri);
+		} catch (IOException e) {
+			//e.printStackTrace();
+			//Errore
 		}
 	}
 
@@ -223,7 +245,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		this.name 			= config.getString("Nome", "ErrorGetName");
 		this.descrizione	= config.getString("Descrizione");
 		
-		this.membri = Membro.loadMembri(config.getConfigurationSection("Membri"));
+		this.membri = Membro.loadMembri(config.getConfigurationSection("Membri"), this);
 		
 		this.area.load(config.getConfigurationSection("Area"));
 		this.municipio.load(config.getConfigurationSection("Municipio"));
@@ -354,6 +376,41 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	@Override
 	public LuoghiType getType() {
 		return LuoghiType.City;
+	}
+
+	/**
+	 * Ritorna la lista dei sindaci
+	 */
+	public ArrayList<Membro> getSindaco() {
+		ArrayList<Membro> tmp = new ArrayList<Membro>();
+		for(Membro mem : this.membri) {
+			if(mem.getType().contains(MembroType.Sindaco)) {
+				tmp.add(mem);
+			}
+		}
+		return tmp;
+	}
+
+	/**
+	 * Ritorna i membri della città
+	 * @return
+	 */
+	public ArrayList<Membro> getMembri() {
+		return this.membri;
+	}
+
+	/**
+	 * @return
+	 */
+	public Area getArea() {
+		return this.area;
+	}
+
+	/**
+	 * @return
+	 */
+	public CustomConfig getConfig() {
+		return new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true);
 	}
 
 
