@@ -3,7 +3,11 @@
  */
 package it.TownyGDR.Towny.City.Area;
 
+import java.util.ArrayList;
+
 import org.bukkit.Location;
+
+import it.TownyGDR.Towny.Zone.ElementoArea;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -13,10 +17,14 @@ import org.bukkit.Location;
  *
  * @text
  * Descrizione:
- * Appezzamento di terra di grandezza standard.
+ * Appezzamento di terra di una data grandezza per i membri della città
+ * un lotto è assegnato a uno o più membri.
  * 
  *********************************************************************/
 public class Lotto {
+	
+	//Variabili oggetto
+	private ArrayList<ElementoArea> lotto;
 
 	/**
 	 * @return
@@ -27,11 +35,11 @@ public class Lotto {
 	}
 
 	/**
-	 * @param locSindaco
+	 * @param loc
 	 * @param yaw
 	 * @return
 	 */
-	public static Lotto createLotto(Location locSindaco, float yaw) {
+	public static Lotto createLotto(Location loc, float yaw) {
 		// TODO Auto-generated method stub
 		return null;
 	}

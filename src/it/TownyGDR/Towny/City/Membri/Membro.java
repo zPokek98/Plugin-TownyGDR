@@ -9,8 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import it.TownyGDR.Towny.City.Membri.Ruoli.Cittadino;
-import it.TownyGDR.Towny.City.Membri.Ruoli.Sindaco;
+import it.TownyGDR.Towny.City.Area.Lotto;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -26,12 +25,16 @@ import it.TownyGDR.Util.Save.Salva;
  * Tiene conto anche del suo titolo all'interno della città.
  * (Che è diverso da come si fa con la nazione)
  * 
+ * Ogni membro ha dei appezzamenti di terra assegnati DA FARE ! *****************************########
+ * 
  *********************************************************************/
-public abstract class Membro implements Salva<ConfigurationSection>{
+public class Membro implements Salva<ConfigurationSection>{
 	
 	//Identificatore per il player, poichè potrebbe essere offline
 	private UUID uuid;
 	private ArrayList<MembroType> type; //Ruoli nella città, può avere più ruoli.
+	
+	private Lotto lotto;
 	
 	/**
 	 * Costruttore membro, con assegnazione uuid del player e il ruolo
@@ -102,12 +105,13 @@ public abstract class Membro implements Salva<ConfigurationSection>{
 			for(String strUuid : list) {
 				switch(MembroType.valueOf(str)) {
 					case Sindaco:{
-						aggiungi(mem, MembroType.Sindaco, new Sindaco(UUID.fromString(strUuid)));
+						mem.add(new Membro(UUID.fromString(strUuid), MembroType.Sindaco));
 					}break;
 						
 					case Cittadino:{
-						aggiungi(mem, MembroType.Cittadino, new Cittadino(UUID.fromString(strUuid)));
+						mem.add(new Membro(UUID.fromString(strUuid), MembroType.Cittadino));
 					}break;
+					
 					case ND:
 					default:
 						break;
@@ -115,26 +119,6 @@ public abstract class Membro implements Salva<ConfigurationSection>{
 			}
 		}
 		return mem;
-	}
-
-	/**
-	 * Funzione di supporto per il caricamento dei dati dei membri per la città
-	 * @param mem
-	 * @param ruolo 
-	 * @param sindaco
-	 */
-	private static void aggiungi(ArrayList<Membro> mem, MembroType ruolo, Membro agg) {
-		//Controlla se è gia stato caricato con un altro ruolo
-		for(Membro tmp : mem) {
-			if(tmp.getUUID().equals(agg.getUUID())) {
-				//esiste gia, basta aggiungere il ruolo
-				if(!tmp.type.contains(ruolo)) {
-					tmp.type.add(ruolo);
-				}
-			}
-		}
-		//questo membro non è stato caricato, lo aggiungo
-		mem.add(agg);
 	}
 
 }

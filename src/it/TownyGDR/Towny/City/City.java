@@ -13,11 +13,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import it.CustomConfig.CustomConfig;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Tag.Taggable;
+import it.TownyGDR.Towny.LuoghiType;
+import it.TownyGDR.Towny.Luogo;
 import it.TownyGDR.Towny.City.Area.Area;
 import it.TownyGDR.Towny.City.Edifici.Municipio.Municipio;
 import it.TownyGDR.Towny.City.Impostazioni.Impostazioni;
 import it.TownyGDR.Towny.City.Membri.Membro;
-import it.TownyGDR.Towny.City.Membri.Ruoli.Sindaco;
+import it.TownyGDR.Towny.City.Membri.MembroType;
 import it.TownyGDR.Towny.City.Regole.Regole;
 import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Save.Salva;
@@ -40,7 +42,7 @@ import it.TownyGDR.Util.Save.Salva;
  * - Nazione
  * 
  *********************************************************************/
-public class City implements Salva<CustomConfig>, Taggable{
+public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	
 	//Variabile di cache per le città per ottimizzare tempi e memoria
 	private static ArrayList<City> ListCity = new ArrayList<City>();
@@ -102,7 +104,7 @@ public class City implements Salva<CustomConfig>, Taggable{
 		city.id = City.getMaxID() + 1;
 		
 		//Il fondatore è automaticamente il sindaco
-		city.membri.add(new Sindaco(pd.getUUID()));
+		city.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
 		city.name = nomeCittà;
 		
 		//Area inizliale? Al momento non c'è claim ??????????????
@@ -293,7 +295,8 @@ public class City implements Salva<CustomConfig>, Taggable{
 	/**
 	 * @return
 	 */
-	public long getId() {
+	@Override
+	public int getId() {
 		return this.id;
 	}
 
@@ -346,6 +349,11 @@ public class City implements Salva<CustomConfig>, Taggable{
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public LuoghiType getType() {
+		return LuoghiType.City;
 	}
 
 

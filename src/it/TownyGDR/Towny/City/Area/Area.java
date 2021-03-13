@@ -11,6 +11,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.Zone.ElementoArea;
+import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -31,7 +33,9 @@ import it.TownyGDR.Util.Save.Salva;
 public class Area implements Salva<ConfigurationSection>{
 	
 	//Variabili oggetto
-	private ArrayList<Lotto> lotti; //Array di Lotto per comodità(comporta di creare la funzione "equals" in Lotto
+	private Zona zona;	//Zona in cui si costrirà la città
+	private ArrayList<ElementoArea> area; //Elementi area claimati dalla città
+	
 	
 
 	//*********************************************************************** Costruttori
@@ -48,11 +52,7 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @return
 	 */
 	public int getSize() {
-		int size = 0;
-		for(Lotto lot : lotti) {
-			size += lot.getSize();
-		}
-		return size;
+		return 0;
 	}
 	
 	

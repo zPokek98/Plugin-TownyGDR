@@ -2,6 +2,7 @@ package it.TownyGDR;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -59,15 +60,16 @@ import net.milkbowl.vault.permission.Permission;
  * - [-]: Util
  * - [-]: PlayerData			("Elsalamander")
  * 		- [-]: Statistiche		("Elsalamander")
- * 			- [ ]: KDA			("Elsalamander")
+ * 			- [-]: KDA			("Elsalamander")
  * 
  * - [ ]: Casata
  * - [ ]: Eventi
  * - [-]: Towny
  * 		- [-]: City
  * 			- [ ]: Area
+ * 				- [ ]: Area
  * 				- [ ]: Lotto
- * 			- [-]: Membro							("Elsalamander")
+ * 			- [-]: Membro							("Elsalamander" Da finire)
  * 				- [x]: MembroType "Enumerazione"	("Elsalamander")
  * 				- [-]: Sindaco						("Elsalamander")
  * 				- [-]: Cittadino					("Elsalamander")
@@ -85,6 +87,12 @@ import net.milkbowl.vault.permission.Permission;
  * 			- [ ]: Votazione
  * 				- [ ]: Proposta
  * 					- [ ]: DichiarazioneGuerra
+ * 		- [-]: Zone
+ * 			- [-]: Zona
+ * 			- [ ]: ElementoArea
+ * 			- [ ]: ZonaType
+ * 			- [ ]: Type
+ * 				- [ ]: ZonaCittadina
  * 			
  * 
  * Per evoluzioni e capire cosa si è fatto, solo per cose rilevnti o completamento
@@ -111,6 +119,7 @@ public class TownyGDR extends JavaPlugin{
 	 * Variabili statiche/private
 	 **********************************/
 	private static TownyGDR instance;
+	private static World TownyWorld;
 	private ConsoleCommandSender send;
 	private FileConfiguration config;
 	private Library library;
@@ -131,6 +140,9 @@ public class TownyGDR extends JavaPlugin{
 		
 		//prndi il file di config
 		this.config = this.getConfig();
+		
+		//Cattura il mondo
+		TownyWorld = Bukkit.getWorld("Towny");
 		
 		//Carica la libreria
 		try {
@@ -262,4 +274,11 @@ public class TownyGDR extends JavaPlugin{
         perms = rsp.getProvider();
         return perms != null;
     }
+
+	/**
+	 * @return
+	 */
+	public static World getTownyWorld() {
+		return TownyWorld;
+	}
 }
