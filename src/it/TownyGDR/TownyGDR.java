@@ -1,5 +1,7 @@
 package it.TownyGDR;
 
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -15,6 +17,8 @@ import it.Library;
 import it.MySQL.MySQL;
 import it.TownyGDR.Command.CommandManager;
 import it.TownyGDR.Event.EventPlayerManager;
+import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.Zone.Zona;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -57,22 +61,20 @@ import net.milkbowl.vault.permission.Permission;
  * 
  * Scaletta Obbiettivi: (Leggenda: "[ ]": non toccato | "[-]":Iniziato | "[x]":Finito | "[+]": Da controllare)
  * - [x]: Taggable
- * - [-]: Util
+ * - [x]: Util
  * - [-]: PlayerData			("Elsalamander")
- * 		- [-]: Statistiche		("Elsalamander")
- * 			- [-]: KDA			("Elsalamander")
+ * 		- [x]: Statistiche		("Elsalamander")
+ * 			- [x]: KDA			("Elsalamander")
  * 
  * - [ ]: Casata
  * - [ ]: Eventi
  * - [-]: Towny
  * 		- [-]: City
- * 			- [ ]: Area
- * 				- [ ]: Area
- * 				- [ ]: Lotto
- * 			- [-]: Membro							("Elsalamander" Da finire)
+ * 			- [x]: Area
+ * 				- [x]: Area
+ * 				- [x]: Lotto
+ * 			- [x]: Membro							("Elsalamander" Da finire)
  * 				- [x]: MembroType "Enumerazione"	("Elsalamander")
- * 				- [-]: Sindaco						("Elsalamander")
- * 				- [-]: Cittadino					("Elsalamander")
  * 			- [ ]: Edifici
  * 				- [ ]: Municipio
  * 			- [ ]: Impostazioni
@@ -87,12 +89,13 @@ import net.milkbowl.vault.permission.Permission;
  * 			- [ ]: Votazione
  * 				- [ ]: Proposta
  * 					- [ ]: DichiarazioneGuerra
- * 		- [-]: Zone
- * 			- [-]: Zona
- * 			- [ ]: ElementoArea
- * 			- [ ]: ZonaType
- * 			- [ ]: Type
- * 				- [ ]: ZonaCittadina
+ * 		- [x]: Zone
+ * 			- [x]: Zona
+ * 			- [x]: ElementoArea
+ * 			- [x]: Settore
+ * 			- [x]: ZonaType
+ * 			- [x]: Type
+ * 				- [x]: ZonaCittadina
  * 			
  * 
  * Per evoluzioni e capire cosa si è fatto, solo per cose rilevnti o completamento
@@ -170,7 +173,15 @@ public class TownyGDR extends JavaPlugin{
 		//registra comandi
 		this.registerCommand();
 		
-		//...
+		//Carica le zone
+		try{
+			Zona.initZona();
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		
+		//Carica le città anche se probabilmente sono già state caricate tremite le zone
+		City.initCity();
 		
 	}
 

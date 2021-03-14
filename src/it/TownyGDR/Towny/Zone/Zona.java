@@ -64,7 +64,7 @@ import it.TownyGDR.Util.Save.Salva;
  * Una zona fa capo ad un Settore che la contiene.
  * 
  *********************************************************************/
-public abstract class Zona implements Salva<CustomConfig>{
+public class Zona implements Salva<CustomConfig>{
 	
 	//ArrayList di cache per tenere a memoria tutte le zone
 	private static ArrayList<Zona> ListZona = new ArrayList<Zona>();
@@ -98,7 +98,9 @@ public abstract class Zona implements Salva<CustomConfig>{
 		
 		//Salva il file iniziale.
 		try{
-			this.save(new CustomConfig("Zone" + File.pathSeparator + this.name + "(" + this.id + ")"));
+			if(!(new File("Zone" + File.pathSeparator + this.name + "(" + this.id + ")")).exists()) {
+				this.save(new CustomConfig("Zone" + File.pathSeparator + this.name + "(" + this.id + ")"));
+			}
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -329,4 +331,33 @@ public abstract class Zona implements Salva<CustomConfig>{
 		this.luogoCache = luogo;
 	}
 
+	/**
+	 * Carica tutte le zone
+	 * @throws IOException 
+	 */
+	public static void initZona() throws IOException {
+		String[] files = Util.getListNameFile("Zone");
+		for(String str : files) {
+			CustomConfig customConfig = new CustomConfig("Zone" + File.pathSeparator +str);
+			FileConfiguration config = customConfig.getConfig();
+			String nome = config.getString("Nome");
+			ZonaType type = ZonaType.valueOf(config.getString("Type"));
+			Zona tmp = new Zona(nome, type);
+			tmp.load(customConfig);
+		}
+	}
+	
+	
+	public static Zona getByID(int id) {
+		for(Zona zon : ListZona) {
+			if(zon.id == id) {
+				return zon;
+			}
+		}
+		return null;
+		
+	}
+	
+	
+	
 }

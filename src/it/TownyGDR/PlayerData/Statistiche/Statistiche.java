@@ -4,9 +4,7 @@
 package it.TownyGDR.PlayerData.Statistiche;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
-import it.MySQL.MySQL;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Util.Save.Salva;
 

@@ -5,7 +5,6 @@ package it.TownyGDR.Towny.City.Membri;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -13,7 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Area.Lotto;
-import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
  * @author: Elsalamander

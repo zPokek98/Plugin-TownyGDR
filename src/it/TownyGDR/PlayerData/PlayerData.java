@@ -33,6 +33,7 @@ import net.milkbowl.vault.economy.EconomyResponse;
  * 
  * 
  *********************************************************************/
+@SuppressWarnings("unused")
 public class PlayerData implements Salva<CustomConfig>, Taggable{
 	
 	//Variabile di cache per il playerData per eventuali get, e ottimizzazione tempi

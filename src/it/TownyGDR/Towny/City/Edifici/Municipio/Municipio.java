@@ -4,7 +4,6 @@
 package it.TownyGDR.Towny.City.Edifici.Municipio;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.City.Edifici.Edifici;
 

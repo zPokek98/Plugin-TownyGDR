@@ -3,18 +3,15 @@
  */
 package it.TownyGDR.Towny.City.Area;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Membri.Membro;
 import it.TownyGDR.Towny.Zone.ElementoArea;
-import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -39,10 +36,11 @@ public class Lotto{
 	 * @param x
 	 * @param z
 	 */
-	private Lotto() {
+	private Lotto(City city) {
 		this.id = -1;
 		this.lotto = new ArrayList<ElementoArea>();
 		this .admin = new ArrayList<Membro>();
+		city.getArea().addLotto(this);
 	}
 
 	/**
@@ -62,9 +60,15 @@ public class Lotto{
 		
 		String[] list = city.getConfig().getConfig().getConfigurationSection("Area.Lotti" ).getKeys(false).stream().toArray(String[] :: new);
 		for(String str : list) {
-			Lotto tmp = new Lotto();
+			
+			//crea il lotto
+			Lotto tmp = new Lotto(city);
+			
+			//id lotto
 			tmp.id = Integer.parseInt(str);
-			Scanner scan = new Scanner(config.getString("Area.Lotti." + str));
+			
+			//Prendi gli elementi area che formano il lotto
+			Scanner scan = new Scanner(config.getString("Lotti." + str));
 			scan.useDelimiter("|");
 			while(scan.hasNext()) {
 				Scanner tp = new Scanner(scan.next());
@@ -82,6 +86,8 @@ public class Lotto{
 			}
 			scan.close();
 			lotti.add(tmp);
+			
+			
 		}
 		return lotti;
 	}
@@ -96,7 +102,6 @@ public class Lotto{
 		}
 		str = str.substring(0, str.length() - 1);
 		config.set("Lotti." + this.id, str);
-		
 	}
 
 	/**
@@ -139,18 +144,24 @@ public class Lotto{
 	 * @return
 	 */
 	public static Lotto loadDataById(int id_, City city) {
-		ArrayList<Membro> membri = city.getMembri();
-		for(Membro mem : membri) {
-			if(mem.getLotto().id == id_) {
-				//trovato il lotto
-				return mem.getLotto();
+		for(Lotto lot : city.getArea().getLotti()) {
+			if(lot.getId() == id_) {
+				return lot;
 			}
 		}
+		
+		//ArrayList<Membro> membri = city.getMembri();
+		//for(Membro mem : membri) {
+		//	if(mem.getLotto().id == id_) {
+		//		//trovato il lotto
+		//		return mem.getLotto();
+		//	}
+		//}
 		
 		//Carica il lotto se non è caricato
 		String str = city.getConfig().getConfig().getString("Area.Lotti." + id_, null);
 		if(str != null) {
-			Lotto lot = new Lotto();
+			Lotto lot = new Lotto(city);
 			Scanner scan = new Scanner(str);
 			scan.useDelimiter("|");
 			while(scan.hasNext()) {

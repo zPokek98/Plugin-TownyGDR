@@ -2,7 +2,6 @@ package it.TownyGDR.Towny.Nazioni;
 
 import java.util.ArrayList;
 
-import org.bukkit.configuration.file.FileConfiguration;
 
 import it.CustomConfig.CustomConfig;
 import it.TownyGDR.Tag.Taggable;

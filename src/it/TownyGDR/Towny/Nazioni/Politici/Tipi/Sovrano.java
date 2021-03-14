@@ -6,7 +6,6 @@ package it.TownyGDR.Towny.Nazioni.Politici.Tipi;
 import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.Nazioni.Politici.Politico;
 

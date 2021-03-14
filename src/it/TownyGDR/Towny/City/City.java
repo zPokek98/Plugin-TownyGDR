@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -171,7 +172,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		CustomConfig customConfig;
 		FileConfiguration config;
 		if(database == null) {
-			customConfig = new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true);
+			customConfig = new CustomConfig("City" + File.pathSeparator + this.getName() + "(" + this.id + ")" , true);
 			config = customConfig.getConfig();
 		}else{
 			customConfig = database;
@@ -245,6 +246,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		this.name 			= config.getString("Nome", "ErrorGetName");
 		this.descrizione	= config.getString("Descrizione");
 		
+		//prima i membri e poi l'area
 		this.membri = Membro.loadMembri(config.getConfigurationSection("Membri"), this);
 		
 		this.area.load(config.getConfigurationSection("Area"));
@@ -414,4 +416,13 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	}
 
 
+	/**
+	 * Carica tutte le città
+	 */
+	public static void initCity() {
+		String[] files = Util.getListNameFile("City");
+		for(String str : files) {
+			City.loadCityByCustomConfig(new CustomConfig("City" + File.pathSeparator + str));
+		}
+	}
 }

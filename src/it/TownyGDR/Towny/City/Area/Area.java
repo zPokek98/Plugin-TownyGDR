@@ -4,11 +4,12 @@
 package it.TownyGDR.Towny.City.Area;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
@@ -41,6 +42,8 @@ public class Area implements Salva<ConfigurationSection>{
 	private Zona zona;	//Zona in cui si costrirà la città
 	private ArrayList<ElementoArea> area; //Elementi area claimati dalla città
 	
+	private ArrayList<Lotto> LottiCity;
+	
 	
 
 	//*********************************************************************** Costruttori
@@ -50,6 +53,7 @@ public class Area implements Salva<ConfigurationSection>{
 	public Area(Zona zona) {
 		this.zona = zona;
 		this.area = new ArrayList<ElementoArea>();
+		this.LottiCity = new ArrayList<Lotto>();
 	}
 	
 	//*********************************************************************** Funzioni Oggetto
@@ -161,14 +165,50 @@ public class Area implements Salva<ConfigurationSection>{
 	}
 
 	@Override
-	public void save(ConfigurationSection database) {
-		// TODO Auto-generated method stub
+	public void save(ConfigurationSection config) {
+		//Salva i lotti
+		for(Lotto lot : this.LottiCity) {
+			lot.save(config);
+		}
 		
+		//Salva id zona
+		config.set("ZonaId", this.zona.getID());
+		
+		//Salva l'area
+		String tmp = "";
+		for(ElementoArea ele : this.area) {
+			tmp += ele.getX() + ";" + ele.getZ() + "|";
+		}
+		tmp =  tmp.substring(0, tmp.length() - 1);
+		config.set("Forma", tmp);
 	}
 
 	@Override
-	public void load(ConfigurationSection database) {
-		// TODO Auto-generated method stub
+	public void load(ConfigurationSection config) {
+		//Carica id zona
+		this.zona = Zona.getByID(config.getInt("ZonaId"));
+		
+		//Carica l'area
+		Scanner scan = new Scanner(config.getString("Forma"));
+		scan.useDelimiter("|");
+		while(scan.hasNext()) {
+			Scanner pt = new Scanner(scan.next());
+			pt.useDelimiter(";");
+			int x = 0;
+			int z = 0;
+			try {
+				x = pt.nextInt();
+				z = pt.nextInt();
+			}catch(InputMismatchException e) {
+				//Error
+			}
+			pt.close();
+			ElementoArea ar = new ElementoArea(x ,z);
+			this.area.add(ar);
+		}
+		scan.close();
+		
+		//Carica i lotti, non serve sono caricati quando vengono caricati i membri
 		
 	}
 
@@ -192,6 +232,20 @@ public class Area implements Salva<ConfigurationSection>{
 	 */
 	public ArrayList<ElementoArea> getClaimato() {
 		return this.area;
+	}
+
+	/**
+	 * @param lotto
+	 */
+	public void addLotto(Lotto lotto) {
+		this.LottiCity.add(lotto);
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<Lotto> getLotti() {
+		return this.LottiCity;
 	}
 	
 	

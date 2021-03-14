@@ -6,6 +6,7 @@ package it.TownyGDR.Towny.Zone;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -42,12 +43,12 @@ import it.CustomConfig.CustomConfig;
  *********************************************************************/
 public class Sector implements Comparable<Sector>{
 	//Vaariabile di cache per i settori
-	private static ArrayList<Sector> ListSector_pos_pos = new ArrayList<Sector>();
-	private static ArrayList<Sector> ListSector_pos_neg = new ArrayList<Sector>();
-	private static ArrayList<Sector> ListSector_neg_pos = new ArrayList<Sector>();
-	private static ArrayList<Sector> ListSector_neg_neg = new ArrayList<Sector>();
+	private static TreeSet<Sector> ListSector_pos_pos = new TreeSet<Sector>();
+	private static TreeSet<Sector> ListSector_pos_neg = new TreeSet<Sector>();
+	private static TreeSet<Sector> ListSector_neg_pos = new TreeSet<Sector>();
+	private static TreeSet<Sector> ListSector_neg_neg = new TreeSet<Sector>();
 	
-	private static ArrayList<ArrayList<Sector>> ListSector = new ArrayList<ArrayList<Sector>>();
+	private static ArrayList<TreeSet<Sector>> ListSector = new ArrayList<TreeSet<Sector>>();
 	static {
 		ListSector.add(ListSector_pos_pos);
 		ListSector.add(ListSector_pos_neg);
@@ -94,7 +95,7 @@ public class Sector implements Comparable<Sector>{
 	 */
 	public static Sector getSectorByLocation(int x, int z) {		
 		//Scansiona su tutti i settori
-		ArrayList<Sector> List = Sector.getList(x,z);
+		TreeSet<Sector> List = Sector.getList(x,z);
 		for(Sector sec : List) {
 			if(sec.contain(x, z)) {
 				return sec;
@@ -109,7 +110,7 @@ public class Sector implements Comparable<Sector>{
 	 * @param z
 	 * @return
 	 */
-	private static ArrayList<Sector> getList(int x, int z) {
+	private static TreeSet<Sector> getList(int x, int z) {
 		if( x >= 0 && z >= 0) {
 			return ListSector_pos_pos;
 		}else if( x >= 0 && z < 0 ) {
@@ -312,7 +313,7 @@ public class Sector implements Comparable<Sector>{
 	 * @return
 	 */
 	public static Sector getSector(int x, int z) {
-		ArrayList<Sector> list = Sector.getList(x, z);
+		TreeSet<Sector> list = Sector.getList(x, z);
 		for(Sector sec : list) {
 			if(sec.getX() == x && sec.getZ() == z) {
 				return sec;

@@ -6,7 +6,6 @@ package it.TownyGDR.Towny.City.Impostazioni;
 import java.util.ArrayList;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import it.TownyGDR.Util.Save.Salva;

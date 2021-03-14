@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import it.TownyGDR.Towny.City.Impostazioni.set.PvpOnCity;
 import it.TownyGDR.Util.Save.Salva;
