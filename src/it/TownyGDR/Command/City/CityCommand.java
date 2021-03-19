@@ -52,7 +52,7 @@ public class CityCommand implements CommandExecutor{
 				switch(args[0]) {
 					case "-create":{
 						//crea una città con il nome dato
-						city = City.createCity(PlayerData.getFromPlayer(p), args[1], Zona.getZonaByLocation(p.getLocation()));
+						city = City.createCity(PlayerData.getPlayerData(p), args[1], Zona.getZonaByLocation(p.getLocation()));
 						if(city != null) {
 							p.sendMessage("Città creata!");
 						}else {
@@ -83,7 +83,7 @@ public class CityCommand implements CommandExecutor{
 					}break;
 					
 					case "claim":{
-						if(city.getArea().claim(p.getLocation(), city, PlayerData.getFromPlayer(p))) {
+						if(city.getArea().claim(p.getLocation(), city, PlayerData.getPlayerData(p))) {
 							p.sendMessage("Area claimata");
 						}else {
 							p.sendMessage("Area non claimata");

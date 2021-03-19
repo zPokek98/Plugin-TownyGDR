@@ -1,5 +1,6 @@
 package it.TownyGDR;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
@@ -7,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -18,8 +20,9 @@ import it.Library;
 import it.MySQL.MySQL;
 import it.TownyGDR.Command.City.CityCommand;
 import it.TownyGDR.Command.Zona.ZonaCommand;
-import it.TownyGDR.Economia.MyEconomy;
 import it.TownyGDR.Event.EventPlayerManager;
+import it.TownyGDR.PlayerData.PlayerData;
+import it.TownyGDR.Towny.Luogo;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Exception.Zona.ExceptionZonaImpossibleToLoad;
@@ -117,8 +120,7 @@ public class TownyGDR extends JavaPlugin{
 	 **********************************/
 	protected MySQL mySQL;
 	protected boolean debug;
-	private static Economy econ = null;
-	public static MyEconomy myEco = null;
+	public static Economy econ = null;
     public static Permission perms = null;
     public static Chat chat = null;
 	
@@ -144,10 +146,15 @@ public class TownyGDR extends JavaPlugin{
 		send = Bukkit.getConsoleSender(); //Inizializza consoleSender per mandare messagi nella console
 		
 		PluginDescriptionFile desc = this.getDescription();
-		send.sendMessage(ChatColor.GRAY + "------- Avvio Plugin: " + desc.getName() + " V:" + desc.getVersion() + "-------");
+		send.sendMessage(ChatColor.GRAY + String.format("[%s]------- Avvio Plugin: " + desc.getName() + " V:" + desc.getVersion() + "-------", getDescription().getName()));
 		
 		//prndi il file di config
-		this.config = this.getConfig();
+		//controlla se esiste il file
+		//if(!(new File(this.getDataFolder().toString() + File.separatorChar + "config.yml")).exists()) {
+		//	this.getConfig().options().copyDefaults(true);
+		//	this.saveConfig();
+		//}
+		//this.config = this.getConfig();
 		
 		//Cattura il mondo
 		TownyWorld = Bukkit.getWorld("Towny");
@@ -162,41 +169,41 @@ public class TownyGDR extends JavaPlugin{
 		
 		send.sendMessage(ChatColor.GRAY + "Load Vault...");
 		if(!setupEconomy()){
-			send.sendMessage(ChatColor.GRAY + String.format("[%s] - Disabilitazione perchè non è stata trovata la dipenza Vault!", getDescription().getName()));
-			getServer().getPluginManager().disablePlugin(this);
-            return;
+			//send.sendMessage(ChatColor.GRAY + String.format("[%s] - Disabilitazione perchè non è stata trovata la dipenza Vault!", getDescription().getName()));
+			//getServer().getPluginManager().disablePlugin(this);
+            //return;
         }
 		
         if(!setupPermissions()) /*getServer().getPluginManager().disablePlugin(this)*/;
         if(!setupChat()) /*getServer().getPluginManager().disablePlugin(this)*/;
 		
 		//prendi l'oggetto mySQL
-        send.sendMessage(ChatColor.GRAY + "Load MySQL...");
+        send.sendMessage(ChatColor.GRAY + String.format("[%s]Load MySQL...", getDescription().getName()));
 		this.database = this.library.getMySQL();
 		
 		//registra gli eventi
-		send.sendMessage(ChatColor.GRAY + "Load Eventi...");
+		send.sendMessage(ChatColor.GRAY + String.format("[%s]Load Eventi...", getDescription().getName()));
 		this.registerEvent();
 		
 		//registra comandi
-		send.sendMessage(ChatColor.GRAY + "Load Commandi...");
+		send.sendMessage(ChatColor.GRAY + String.format("[%s]Load Command...", getDescription().getName()));
 		this.registerCommand();
 		
 		//Carica le zone
-		send.sendMessage(ChatColor.GRAY + "Load Zone...");
+		send.sendMessage(ChatColor.GRAY + String.format("[%s]Load Zone...", getDescription().getName()));
 		try{
 			Zona.initZona();
 		}catch (IOException e){
 			e.printStackTrace();
 		} catch (ExceptionZonaImpossibleToLoad e) {
 			//Impossibile caricare la zona
-			send.sendMessage(ChatColor.RED + "Impossibile caricare la zona!!!");
-			send.sendMessage(ChatColor.RED + "Chiusura server...");
+			send.sendMessage(ChatColor.RED + String.format("[%s]Impossibile caricare la zona!!!", getDescription().getName()));
+			send.sendMessage(ChatColor.RED + String.format("[%s]Chiusura server...", getDescription().getName()));
 			getServer().getPluginManager().disablePlugin(this);
 		}
 		
 		//Carica le città anche se probabilmente sono già state caricate tremite le zone
-		send.sendMessage(ChatColor.GRAY + "Load City...");
+		send.sendMessage(ChatColor.GRAY +  String.format("[%s]Load City...", getDescription().getName()));
 		City.initCity();
 		
 	}
@@ -204,8 +211,28 @@ public class TownyGDR extends JavaPlugin{
 	//Disable
 	public void onDisable() {
 		send.sendMessage(ChatColor.GRAY + "------- Disabilitazione -------");
+		
 		//Salva tutti i dati
-		//...
+		//Ma prima kicka tutti i player
+		//e salva i loro dati
+		for (Player target : Bukkit.getServer().getOnlinePlayers()) {
+			PlayerData pd = PlayerData.getPlayerData(target);
+			try{
+				pd.save();
+			}catch(IOException e){
+				send.sendMessage(String.format("[%s] Impossibile salvare i dati di: ", target.getName()));
+			}  //Salva i dati del player
+		    target.kickPlayer("Sei stato/a kickato perchè il server si sta chiudendo!");
+		}
+		
+		//Salva il file di config
+		//this.saveConfig();
+		
+		//Salva le zone
+		Zona.saveAll();
+		
+		//Salva tutti i luoghi
+		Luogo.saveAll();
 		
 	}
 		
@@ -253,7 +280,7 @@ public class TownyGDR extends JavaPlugin{
 	 */
 	private void registerEvent() {
 		PluginManager pl = this.getServer().getPluginManager();
-		//pl.registerEvents(new EventPlayerManager(), this);
+		pl.registerEvents(new EventPlayerManager(), this);
 		
 	}
 	
@@ -282,12 +309,12 @@ public class TownyGDR extends JavaPlugin{
         econ = rsp.getProvider();
         return econ != null;
         */
-		Plugin vault = getServer().getPluginManager().getPlugin("Vault");
-        if (vault == null) {
-          return false;
-        }
-        myEco = new MyEconomy();
-        getServer().getServicesManager().register(Economy.class, myEco, vault, ServicePriority.Highest);
+		//Plugin vault = getServer().getPluginManager().getPlugin("Vault");
+        //if (vault == null) {
+        //  return false;
+        //}
+        //myEco = new MyEconomy();
+        //getServer().getServicesManager().register(Economy.class, myEco, vault, ServicePriority.Highest);
 		
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {

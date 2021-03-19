@@ -90,8 +90,6 @@ public class Area implements Salva<ConfigurationSection>{
 			}
 			if(!check) return false;
 			
-			Bukkit.getConsoleSender().sendMessage("passo 1");
-			
 			//ha i soldi?
 			if(pd.getBalance() >= Area.CostoSoldi) {
 				//Ha i soldi

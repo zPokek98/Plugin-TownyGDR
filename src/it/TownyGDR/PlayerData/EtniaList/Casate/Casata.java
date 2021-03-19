@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.TownyGDR.PlayerData.Allineamenti;
+package it.TownyGDR.PlayerData.EtniaList.Casate;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -11,10 +11,9 @@ package it.TownyGDR.PlayerData.Allineamenti;
  *
  * @text
  * Descrizione:
- * Allineamento??? bho
- * Ci sono più tipi di allineamenti e sono elencati qua
+ * Descrizione generale delle casate
  * 
  *********************************************************************/
-public enum AllineamentoType {
-	
+public class Casata {
+
 }

@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.PlayerData;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -103,6 +104,14 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	public boolean equals(PlayerData pd) {
 		return this.uuid.equals(pd.getUUID());
 	}
+	
+	/**
+	 * Salva i dati del player
+	 * @throws IOException 
+	 */
+	public void save() throws IOException {
+		this.save(null);
+	}
 
 	@Override
 	/**
@@ -115,7 +124,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		CustomConfig customConfig;
 		FileConfiguration config;
 		if(database == null) {
-			customConfig = new CustomConfig("PlayerData/" + this.uuid , true, TownyGDR.getInstance());
+			customConfig = new CustomConfig("PlayerData" + File.separatorChar + this.uuid , TownyGDR.getInstance());
 			config = customConfig.getConfig();
 		}else{
 			customConfig = database;
@@ -125,12 +134,18 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		config.set("UUID", this.uuid.toString());
 		config.set("IdCity", this.idCity);
 		
-		//Salva id città
-		config.set("City", this.idCity);
 		
-		//Salva le statistiche
+		//Carica le statistiche
+		if(!config.contains("Statistiche")) {
+			config.createSection("Statistiche");
+		}
+		
+		//salva il KDA
+		if(!config.contains("Statistiche.KDA")) config.set("Statistiche.KDA.tmp", "tmp");
 		this.kda.save(config.getConfigurationSection("Statistiche.KDA"));
-		//...
+		if(config.contains("Statistiche.KDA.tmp")) config.set("Statistiche.KDA.tmp", null);
+		
+		
 		
 		//Salva i dati nel file.
 		if(!customConfig.save()) {
@@ -162,7 +177,14 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		}
 		
 		//Carica le statistiche
+		if(!config.contains("Statistiche")) {
+			config.createSection("Statistiche");
+		}
+		
+		//salva il KDA
+		if(!config.contains("Statistiche.KDA")) config.set("Statistiche.KDA.tmp", "tmp");
 		this.kda.load(config.getConfigurationSection("Statistiche.KDA"));
+		if(config.contains("Statistiche.KDA.tmp")) config.set("Statistiche.KDA.tmp", null);
 		//...
 		
 	}
@@ -185,15 +207,30 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 * @return
 	 */
 	public static PlayerData getFromUUID(UUID playerUuid) {
+		//Controlla fra quelli già caricati
 		for(PlayerData pd : ListPlayerData) {
 			if(pd.getUUID().equals(playerUuid)) {
 				return pd;
 			}
 		}
+		
+		//Controlla se esiste il suo file
 		if(PlayerData.checkExistThisPlayer(playerUuid)) {
+			//Esiste il file, lo carico
 			return PlayerData.loadPlayerData(playerUuid);
 		}
+		
+		//Non è mai esistito questo player
 		return null;
+	}
+	
+	/**
+	 * @param target
+	 * @return
+	 */
+	public static PlayerData getPlayerData(Player p) {
+		PlayerData tmp = PlayerData.getFromUUID(p.getUniqueId());
+		return tmp == null ? new PlayerData(p) : tmp;
 	}
 	
 	/**
@@ -217,8 +254,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 * Ritorna i soldi del player.
 	 */
 	public double getBalance() {
-		return 1000;
-		//return TownyGDR.myEco.getBalance(player);
+		return TownyGDR.econ.getBalance(player);
 	}
 	
 	/**
@@ -228,7 +264,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean addMoney(double val) {
 		if(val > 0) {
-			/*EconomyResponse result = */TownyGDR.myEco.depositPlayer(player, val);
+			/*EconomyResponse result = */TownyGDR.econ.depositPlayer(player, val);
 			return true;
 		}
 		return false;
@@ -241,7 +277,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean withdrawMoney(double val) {
 		if(val > 0) {
-			TownyGDR.myEco.withdrawPlayer(player, val);
+			TownyGDR.econ.withdrawPlayer(player, val);
 			return true;
 		}
 		return false;
@@ -308,7 +344,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		//Si riferisce al KDA?
 		if(str.contains("KDA")) {
 			//mantieni solo la parte dal KDA in poi
-			return this.kda.getValueFromTag(str.replaceFirst("Player.", ""));
+			return this.kda.getValueFromTag(str.replaceFirst("Player.KDA.", ""));
 		}
 		//...
 		
@@ -328,13 +364,6 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		return "(Error Invalid code: " + str + ")";
 	}
 
-	/**
-	 * @param p
-	 * @return
-	 */
-	public static PlayerData getFromPlayer(Player p) {
-		PlayerData tmp = PlayerData.getFromUUID(p.getUniqueId());
-		return tmp == null ? new PlayerData(p) : tmp;
-	}
+	
 
 }

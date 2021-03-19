@@ -48,7 +48,7 @@ import it.TownyGDR.Util.Save.Salva;
 public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	
 	//Variabile di cache per le città per ottimizzare tempi e memoria
-	private static ArrayList<City> ListCity = new ArrayList<City>();
+	public static ArrayList<City> ListCity = new ArrayList<City>();
 	
 	//Contenitore dei Tag per la city
 	private static ArrayList<String> TagList = new ArrayList<String>();
@@ -91,6 +91,8 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		this.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
 		
 		this.area 		 = new Area(zon);
+		zon.setLuogo(this);
+		
 		this.municipio	 = new Municipio();
 		this.impostazioni= new Impostazioni();
 		this.regole		 = new Regole();
@@ -143,6 +145,9 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		
 		//Area inizliale? Al momento non c'è claim ??????????????
 		//...
+		
+		//Imposta il player come membro di questa città
+		pd.setCity(city);
 		
 		try{
 			city.save(null); //può anche essere null l'argomento

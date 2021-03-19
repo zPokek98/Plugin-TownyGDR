@@ -1,7 +1,9 @@
 /**
  * 
  */
-package it.TownyGDR.PlayerData.Allineamenti;
+package it.TownyGDR.PlayerData.EtniaList.Casate.Naviana;
+
+import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -11,10 +13,14 @@ package it.TownyGDR.PlayerData.Allineamenti;
  *
  * @text
  * Descrizione:
- * Allineamento??? bho
- * Ci sono più tipi di allineamenti e sono elencati qua
  * 
  *********************************************************************/
-public enum AllineamentoType {
-	
+public enum NavianaCasata implements CasataType{
+	Darnis,
+	Egeril,
+	Fen,
+	Forven,
+	Leowell,
+	River,
+	Singer;
 }

@@ -1,7 +1,9 @@
 /**
  * 
  */
-package it.TownyGDR.PlayerData.Allineamenti;
+package it.TownyGDR.PlayerData.EtniaList.Casate.Dragoniana;
+
+import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -11,10 +13,17 @@ package it.TownyGDR.PlayerData.Allineamenti;
  *
  * @text
  * Descrizione:
- * Allineamento??? bho
- * Ci sono più tipi di allineamenti e sono elencati qua
  * 
  *********************************************************************/
-public enum AllineamentoType {
+public enum DragonianaCasata implements CasataType{
+	Dandu,
+	Dragoy,
+	Drengot,
+	Hol,
+	Petrix,
+	Renix,
+	Roy,
+	Trevor,
+	Zamputor;
 	
 }

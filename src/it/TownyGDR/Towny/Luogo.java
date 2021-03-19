@@ -3,6 +3,8 @@
  */
 package it.TownyGDR.Towny;
 
+import java.io.IOException;
+
 import it.TownyGDR.Towny.City.City;
 
 /*********************************************************************
@@ -49,6 +51,20 @@ public abstract class Luogo {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * 
+	 */
+	public static void saveAll() {
+		for(City city : City.ListCity){
+			try{
+				city.save(null);
+			}catch(IOException e){
+				//Error
+			}
+		}
+		
 	}
 	
 }

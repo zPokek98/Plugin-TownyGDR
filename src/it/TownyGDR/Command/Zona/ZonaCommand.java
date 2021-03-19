@@ -79,16 +79,8 @@ public class ZonaCommand implements CommandExecutor{
 				
 				switch(args[0]) {
 					case "-id":{
-						//prendi la zona secondo l'id
-						int id = 0;
-						try {
-							id = Integer.parseInt(args[1]);
-							zon = Zona.getByID(id);
-							offset = 2;
-						}catch(NumberFormatException e) {
-							error(p);
-							return true;
-						}
+						zon = this.getZonaByID(args[1]);
+						offset = 2;
 					}break;
 					
 					case "-nome":{
@@ -98,21 +90,15 @@ public class ZonaCommand implements CommandExecutor{
 					}break;
 					
 					case "-loc":{
-						//prendi la zona secondo la posizone del player
-						//ho due possibili opzioni [-qua , -pos [x,z]
+						this.getZonaByLocation(args, p);
 						if(args[2].equalsIgnoreCase("-qua")) {
-							zon = Zona.getZonaByLocation(p.getLocation());
 							offset = 2;
 						}else if(args[2].equalsIgnoreCase("-pos")) {
-							try {
-								int x = Integer.parseInt(args[3]);
-								int z = Integer.parseInt(args[4]);
-								zon = Zona.getZonaByLocation(new Location(p.getLocation().getWorld(), x, 0, z));
-								offset = 4;
-							}catch(NumberFormatException e) {
-								error(p);
-								return true;
-							}
+							offset = 4;
+						}else{
+							//Sintassi non corretta
+							error(p);
+							return true;
 						}
 					}break;
 					
@@ -122,9 +108,15 @@ public class ZonaCommand implements CommandExecutor{
 						ZonaType type = ZonaType.valueOf(args[2]);
 						try {
 							zon = new Zona(nome, type);
+							p.sendMessage("Zona creata con successo, ID zona creata: " + zon.getID());
 						} catch (ExceptionZonaNameNotAvaiable e) {
 							p.sendMessage("Nome non valido!");
 						}
+						return true;
+					}
+					
+					case "-help":{
+						this.help(p);
 						return true;
 					}
 				}
@@ -138,6 +130,7 @@ public class ZonaCommand implements CommandExecutor{
 				//Dopo aver ottenuto la zona ho vari comandi in cascata... [add/remove/check/getinfo]
 				switch(args[offset]) {
 				
+					//Salva la Zona
 					case "save":{
 						try {
 							zon.save(new CustomConfig("Zone" + File.separatorChar + zon.getName() + "(" + zon.getID() + ")", TownyGDR.getInstance()));
@@ -147,6 +140,7 @@ public class ZonaCommand implements CommandExecutor{
 						}
 					}
 					
+					//Aggiungi alla zona una posizione
 					case "add":{
 						//Aggiungi alla zona trovata l'elemento d'area indicato se possibile
 						//l'elemento d'area è indicato con [-qua , -pos x,z]
@@ -172,8 +166,10 @@ public class ZonaCommand implements CommandExecutor{
 								return true;
 							}
 						}
-					}break;
+						return true;
+					}//break;
 					
+					//Rimmuovi la posizione data dalla zona
 					case "remove":{
 						//Aggiungi alla zona trovata l'elemento d'area indicato se possibile
 						//l'elemento d'area è indicato con [-qua , -pos x,z]
@@ -199,8 +195,10 @@ public class ZonaCommand implements CommandExecutor{
 								return true;
 							}
 						}
-					}break;
+						return true;
+					}//break;
 					
+					//Controlla se la posizione data è dentro la zona
 					case "check":{
 						//Aggiungi alla zona trovata l'elemento d'area indicato se possibile
 						//l'elemento d'area è indicato con [-qua , -pos x,z]
@@ -226,8 +224,10 @@ public class ZonaCommand implements CommandExecutor{
 								return true;
 							}
 						}
-					}break;
+						return true;
+					}//break;
 					
+					//Informazioni della zona trovata
 					case "getinfo":{
 						p.sendMessage("Info della zona: " + zon.getName());
 						p.sendMessage("Type: " + zon.getType().toString());
@@ -239,8 +239,8 @@ public class ZonaCommand implements CommandExecutor{
 								p.sendMessage("Chunk: " + ele.getX() + " : " + ele.getZ());
 							}
 						}
-						
-					}break;
+						return true;
+					}//break;
 				}
 				
 				
@@ -258,10 +258,70 @@ public class ZonaCommand implements CommandExecutor{
 	}
 
 	/**
+	 * Comando help per la zona
+	 * @param p
+	 */
+	private void help(Player p) {
+		p.sendMessage(ChatColor.GREEN + "----- Zona Help ------");
+		p.sendMessage(ChatColor.GREEN + "/zona -[id/nome] <arg> [add/remove/check] -qua");
+		p.sendMessage(ChatColor.GREEN + "/zona -[id/nome] <arg> [add/remove/check] -pos <args>");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -qua [add/remove/check] -qua");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -qua [add/remove/check] -pos <args>");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -pos <args> [add/remove/check] -qua");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -pos <args> [add/remove/check] -pos <args>");
+		p.sendMessage(ChatColor.GREEN + "/zona -create <nome> <type>");
+		p.sendMessage(ChatColor.GREEN + "/zona -[id/nome] <arg> save");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -qua save");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -pos <args> save");
+		p.sendMessage(ChatColor.GREEN + "/zona -[id/nome] <arg> getinfo");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -qua getinfo");
+		p.sendMessage(ChatColor.GREEN + "/zona -loc -pos <args> getinfo");
+		
+	}
+
+	/**
 	 * @param sender
 	 */
 	private void error(CommandSender sender) {
 		sender.sendMessage("Sintassi non valida per eseguire il commando!");
+	}
+	
+	//Prendi la zona in base all'id dato
+	/**
+	 * Ritorna la zona in base alle info date
+	 * @param id
+	 * @return
+	 */
+	private Zona getZonaByID(String id) {
+		try {
+			return Zona.getByID(Integer.parseInt(id));
+		}catch(NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Ritorna la zona in base alle info date
+	 * @param args
+	 * @param p
+	 * @return
+	 */
+	private Zona getZonaByLocation(String args[], Player p) {
+		//prendi la zona secondo la posizone del player
+		//ho due possibili opzioni [-qua , -pos [x,z]
+		if(args[1].equalsIgnoreCase("-qua")) {
+			return Zona.getZonaByLocation(p.getLocation());
+		}else if(args[1].equalsIgnoreCase("-pos")) {
+			try {
+				int x = Integer.parseInt(args[2]);
+				int z = Integer.parseInt(args[3]);
+				return Zona.getZonaByLocation(new Location(p.getLocation().getWorld(), x, 0, z));
+				
+			}catch(NumberFormatException e) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 }

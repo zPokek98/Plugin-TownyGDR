@@ -361,6 +361,7 @@ public class Zona implements Salva<CustomConfig>{
 	 */
 	public void setLuogo(Luogo luogo) {
 		this.luogoCache = luogo;
+		this.luogo = luogo != null ? luogo.getType() : null;
 	}
 
 	/**
@@ -414,6 +415,20 @@ public class Zona implements Salva<CustomConfig>{
 			}
 		}
 		return null;
+	}
+
+
+	/**
+	 * Salva tutte le zone
+	 */
+	public static void saveAll() {
+		for(Zona zon : ListZona) {
+			try {
+				zon.save(null);
+			}catch (IOException e){
+				//Errore
+			}
+		}
 	}
 	
 }
