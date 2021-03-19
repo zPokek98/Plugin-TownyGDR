@@ -41,6 +41,7 @@ import it.CustomConfig.CustomConfig;
  * Manca il salvataggio e il load per i settori anche nelle zone ******************
  * 
  *********************************************************************/
+@SuppressWarnings("unused")
 public class Sector implements Comparable<Sector>{
 	//Vaariabile di cache per i settori
 	private static TreeSet<Sector> ListSector_pos_pos = new TreeSet<Sector>();
@@ -75,7 +76,7 @@ public class Sector implements Comparable<Sector>{
 		this.coord_x = x;
 		this.coord_z = z;
 		this.zoneInSector = new ArrayList<Zona>();
-
+		
 		Sector.getList(x, z).add(this);
 	}
 	
@@ -161,9 +162,9 @@ public class Sector implements Comparable<Sector>{
 		
 		int l   = (SizeSector - 1)/2;
 		//Controllo asse X
-		if(  this.coord_x - l > tmp_x && this.coord_x + l < tmp_x  ) {
+		if(  this.coord_x - l < tmp_x && this.coord_x + l > tmp_x  ) {
 			//Controllo asse Z
-			if(  this.coord_z - l > tmp_z && this.coord_z + l < tmp_z  ) {
+			if(  this.coord_z - l < tmp_z && this.coord_z + l > tmp_z  ) {
 				//rientra!
 				return true;
 			}
@@ -244,7 +245,7 @@ public class Sector implements Comparable<Sector>{
 		return this.coord_z;
 	}
 
-	
+	/*
 	public void save(CustomConfig database) throws IOException {
 		FileConfiguration config;
 		if(database == null) {
@@ -265,10 +266,13 @@ public class Sector implements Comparable<Sector>{
 		
 		database.save();		
 	}
+	*/
 	
+	/*
 	private CustomConfig getCustomConfig() {
 		return new CustomConfig("Settori" + File.pathSeparator + this.coord_x + ";" + this.coord_z);
 	}
+	*/
 
 	@Override
 	public int compareTo(Sector sector) {

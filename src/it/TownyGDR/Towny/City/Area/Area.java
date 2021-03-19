@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -75,7 +76,7 @@ public class Area implements Salva<ConfigurationSection>{
 		int x = chunk.getX();
 		int z = chunk.getZ();
 		ElementoArea ele = new ElementoArea(x, z);
-		if(this.checkAdiacenza(ele)) {
+		if(this.checkAdiacenza(ele) || this.area.size() == 0) {
 			//Claimabile
 			//Ha i requisiti per claimarlo
 			
@@ -89,18 +90,22 @@ public class Area implements Salva<ConfigurationSection>{
 			}
 			if(!check) return false;
 			
+			Bukkit.getConsoleSender().sendMessage("passo 1");
+			
 			//ha i soldi?
 			if(pd.getBalance() >= Area.CostoSoldi) {
 				//Ha i soldi
 				//Ha un minimo di player?
-				if(city.getMembri().size() * Area.ChunkSuMembri < this.getSize()) {
+				Bukkit.getConsoleSender().sendMessage("passo 2");
+				if((city.getMembri().size() <= this.getSize() * Area.ChunkSuMembri) || this.getSize() == 0) {
 					//ha abbastanza membri
-					
+					Bukkit.getConsoleSender().sendMessage("passo 3");
 					//Togli i soldi
 					pd.withdrawMoney(Area.CostoSoldi);
 					
 					//Aggiungi l'area
 					this.area.add(ele);
+					return true;
 				}
 			}
 		}
@@ -150,14 +155,16 @@ public class Area implements Salva<ConfigurationSection>{
 			
 			//Vari elementi aree affianco all'area
 			ArrayList<ElementoArea> list = new ArrayList<ElementoArea>();
-			list.add(new ElementoArea(area.getX() + 1 , area.getZ() + 1));
-			list.add(new ElementoArea(area.getX() + 1 , area.getZ() - 1));
-			list.add(new ElementoArea(area.getX() - 1 , area.getZ() + 1));
-			list.add(new ElementoArea(area.getX() - 1 , area.getZ() - 1));
+			list.add(new ElementoArea(area.getX()     , area.getZ() + 1));
+			list.add(new ElementoArea(area.getX()     , area.getZ() - 1));
+			list.add(new ElementoArea(area.getX() + 1 , area.getZ()    ));
+			list.add(new ElementoArea(area.getX() - 1 , area.getZ()    ));
 			
 			for(ElementoArea ele : list) {
-				if(this.area.contains(ele)) {
-					return true;
+				for(ElementoArea le : this.area) {
+					if(ele.getX() == le.getX() && ele.getZ() == le.getZ()) {
+						return true;
+					}
 				}
 			}
 		}
@@ -175,9 +182,12 @@ public class Area implements Salva<ConfigurationSection>{
 		config.set("ZonaId", this.zona.getID());
 		
 		//Salva l'area
+		if(this.area.size() == 0) {
+			return;
+		}
 		String tmp = "";
 		for(ElementoArea ele : this.area) {
-			tmp += ele.getX() + ";" + ele.getZ() + "|";
+			tmp += ele.getX() + "&" + ele.getZ() + ";";
 		}
 		tmp =  tmp.substring(0, tmp.length() - 1);
 		config.set("Forma", tmp);
@@ -189,24 +199,27 @@ public class Area implements Salva<ConfigurationSection>{
 		this.zona = Zona.getByID(config.getInt("ZonaId"));
 		
 		//Carica l'area
-		Scanner scan = new Scanner(config.getString("Forma"));
-		scan.useDelimiter("|");
-		while(scan.hasNext()) {
-			Scanner pt = new Scanner(scan.next());
-			pt.useDelimiter(";");
-			int x = 0;
-			int z = 0;
-			try {
-				x = pt.nextInt();
-				z = pt.nextInt();
-			}catch(InputMismatchException e) {
-				//Error
+		if(config.contains("Forma")) {
+			Scanner scan = new Scanner(config.getString("Forma"));
+			scan.useDelimiter(";");
+			while(scan.hasNext()) {
+				String coppia = scan.next();
+				Scanner pt = new Scanner(coppia);
+				pt.useDelimiter("&");
+				int x = 0;
+				int z = 0;
+				try {
+					x = pt.nextInt();
+					z = pt.nextInt();
+				}catch(InputMismatchException e) {
+					//Error
+				}
+				pt.close();
+				ElementoArea ar = new ElementoArea(x ,z);
+				this.area.add(ar);
 			}
-			pt.close();
-			ElementoArea ar = new ElementoArea(x ,z);
-			this.area.add(ar);
+			scan.close();
 		}
-		scan.close();
 		
 		//Carica i lotti, non serve sono caricati quando vengono caricati i membri
 		

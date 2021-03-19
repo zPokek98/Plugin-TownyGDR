@@ -41,7 +41,9 @@ public class Impostazioni implements Salva<ConfigurationSection>{
 	@Override
 	public void save(ConfigurationSection config) throws IOException {
 		for(Settings sett : this.settings) {
+			if(!config.contains(sett.getName())) config.set(sett.getName() + ".tmp", "tmp");
 			sett.save(config.getConfigurationSection(sett.getName()));
+			if(config.contains(sett.getName() + ".tmp")) config.set(sett.getName() + ".tmp", null);
 		}
 	}
 

@@ -26,7 +26,7 @@ import it.TownyGDR.Towny.City.Area.Lotto;
  * Tiene conto anche del suo titolo all'interno della città.
  * (Che è diverso da come si fa con la nazione)
  * 
- * Ogni membro ha dei appezzamenti di terra assegnati DA FARE ! *****************************########
+ * Ogni membro ha dei appezzamenti di terra assegnati 
  * 
  *********************************************************************/
 public class Membro{
@@ -79,7 +79,10 @@ public class Membro{
 			}
 			str = str.substring(0, str.length() - 1);
 			config.set(mem.getUUID() + ".Ruolo", str);
-			config.set(mem.getUUID() + ".Lotto", mem.lotto.getId());
+			if(mem.lotto != null) {
+				config.set(mem.getUUID() + ".Lotto", mem.lotto.getId());
+			}
+			
 		}
 	}
 	
@@ -111,7 +114,9 @@ public class Membro{
 			
 			//ottieni i lotti del player
 			membro.lotto  = Lotto.loadDataById(config.getInt(".Lotto"), city);
-			membro.lotto.addMembro(membro);
+			if(membro.lotto != null) {
+				membro.lotto.addMembro(membro);
+			}
 			
 			mem.add(membro);
 		}

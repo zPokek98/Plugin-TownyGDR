@@ -7,7 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/ledi/Desktop/edi/Minecraft/Net-work/progetti plugin/API/SERVER/spigot-1.16.5.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ledi/Desktop/edi/Minecraft/Net-work/progetti plugin/API/LIBRERIE MIE/Library.jar"/>
 	<classpathentry kind="lib" path="C:/Users/ledi/Desktop/edi/Minecraft/Net-work/progetti plugin/API/LIBRERIA ESTERNE/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ledi/Desktop/edi/Minecraft/Net-work/progetti plugin/API/LIBRERIE MIE/Library.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

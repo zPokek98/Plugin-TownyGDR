@@ -3,7 +3,9 @@
  */
 package it.TownyGDR.Event;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -17,4 +19,8 @@ import org.bukkit.event.Listener;
  *********************************************************************/
 public class EventPlayerManager implements Listener{
 
+	@EventHandler
+	public void onPlayerJoinEvent(PlayerJoinEvent event) {
+		
+	}
 }

@@ -115,7 +115,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		CustomConfig customConfig;
 		FileConfiguration config;
 		if(database == null) {
-			customConfig = new CustomConfig("PlayerData/" + this.uuid , true);
+			customConfig = new CustomConfig("PlayerData/" + this.uuid , true, TownyGDR.getInstance());
 			config = customConfig.getConfig();
 		}else{
 			customConfig = database;
@@ -144,7 +144,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		CustomConfig customConfig;
 		FileConfiguration config;
 		if(database == null) {
-			customConfig = new CustomConfig("PlayerData/" + this.uuid , true);
+			customConfig = new CustomConfig("PlayerData/" + this.uuid , true, TownyGDR.getInstance());
 			config = customConfig.getConfig();
 		}else{
 			customConfig = database;
@@ -175,7 +175,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	public static PlayerData loadPlayerData(UUID uuid) {
 		PlayerData pd = new PlayerData(null);
 		pd.uuid = uuid;
-		pd.load(new CustomConfig("PlayerData/" + pd.uuid , true));
+		pd.load(new CustomConfig("PlayerData/" + pd.uuid , true, TownyGDR.getInstance()));
 		return pd;
 	}
 	
@@ -204,6 +204,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	public static boolean checkExistThisPlayer(UUID uuid) {
 		String[] paths = Util.getListNameFile("PlayerData");
 		for(String str : paths) {
+			str = str.substring(0,str.length() - 4);
 			if(str.equals(uuid.toString())) {
 				return true;
 			}
@@ -216,7 +217,8 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 * Ritorna i soldi del player.
 	 */
 	public double getBalance() {
-		return TownyGDR.econ.getBalance(player);
+		return 1000;
+		//return TownyGDR.myEco.getBalance(player);
 	}
 	
 	/**
@@ -226,7 +228,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean addMoney(double val) {
 		if(val > 0) {
-			/*EconomyResponse result = */TownyGDR.econ.depositPlayer(player, val);
+			/*EconomyResponse result = */TownyGDR.myEco.depositPlayer(player, val);
 			return true;
 		}
 		return false;
@@ -239,7 +241,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean withdrawMoney(double val) {
 		if(val > 0) {
-			TownyGDR.econ.withdrawPlayer(player, val);
+			TownyGDR.myEco.withdrawPlayer(player, val);
 			return true;
 		}
 		return false;
@@ -324,6 +326,15 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		}
 		
 		return "(Error Invalid code: " + str + ")";
+	}
+
+	/**
+	 * @param p
+	 * @return
+	 */
+	public static PlayerData getFromPlayer(Player p) {
+		PlayerData tmp = PlayerData.getFromUUID(p.getUniqueId());
+		return tmp == null ? new PlayerData(p) : tmp;
 	}
 
 }

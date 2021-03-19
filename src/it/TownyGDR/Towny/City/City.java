@@ -12,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.CustomConfig.CustomConfig;
+import it.TownyGDR.TownyGDR;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.LuoghiType;
@@ -93,6 +94,8 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		this.municipio	 = new Municipio();
 		this.impostazioni= new Impostazioni();
 		this.regole		 = new Regole();
+		
+		ListCity.add(this);
 	}
 	
 	/**
@@ -109,6 +112,8 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		this.municipio	 = new Municipio();
 		this.impostazioni= new Impostazioni();
 		this.regole		 = new Regole();
+		
+		ListCity.add(this);
 	}
 	
 	/**
@@ -118,7 +123,16 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @param pd
 	 * @return
 	 */
-	public City createCity(PlayerData pd, String nomeCitta, Zona zon) {
+	public static City createCity(PlayerData pd, String nomeCitta, Zona zon) {
+		//Controlla che la zona è libera
+		if(zon.getLuogo() == null) {
+			//libera
+		}else {
+			//non è libera
+			return null;
+		}
+		
+		
 		City city = new City(nomeCitta, pd, zon);
 		//Prendi l'id massimo fra le città
 		city.id = City.getMaxID() + 1;
@@ -148,7 +162,8 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		int tmp = 0;
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
-			CustomConfig customConfig = new CustomConfig("City/" + str);
+			str = str.substring(0,str.length() - 4);
+			CustomConfig customConfig = new CustomConfig("City/" + str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
 			if(config.getInt("ID") > tmp) {
 				tmp = config.getInt("ID");
@@ -172,7 +187,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		CustomConfig customConfig;
 		FileConfiguration config;
 		if(database == null) {
-			customConfig = new CustomConfig("City" + File.pathSeparator + this.getName() + "(" + this.id + ")" , true);
+			customConfig = new CustomConfig("City" + File.separatorChar + this.getName() + "(" + this.id + ")" , true, TownyGDR.getInstance());
 			config = customConfig.getConfig();
 		}else{
 			customConfig = database;
@@ -183,12 +198,25 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		config.set("Nome", this.getName());
 		config.set("Descrizione", this.descrizione);
 		
+		if(!config.contains("Area")) config.set("Area.tmp", "tmp");
 		this.saveArea(config.getConfigurationSection("Area"));
-		this.saveMembri(config.getConfigurationSection("Membri"));
-		this.saveEdifici(config.getConfigurationSection("Edifici"));
+		if(config.contains("Area.tmp")) config.set("Area.tmp", null);
 		
+		if(!config.contains("Membri")) config.set("Membri.tmp", "tmp");
+		this.saveMembri(config.getConfigurationSection("Membri"));
+		if(config.contains("Membri.tmp")) config.set("Membri.tmp", null);
+		
+		if(!config.contains("Edifici")) config.set("Edifici.tmp", "tmp");
+		this.saveEdifici(config.getConfigurationSection("Edifici"));
+		if(config.contains("Edifici.tmp")) config.set("Edifici.tmp", null);
+		
+		if(!config.contains("Impostazioni")) config.set("Impostazioni.tmp", "tmp");
 		this.impostazioni.save(config.getConfigurationSection("Impostazioni"));
+		if(config.contains("Impostazioni.tmp")) config.set("Impostazioni.tmp", null);
+		
+		if(!config.contains("Regole")) config.set("Regole.tmp", "tmp");
 		this.regole.save(config.getConfigurationSection("Regole"));
+		if(config.contains("Regole.tmp")) config.set("Regole.tmp", null);
 		
 		//Salva i dati nel file.
 		if(!customConfig.save()) {
@@ -213,7 +241,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 */
 	private void saveMembri(ConfigurationSection config) {
 		try {
-			Membro.save(config.getConfigurationSection("Membri"), this.membri);
+			Membro.save(config, this.membri);
 		} catch (IOException e) {
 			//e.printStackTrace();
 			//Errore
@@ -234,7 +262,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		CustomConfig customConfig;
 		FileConfiguration config;
 		if(database == null) {
-			customConfig = new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true);
+			customConfig = new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true, TownyGDR.getInstance());
 			config = customConfig.getConfig();
 		}else{
 			customConfig = database;
@@ -284,7 +312,8 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	public static City loadCityByID(long id) {
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
-			CustomConfig customConfig = new CustomConfig("City/" + str);
+			str = str.substring(0,str.length() - 4);
+			CustomConfig customConfig = new CustomConfig("City/" + str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
 			if(config.getInt("ID") == id) {
 				return City.loadCityByCustomConfig(customConfig);
@@ -412,7 +441,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @return
 	 */
 	public CustomConfig getConfig() {
-		return new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true);
+		return new CustomConfig("City/" + this.getName() + "(" + this.id + ")" , true, TownyGDR.getInstance());
 	}
 
 
@@ -422,7 +451,8 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	public static void initCity() {
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
-			City.loadCityByCustomConfig(new CustomConfig("City" + File.pathSeparator + str));
+			str = str.substring(0,str.length() - 4);
+			City.loadCityByCustomConfig(new CustomConfig("City" + File.separatorChar + str, TownyGDR.getInstance()));
 		}
 	}
 }

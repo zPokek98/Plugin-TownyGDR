@@ -23,9 +23,9 @@ public class Util {
 		//se non esiste la cartella
 		if(!cartella.exists()){	
 			//non esiste la cartella!
-			cartella.mkdir();
+			cartella.mkdirs();
 		}
-		return cartella.list();
+		return cartella.list() == null ? new String[0] : cartella.list();
 	}
 
 }

@@ -11,14 +11,18 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import it.Library;
 import it.MySQL.MySQL;
-import it.TownyGDR.Command.CommandManager;
+import it.TownyGDR.Command.City.CityCommand;
+import it.TownyGDR.Command.Zona.ZonaCommand;
+import it.TownyGDR.Economia.MyEconomy;
 import it.TownyGDR.Event.EventPlayerManager;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.Zone.Zona;
+import it.TownyGDR.Util.Exception.Zona.ExceptionZonaImpossibleToLoad;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -48,7 +52,7 @@ import net.milkbowl.vault.permission.Permission;
  * e i suoi componenti e ovviamente le loro iterazioni.
  * 
  * #Altre info------------------------------------------------------
- * La economia è supportata dalla vault
+ * La economia è supportata dalla vault, ma bisogna creare l'eonomia nel suo complesso
  * Come i permessi e la Chat.
  * 
  * 
@@ -113,7 +117,8 @@ public class TownyGDR extends JavaPlugin{
 	 **********************************/
 	protected MySQL mySQL;
 	protected boolean debug;
-	public static Economy econ = null;
+	private static Economy econ = null;
+	public static MyEconomy myEco = null;
     public static Permission perms = null;
     public static Chat chat = null;
 	
@@ -151,6 +156,7 @@ public class TownyGDR extends JavaPlugin{
 		try {
 			this.library = this.getLibraryInstance();
 		}catch(RuntimeException e) {
+			send.sendMessage(ChatColor.GRAY + String.format("[%s] - Disabilitazione perchè non è stata trovata la dipenza Library!", getDescription().getName()));
 			getServer().getPluginManager().disablePlugin(this);
 		}
 		
@@ -161,26 +167,36 @@ public class TownyGDR extends JavaPlugin{
             return;
         }
 		
-        if(!setupPermissions()) getServer().getPluginManager().disablePlugin(this);
-        if(!setupChat()) getServer().getPluginManager().disablePlugin(this);
+        if(!setupPermissions()) /*getServer().getPluginManager().disablePlugin(this)*/;
+        if(!setupChat()) /*getServer().getPluginManager().disablePlugin(this)*/;
 		
 		//prendi l'oggetto mySQL
+        send.sendMessage(ChatColor.GRAY + "Load MySQL...");
 		this.database = this.library.getMySQL();
 		
 		//registra gli eventi
+		send.sendMessage(ChatColor.GRAY + "Load Eventi...");
 		this.registerEvent();
 		
 		//registra comandi
+		send.sendMessage(ChatColor.GRAY + "Load Commandi...");
 		this.registerCommand();
 		
 		//Carica le zone
+		send.sendMessage(ChatColor.GRAY + "Load Zone...");
 		try{
 			Zona.initZona();
 		}catch (IOException e){
 			e.printStackTrace();
+		} catch (ExceptionZonaImpossibleToLoad e) {
+			//Impossibile caricare la zona
+			send.sendMessage(ChatColor.RED + "Impossibile caricare la zona!!!");
+			send.sendMessage(ChatColor.RED + "Chiusura server...");
+			getServer().getPluginManager().disablePlugin(this);
 		}
 		
 		//Carica le città anche se probabilmente sono già state caricate tremite le zone
+		send.sendMessage(ChatColor.GRAY + "Load City...");
 		City.initCity();
 		
 	}
@@ -237,15 +253,16 @@ public class TownyGDR extends JavaPlugin{
 	 */
 	private void registerEvent() {
 		PluginManager pl = this.getServer().getPluginManager();
-		pl.registerEvents(new EventPlayerManager(), this);
-
+		//pl.registerEvents(new EventPlayerManager(), this);
+		
 	}
 	
 	/**
 	 * Registra i commandi
 	 */
 	private void registerCommand() {
-		this.getCommand("Towny").setExecutor(new CommandManager());
+		this.getCommand("Zona").setExecutor(new ZonaCommand());
+		this.getCommand("City").setExecutor(new CityCommand());
 	}
 
 	/**
@@ -253,6 +270,7 @@ public class TownyGDR extends JavaPlugin{
 	 * @return
 	 */
 	private boolean setupEconomy() {
+		/*
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
@@ -263,6 +281,20 @@ public class TownyGDR extends JavaPlugin{
         }
         econ = rsp.getProvider();
         return econ != null;
+        */
+		Plugin vault = getServer().getPluginManager().getPlugin("Vault");
+        if (vault == null) {
+          return false;
+        }
+        myEco = new MyEconomy();
+        getServer().getServicesManager().register(Economy.class, myEco, vault, ServicePriority.Highest);
+		
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            econ = economyProvider.getProvider();
+        }
+
+        return (econ != null);
     }
  
 	/**
@@ -270,9 +302,11 @@ public class TownyGDR extends JavaPlugin{
 	 * @return
 	 */
     private boolean setupChat() {
-        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
-        chat = rsp.getProvider();
-        return chat != null;
+    	RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        if (chatProvider != null) {
+            chat = chatProvider.getProvider();
+        }
+        return (chat != null);
     }
  
     /**
@@ -280,10 +314,11 @@ public class TownyGDR extends JavaPlugin{
      * @return
      */
     private boolean setupPermissions() {
-    	send.sendMessage(ChatColor.GRAY + "Load Permission class...");
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
-        return perms != null;
+    	RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            perms = permissionProvider.getProvider();
+        }
+        return (perms != null);
     }
 
 	/**

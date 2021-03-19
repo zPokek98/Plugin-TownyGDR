@@ -116,9 +116,10 @@ public class ElementoArea {
 	 * La classe non ha l'implementazione Salva<T> dato che non si puo
 	 * associare un implementazione di tipo LOAD al singolo :(
 	 * @param config
+	 * @param sec 
 	 * @throws IOException
 	 */
-	public static void save(ConfigurationSection config,  ArrayList<ElementoArea> list) throws IOException {		
+	public static void save(ConfigurationSection config,  Sector sec, ArrayList<ElementoArea> list) throws IOException {		
 		//Creazione List per formalità
 		List<String> tmp = new ArrayList<String>();
 		for(ElementoArea ele : list) {
@@ -126,10 +127,10 @@ public class ElementoArea {
 		}
 		
 		//elimina i dati sotto ListAree
-		config.set("List", null);
+		config.set("Settore" + sec.toString() +".List", null);
 		
 		//aggiungi alla lista su ListAree
-		config.set("List", tmp);
+		config.set("Settore" + sec.toString() +".List", tmp);
 	}
 	
 	/**
@@ -180,7 +181,7 @@ public class ElementoArea {
 	public static ArrayList<ElementoArea> loadData(ConfigurationSection config) {
 		ArrayList<ElementoArea> arr = new ArrayList<ElementoArea>();
 		
-		List<String> list = config.getStringList("ListAree");
+		List<String> list = config.getStringList("List");
 		
 		//Variabile Scanner
 		Scanner scan = null;

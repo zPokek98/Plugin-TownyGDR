@@ -9,14 +9,19 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.CustomConfig.CustomConfig;
+import it.TownyGDR.TownyGDR;
 import it.TownyGDR.Towny.LuoghiType;
 import it.TownyGDR.Towny.Luogo;
 import it.TownyGDR.Util.Util;
+import it.TownyGDR.Util.Exception.Zona.ExceptionZonaImpossibleToLoad;
+import it.TownyGDR.Util.Exception.Zona.ExceptionZonaNameNotAvaiable;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -86,8 +91,10 @@ public class Zona implements Salva<CustomConfig>{
 	/**
 	 * Costruttore di una zona con la tipologia assegnata e nome.
 	 * @param type
+	 * @throws ExceptionZonaNameNotAvaiable 
 	 */
-	public Zona(String nome, ZonaType type) {
+	public Zona(String nome, ZonaType type) throws ExceptionZonaNameNotAvaiable {
+		if(!Zona.checkNameIsFree(nome)) throw new ExceptionZonaNameNotAvaiable("Nome già usato!!!");
 		this.name = nome;
 		this.id   = Zona.getMaxID() + 1;
 		this.area = new TreeMap<Sector, ArrayList<ElementoArea>>();
@@ -95,18 +102,25 @@ public class Zona implements Salva<CustomConfig>{
 		
 		//Aggiungi alla cache
 		ListZona.add(this);
-		
-		//Salva il file iniziale.
-		try{
-			if(!(new File("Zone" + File.pathSeparator + this.name + "(" + this.id + ")")).exists()) {
-				this.save(new CustomConfig("Zone" + File.pathSeparator + this.name + "(" + this.id + ")"));
-			}
-		}catch(IOException e){
-			e.printStackTrace();
-		}
 	}
 	
 	
+	/**
+	 * Controlla in tutte le zone esistenti se una ha questo nome!
+	 * @param nome
+	 * @return
+	 */
+	private static boolean checkNameIsFree(String nome) {
+		//Dato che tutte le zone sono in RAM la cerco solo la
+		for(Zona zon : ListZona) {
+			if(zon.name.equals(nome)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
 	/**
 	 * Ritorna l'id massimo presente fra tutte le zone
 	 * @return
@@ -115,7 +129,8 @@ public class Zona implements Salva<CustomConfig>{
 		int id = 0;
 		String[] list = Util.getListNameFile("Zone"); //Lista dei nomi dei file dentro la cartella "Zone"
 		for(String str : list) {
-			CustomConfig customConfig = new CustomConfig("Zone" + File.pathSeparator + str );
+			str = str.substring(0,str.length() - 4);
+			CustomConfig customConfig = new CustomConfig("Zone" + File.separatorChar + str , TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
 			int tmp = config.getInt("ID"); //Prendi l'ID nel file letto
 			if(tmp > id) {
@@ -130,6 +145,10 @@ public class Zona implements Salva<CustomConfig>{
 	 * @param elementoArea
 	 */
 	public boolean addElementoArea(ElementoArea elementoArea) {
+		if(this.contain(elementoArea)) {
+			return false;
+		}
+		
 		//prendi il settore per quell'area
 		Sector sec = Sector.getSectorByLocation(elementoArea.getX(), elementoArea.getZ());
 		if(sec.getZone().size() == 0) {
@@ -186,7 +205,12 @@ public class Zona implements Salva<CustomConfig>{
 	public boolean contain(ElementoArea ele) {
 		for(Sector sec : this.area.keySet()) {
 			ArrayList<ElementoArea> list = this.area.get(sec);
-			return list.contains(ele);
+			for(ElementoArea el : list) {
+				if(el.getX() == ele.getX() && el.getZ() == ele.getZ()) {
+					return true;
+				}
+			}
+			//return list.contains(ele);
 		}
 		return false;
 	}
@@ -232,7 +256,7 @@ public class Zona implements Salva<CustomConfig>{
 	public void save(CustomConfig database) throws IOException {
 		CustomConfig customConfig;
 		if(database == null) {
-			customConfig = new CustomConfig("Zone" + File.pathSeparator + this.name + "(" + this.id + ")");
+			customConfig = new CustomConfig("Zone" + File.separatorChar + this.name + "(" + this.id + ")", TownyGDR.getInstance());
 		}else{
 			customConfig = database;
 		}
@@ -248,10 +272,15 @@ public class Zona implements Salva<CustomConfig>{
 		
 		
 		//Salva tutti gli elementi d'area
+		if(config.getConfigurationSection("Area") == null) {
+			config.set("Area.tmp", "tmp");
+		}
 		ConfigurationSection section = config.getConfigurationSection("Area");
 		for(Sector tmp : this.area.keySet()) {
-			ElementoArea.save(section.getConfigurationSection("Settore." + section.toString()), this.area.get(tmp));
+			ElementoArea.save(section, tmp, this.area.get(tmp));
 		}
+		//elimina il tmp
+		config.set("Area.tmp", null);
 		
 		customConfig.save();
 	}
@@ -260,7 +289,7 @@ public class Zona implements Salva<CustomConfig>{
 	public void load(CustomConfig database) throws IOException {
 		CustomConfig customConfig;
 		if(database == null) {
-			customConfig = new CustomConfig("Zone" + File.pathSeparator + this.name + "(" + this.id + ")");
+			customConfig = new CustomConfig("Zone" + File.separatorChar + this.name + "(" + this.id + ")", TownyGDR.getInstance());
 		}else{
 			customConfig = database;
 		}
@@ -269,18 +298,21 @@ public class Zona implements Salva<CustomConfig>{
 		this.id    = config.getInt("ID");
 		this.name  = config.getString("Nome");
 		this.type  = ZonaType.valueOf(config.getString("Type"));
-		this.luogo = LuoghiType.valueOf(config.getString("Luogo"));
-		if(this.luogo != null) {
+		
+		String tmp = config.getString("Luogo", null);
+		if(tmp != null) {
+			this.luogo = LuoghiType.valueOf(tmp);
 			this.luogoCache = Luogo.getById(luogo, config.getInt("LuogoID"));
 		}
-		
-		String[] list = config.getConfigurationSection("Area").getKeys(false).stream().toArray(String[] :: new);
-		for(String str : list) {
-			Sector sec = Sector.valueOf(str.substring(0,7));
-			if(sec != null) {
-				ArrayList<ElementoArea> ele = ElementoArea.loadData(config.getConfigurationSection("Area." + str));
-				this.area.put(sec, ele);
-				sec.addZona(this);
+		if(config.contains("Area")) {
+			String[] list = config.getConfigurationSection("Area").getKeys(false).stream().toArray(String[] :: new);
+			for(String str : list) {
+				Sector sec = Sector.valueOf(str.replaceFirst("Settore", ""));
+				if(sec != null) {
+					ArrayList<ElementoArea> ele = ElementoArea.loadData(config.getConfigurationSection("Area." + str));
+					this.area.put(sec, ele);
+					sec.addZona(this);					
+				}
 			}
 		}
 	}
@@ -290,7 +322,7 @@ public class Zona implements Salva<CustomConfig>{
 	 * Ritorna le arree della zona
 	 * @return
 	 */
-	protected Map<Sector, ArrayList<ElementoArea>> getArea() {
+	public Map<Sector, ArrayList<ElementoArea>> getArea() {
 		return this.area;
 	}
 	
@@ -334,20 +366,33 @@ public class Zona implements Salva<CustomConfig>{
 	/**
 	 * Carica tutte le zone
 	 * @throws IOException 
+	 * @throws ExceptionZonaImpossibleToLoad 
 	 */
-	public static void initZona() throws IOException {
+	public static void initZona() throws IOException, ExceptionZonaImpossibleToLoad {
 		String[] files = Util.getListNameFile("Zone");
 		for(String str : files) {
-			CustomConfig customConfig = new CustomConfig("Zone" + File.pathSeparator +str);
+			//rimuovi l'estenzione
+			str = str.substring(0,str.length() - 4);
+			CustomConfig customConfig = new CustomConfig("Zone" + File.separatorChar +str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
 			String nome = config.getString("Nome");
 			ZonaType type = ZonaType.valueOf(config.getString("Type"));
-			Zona tmp = new Zona(nome, type);
-			tmp.load(customConfig);
+			Zona tmp = null;
+			try {
+				tmp = new Zona(nome, type);
+				tmp.load(customConfig);
+			} catch (ExceptionZonaNameNotAvaiable e) {
+				//Errore
+				throw new ExceptionZonaImpossibleToLoad("Impossibile caricare la zona di file: " + str);
+			}
 		}
 	}
 	
-	
+	/**
+	 * Ritorna la zona in base al suo id
+	 * @param id
+	 * @return
+	 */
 	public static Zona getByID(int id) {
 		for(Zona zon : ListZona) {
 			if(zon.id == id) {
@@ -355,9 +400,20 @@ public class Zona implements Salva<CustomConfig>{
 			}
 		}
 		return null;
-		
 	}
 	
-	
+	/**
+	 * Ritorna la zona in base al suo nome
+	 * @param name
+	 * @return
+	 */
+	public static Zona getZona(String name) {
+		for(Zona zon : ListZona) {
+			if(zon.name.equals(name)) {
+				return zon;
+			}
+		}
+		return null;
+	}
 	
 }
