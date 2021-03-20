@@ -39,7 +39,7 @@ import net.milkbowl.vault.permission.Permission;
  * @text
  * Descrizione:
  * Plugin per il Towny.
- * La modalità in questione comprende moolti oggetti per realizzare
+ * La modalità in questione comprende molti oggetti per realizzare
  * le città/nazioni e le loro iterazioni.
  * 
  * In questa modalità sono presenti le città dei luoghi che vengono claimati
@@ -138,7 +138,6 @@ public class TownyGDR extends JavaPlugin{
 	//Funzione LOAD - ENABLE - DISABLE **********************************************************************
 	public void onLoad() {
 		instance = this; //inizializzo l'istanza
-		
 	}
 	
 	//Enable

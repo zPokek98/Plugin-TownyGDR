@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -190,11 +191,17 @@ public class Sector implements Comparable<Sector>{
 	 */
 	public Zona getZonaByArea(int x, int z) {
 		//Controlla se le coordinate appartengono a questo settore
+		//Bukkit.getConsoleSender().sendMessage("Passo 1");
+		//Bukkit.getConsoleSender().sendMessage("settore: " + this.toString());
 		if(!this.contain(x, z)) return null;
 		
+		//Bukkit.getConsoleSender().sendMessage("Passo 2");
 		for(Zona tmp : this.zoneInSector) {
+			//Bukkit.getConsoleSender().sendMessage("Passo 3");
 			ArrayList<ElementoArea> aree = tmp.getArea().get(this);
 			for(ElementoArea ele : aree) {
+				//Bukkit.getConsoleSender().sendMessage("Passo 4: " + ele.getX() + " : " + ele.getZ());
+				//Bukkit.getConsoleSender().sendMessage("Passo 5: " + x + " : " + z);
 				if(ele.getX() == x && ele.getZ() == z) {
 					return tmp;
 				}

@@ -235,6 +235,7 @@ public class ZonaCommand implements CommandExecutor{
 						p.sendMessage("Id Luogo(-1 se non c'è)" + (zon.getLuogo() != null ? zon.getLuogo().getId() : -1));
 						p.sendMessage("Id Zona: " + zon.getID());
 						for(Sector sec : zon.getArea().keySet()) {
+							p.sendMessage("Settore: " + sec.toString());
 							for(ElementoArea ele : zon.getArea().get(sec)) {
 								p.sendMessage("Chunk: " + ele.getX() + " : " + ele.getZ());
 							}
