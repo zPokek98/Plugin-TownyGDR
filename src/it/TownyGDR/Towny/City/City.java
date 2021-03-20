@@ -126,6 +126,10 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @return
 	 */
 	public static City createCity(PlayerData pd, String nomeCitta, Zona zon) {
+		if(zon == null) {
+			return null;
+		}
+		
 		//Controlla che la zona è libera
 		if(zon.getLuogo() == null) {
 			//libera

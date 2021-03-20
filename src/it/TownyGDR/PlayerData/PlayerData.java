@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -18,6 +19,7 @@ import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Save.Salva;
+import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 /*********************************************************************
@@ -45,7 +47,8 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	static{		//Immetti i tag nel contenitore dei Tag
 		TagList.add("%Player.name%");
 		TagList.add("%Player.uuid%");
-		TagList.add("%...%");
+		TagList.add("%Player.KDA.kill%");
+		TagList.add("%Player.KDA.death%");
 	}
 	
 	//Variabili oggetto giocatore**********
@@ -230,7 +233,17 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public static PlayerData getPlayerData(Player p) {
 		PlayerData tmp = PlayerData.getFromUUID(p.getUniqueId());
-		return tmp == null ? new PlayerData(p) : tmp;
+		if(tmp == null) {
+			tmp = new PlayerData(p);
+			Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + String.format("[%s]Nuovo giocatore! Nome: %s ", TownyGDR.getInstance().getDescription().getName(), p.getName()));
+			//salvo per la prima volta il player
+			try{
+				tmp.save();
+			}catch (IOException e){
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + String.format("[%s] Impossibile salvare i dati di : %s", TownyGDR.getInstance().getDescription().getName(), p.getName()));
+			}
+		}
+		return tmp;
 	}
 	
 	/**
@@ -344,7 +357,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		//Si riferisce al KDA?
 		if(str.contains("KDA")) {
 			//mantieni solo la parte dal KDA in poi
-			return this.kda.getValueFromTag(str.replaceFirst("Player.KDA.", ""));
+			return this.kda.getValueFromTag(str.replaceFirst("Player.", ""));
 		}
 		//...
 		
