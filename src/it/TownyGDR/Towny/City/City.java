@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -25,6 +26,9 @@ import it.TownyGDR.Towny.City.Membri.MembroType;
 import it.TownyGDR.Towny.City.Regole.Regole;
 import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Util;
+import it.TownyGDR.Util.Exception.ExceptionLoad;
+import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
+import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoadArea;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -43,6 +47,40 @@ import it.TownyGDR.Util.Save.Salva;
  * - Impostazioni
  * - Edifici
  * - Nazione
+ * 
+ * Le città vengono vengono salvate in una array per cache, per la ricerca
+ * si utilizza un opportuno id che identifica unicamente una città, l'id
+ * è restituito da una funzione che prende il più grande presente fra tutte le 
+ * città caricate e non presenti nel server,(ho scelto che le città devono avere
+ * anche un nome univoco, quindi una possibile ricerca è data dal nome della città).
+ * 
+ * ### implementa funzione per unicita del nome città
+ * 
+ * La città risiede su una zona e la sua area è vincolata da essa
+ * la gestione dell'area della città e demandata alla classe Area.
+ * 
+ * I membri della città sono descritti singolarmente dalla classe Membro
+ * usando come identificato UUID del player, il ruolo del player è dentro
+ * l'oggetto membro.
+ * Tutti i membri sono contenuti in un ArrayList.
+ * 
+ * Gli edifici della città, devono avere tutti l'interfaccia pubblica data
+ * dalla classe "Edifici" il suo comportamento sarà demandato a una classe
+ * appropriata per l'edificio, al momento ci stanno come edifici:
+ * - un cazzo
+ * 
+ * La città può avere delle impostazioni?
+ * Del tipo regolamentare le interazioni fra i membri della città o altro
+ * Tutte le impostazioni sono dentro l'oggetto Impostazioni(contiente il set
+ * creato)
+ * 
+ * La città ha anche una lista di "Regole" non gestite da codice in quanto saranno
+ * regole imposte del sindaco/i in quanto comportarsi nella città.
+ * 
+ * Manca da fare:
+ * - Creazione lotti e acquisizione dal membro.
+ * 
+ * 
  * 
  *********************************************************************/
 public class City extends Luogo implements Salva<CustomConfig>, Taggable{
@@ -126,20 +164,32 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @return
 	 */
 	public static City createCity(PlayerData pd, String nomeCitta, Zona zon) {
-		if(zon == null) {
+		if(zon == null){
 			return null;
 		}
 		
 		//Controlla che la zona è libera
-		if(zon.getLuogo() == null) {
+		if(zon.getLuogo() == null){
 			//libera
-		}else {
+		}else{
 			//non è libera
 			return null;
 		}
 		
+		//modifichiamo il nome(la prima maiuscola e il resto miniscolo)
+		nomeCitta = nomeCitta.toLowerCase();
+		String primo = Character.toString(nomeCitta.charAt(0)).toUpperCase();
+		nomeCitta = nomeCitta.substring(1);
+		nomeCitta = primo + nomeCitta;
 		
+		//Controlla se nessun'altra città ha questo nome
+		if(!checkIsFreeName(nomeCitta)) {
+			return null;
+		}
+		
+		//Alloca la città
 		City city = new City(nomeCitta, pd, zon);
+		
 		//Prendi l'id massimo fra le città
 		city.id = City.getMaxID() + 1;
 		
@@ -156,11 +206,32 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		try{
 			city.save(null); //può anche essere null l'argomento
 		}catch(IOException e){
-			e.printStackTrace();
+			//Non riesce a salvare la città...
+			Bukkit.getConsoleSender().sendMessage("Impossibile salvare la città di nome e id: " + city.name + city.id);
 		}
 		return city;
 	}
 	
+	/**
+	 * @param nomeCitta
+	 * @return
+	 */
+	private static boolean checkIsFreeName(String nomeCitta) {
+		//Dato che le città posso anche non essere cariche nella RAM cerco in tutti i file di salvataggio
+		String[] files = Util.getListNameFile("City");
+		for(String str : files) {
+			//Per ogni "file", in realtà nome del file.
+			str = str.substring(0,str.length() - 4); //rimuobi il ".yml" alla fine
+			CustomConfig customConfig = new CustomConfig("City/" + str, TownyGDR.getInstance());
+			FileConfiguration config = customConfig.getConfig();
+			//confronta i nomi
+			if(config.getString("Nome").equalsIgnoreCase(str)) {
+				return true;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Ritorna il massimo id raggiunto.
 	 * Nel caso per fondare una nuova città bisogna sommare +1 dopo.
@@ -171,9 +242,11 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		int tmp = 0;
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
-			str = str.substring(0,str.length() - 4);
+			//Per ogni "file", in realtà nome del file.
+			str = str.substring(0,str.length() - 4); //rimuobi il ".yml" alla fine
 			CustomConfig customConfig = new CustomConfig("City/" + str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
+			//confronta gli id
 			if(config.getInt("ID") > tmp) {
 				tmp = config.getInt("ID");
 			}
@@ -249,11 +322,11 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @param configurationSection
 	 */
 	private void saveMembri(ConfigurationSection config) {
-		try {
+		try{
 			Membro.save(config, this.membri);
-		} catch (IOException e) {
+		}catch (IOException e){
 			//e.printStackTrace();
-			//Errore
+			//non ci entrerà mai
 		}
 	}
 
@@ -266,7 +339,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	}
 
 	@Override
-	public void load(CustomConfig database) throws IOException {
+	public void load(CustomConfig database) throws IOException, ExceptionLoad {
 		//prendi
 		CustomConfig customConfig;
 		FileConfiguration config;
@@ -297,14 +370,21 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * ritorna null, se è avvenuto un errore di lettura lanca una eccezione, e ritorna null.
 	 * @param config
 	 * @return
+	 * @throws ExceptionCityImpossibleLoad 
+	 * @throws ExceptionCityImpossibleLoadArea 
 	 */
-	public static City loadCityByCustomConfig(CustomConfig config) {
+	public static City loadCityByCustomConfig(CustomConfig config) throws ExceptionCityImpossibleLoad {
 		City city = new City();
 		try{
-			city.load(config);
+			try{
+				city.load(config);
+			}catch(ExceptionLoad e){
+				//Impossibile caricare la città
+				String mes = "Impossibile cariare la città di nome e id: " + config.getFile().getName();
+				throw new ExceptionCityImpossibleLoad(mes);
+			}
 		}catch(IOException e){
-			e.printStackTrace();
-			return null;
+			//non ci entrerà mai
 		}
 		if(!ListCity.contains(city)) {
 			ListCity.add(city);
@@ -317,14 +397,19 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * Da evitare poichè ha complessità elevata
 	 * @param id
 	 * @return
+	 * @throws ExceptionCityImpossibleLoad 
 	 */
-	public static City loadCityByID(long id) {
+	public static City loadCityByID(long id) throws ExceptionCityImpossibleLoad {
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
-			str = str.substring(0,str.length() - 4);
+			//per ogni "file"
+			str = str.substring(0,str.length() - 4); //elimina ".yml" alla fine
+			
 			CustomConfig customConfig = new CustomConfig("City/" + str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
+			//trova il file che contiene come parametro su "ID" il valore dato alla funzione
 			if(config.getInt("ID") == id) {
+				//Trovata al città da caricare
 				return City.loadCityByCustomConfig(customConfig);
 			}
 		}
@@ -343,8 +428,9 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	/**
 	 * @param idCity
 	 * @return
+	 * @throws ExceptionCityImpossibleLoad 
 	 */
-	public static City getByID(long idCity) {
+	public static City getByID(long idCity) throws ExceptionCityImpossibleLoad {
 		for(City tmp : ListCity) {
 			if(tmp.getId() == idCity) {
 				return tmp;
@@ -438,6 +524,59 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	public ArrayList<Membro> getMembri() {
 		return this.membri;
 	}
+	
+	/**
+	 * Aggiungi un membro alla città con il ruolo specificato
+	 * @param pd
+	 * @return
+	 */
+	public boolean addMembro(PlayerData pd, MembroType type) {
+		//controlliamo che il pirla non è in un'altra città
+		if(pd.getCity() == null) {
+			//non è in un'altra città
+			pd.setCity(this);
+			return this.membri.add(new Membro(pd.getUUID(), type));
+		}
+		return false;
+	}
+	
+	/**
+	 * Aggiungi un nuovo membro con il ruolo di cittadino
+	 * @param pd
+	 * @return
+	 */
+	public boolean addMembro(PlayerData pd) {
+		return this.addMembro(pd, MembroType.Cittadino);
+	}
+	
+	/**
+	 * Rimuovi dalla città il membro dato il Membro.
+	 * @param mem
+	 * @return
+	 */
+	public boolean removeMembro(Membro mem) {
+		if(this.membri.contains(mem)) {
+			PlayerData.getFromUUID(mem.getUUID()).setCity(null);
+			return this.membri.remove(mem);
+		}
+		return false;
+	}
+	
+	/**
+	 * Rimuovi il membro dato dal player passato se presente
+	 * @param pd
+	 * @return
+	 */
+	public boolean removeMembro(PlayerData pd) {
+		for(Membro mem : this.membri) {
+			if(mem.getUUID().equals(pd.getUUID())) {
+				//trovato il membro del player
+				pd.setCity(null);
+				return this.membri.remove(mem);
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * @return
@@ -456,12 +595,18 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 
 	/**
 	 * Carica tutte le città
+	 * @throws ExceptionCityImpossibleLoad 
 	 */
-	public static void initCity() {
+	public static void initCity() throws ExceptionCityImpossibleLoad {
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
 			str = str.substring(0,str.length() - 4);
-			City.loadCityByCustomConfig(new CustomConfig("City" + File.separatorChar + str, TownyGDR.getInstance()));
+			try{
+				City.loadCityByCustomConfig(new CustomConfig("City" + File.separatorChar + str, TownyGDR.getInstance()));
+			}catch(ExceptionCityImpossibleLoad e){
+				Bukkit.getConsoleSender().sendMessage(e.getMessage());
+				throw new ExceptionCityImpossibleLoad(e.getMessage());
+			}
 		}
 	}
 }

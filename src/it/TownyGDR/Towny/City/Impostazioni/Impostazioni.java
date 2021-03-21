@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.bukkit.configuration.ConfigurationSection;
 
 import it.TownyGDR.Towny.City.Impostazioni.set.PvpOnCity;
+import it.TownyGDR.Util.Exception.ExceptionLoad;
 import it.TownyGDR.Util.Save.Salva;
 
 /*********************************************************************
@@ -48,7 +49,7 @@ public class Impostazioni implements Salva<ConfigurationSection>{
 	}
 
 	@Override
-	public void load(ConfigurationSection config) throws IOException {
+	public void load(ConfigurationSection config) throws IOException, ExceptionLoad {
 		for(Settings sett : this.settings) {
 			sett.load(config.getConfigurationSection(sett.getName()));
 		}

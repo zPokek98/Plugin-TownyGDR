@@ -18,6 +18,7 @@ import it.TownyGDR.PlayerData.Statistiche.Stats.KDA;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Util.Util;
+import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
 import it.TownyGDR.Util.Save.Salva;
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -173,7 +174,12 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		//id città a -1
 		this.idCity = config.getInt("IdCity", -1);
 		if(this.idCity != -1) {
-			this.city = City.getByID(idCity);
+			try{
+				this.city = City.getByID(idCity);
+			}catch(ExceptionCityImpossibleLoad e){
+				this.idCity = -1;
+				this.city = null;
+			}
 			if(this.city == null){
 				this.idCity = -1;
 			}
@@ -321,7 +327,12 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	public City getCity() {
 		if(this.city == null) {
 			if(this.idCity != -1) {
-				return City.getByID(idCity);
+				try{
+					return City.getByID(idCity);
+				}catch(ExceptionCityImpossibleLoad e){
+					this.idCity = -1;
+					this.city = null;
+				}
 			}
 		}else{
 			return this.city;

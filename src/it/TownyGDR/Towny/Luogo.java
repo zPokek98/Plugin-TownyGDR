@@ -6,6 +6,7 @@ package it.TownyGDR.Towny;
 import java.io.IOException;
 
 import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -38,8 +39,9 @@ public abstract class Luogo {
 	 * @param type
 	 * @param id
 	 * @return
+	 * @throws ExceptionCityImpossibleLoad 
 	 */
-	public static Luogo getById(LuoghiType type, int id) {
+	public static Luogo getById(LuoghiType type, int id) throws ExceptionCityImpossibleLoad {
 		switch(type){
 			case City:{
 				return City.getByID(id);

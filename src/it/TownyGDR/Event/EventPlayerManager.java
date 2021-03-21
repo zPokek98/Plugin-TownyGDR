@@ -6,10 +6,42 @@ package it.TownyGDR.Event;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLevelChangeEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRegisterChannelEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.event.player.PlayerUnregisterChannelEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import it.TownyGDR.PlayerData.PlayerData;
 
@@ -37,5 +69,247 @@ public class EventPlayerManager implements Listener{
 		}catch(IOException e){
 			Bukkit.getConsoleSender().sendMessage("Impossibile salvare i dati di: " + event.getPlayer().getName());
 		}
+	}
+	
+	@EventHandler
+	public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerAnimationEvent(PlayerAnimationEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerBedEnterEvent(PlayerBedEnterEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerBedLeaveEvent(PlayerBedLeaveEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerBucketEmptyEvent(PlayerBucketEmptyEvent event)
+	{
+		
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerBucketEvent(PlayerBucketEvent event)
+	{
+		
+	}
+	*/
+	
+	@EventHandler
+	public void onPlayerBucketFillEvent(PlayerBucketFillEvent event)
+	{
+		
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerChannelEvent(PlayerChannelEvent event)
+	{
+		
+	}
+	*/
+	
+	/*
+	@EventHandler
+	public void onPlayerChatEvent(PlayerChatEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent event)
+	{
+		
+	}
+	*/
+	
+	@EventHandler
+	public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerDropItemEvent(PlayerDropItemEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerEggThrowEvent(PlayerEggThrowEvent event)
+	{
+		
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerEvent(PlayerEvent event)
+	{
+		
+	}
+	*/
+	
+	@EventHandler
+	public void onPlayerExpChangeEvent(PlayerExpChangeEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerFishEvent(PlayerFishEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event)
+	{
+		
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event)
+	{
+		
+	}
+	*/
+	
+	@EventHandler
+	public void onPlayerInteractEvent(PlayerInteractEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerItemBreakEvent(PlayerItemBreakEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerItemHeldEvent(PlayerItemHeldEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerKickEvent(PlayerKickEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerLevelChangeEvent(PlayerLevelChangeEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerLoginEvent(PlayerLoginEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerMoveEvent(PlayerMoveEvent event)
+	{
+		
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerPickupItemEvent(PlayerPickupItemEvent event)
+	{
+		
+	}
+	*/
+	
+	@EventHandler
+	public void onPlayerPortalEvent(PlayerPortalEvent event)
+	{
+		
+	}
+	
+	/*
+	@EventHandler
+	public void onPlayerPreLoginEvent(PlayerPreLoginEvent event)
+	{
+		
+	}
+	*/
+	
+	@EventHandler
+	public void onPlayerRegisterChannelEvent(PlayerRegisterChannelEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerRespawnEvent(PlayerRespawnEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerShearEntityEvent(PlayerShearEntityEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerTeleportEvent(PlayerTeleportEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerToggleFlightEvent(PlayerToggleFlightEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerToggleSprintEvent(PlayerToggleSprintEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerUnregisterChannelEvent(PlayerUnregisterChannelEvent event)
+	{
+		
+	}
+	
+	@EventHandler
+	public void onPlayerVelocityEvent(PlayerVelocityEvent event)
+	{
+		
 	}
 }

@@ -83,6 +83,8 @@ public class ElementoArea {
 			this.chunk = TownyGDR.getTownyWorld().getChunkAt(x, z);
 		}else{
 			//Carica il chunk in modo forzato e mettilo nella cache.
+			
+			//Non farlo.
 			//TownyGDR.getTownyWorld().loadChunk(x, z);
 			//this.chunk = TownyGDR.getTownyWorld().getChunkAt(x, z);
 		}
@@ -115,6 +117,9 @@ public class ElementoArea {
 	 * Salva l'elemento d'area.
 	 * La classe non ha l'implementazione Salva<T> dato che non si puo
 	 * associare un implementazione di tipo LOAD al singolo :(
+	 * 
+	 * Passo la sezione di configuration in cui salvo un array di elementi d'area
+	 * passando anche come parametro il settore in cui risiedono
 	 * @param config
 	 * @param sec 
 	 * @throws IOException
@@ -166,7 +171,7 @@ public class ElementoArea {
 	public Chunk getChunk() {
 		if(this.chunk != null) return this.chunk;
 		
-		//Carica il chunk.
+		//Carica il chunk, dato che la variabile di cache e null e inserisci nella cache
 		TownyGDR.getTownyWorld().loadChunk(this.coord_x, this.coord_z);
 		this.chunk = TownyGDR.getTownyWorld().getChunkAt(this.coord_x, this.coord_z);
 		return this.chunk;

@@ -88,6 +88,14 @@ public abstract class GuiGeneral {
 	}
 	
 	/**
+	 * Ritorna l'id della Gui
+	 * @return
+	 */
+	public int  getID() {
+		return this.id;
+	}
+	
+	/**
 	 * Aprire la gui al player pd
 	 * @param pd
 	 */

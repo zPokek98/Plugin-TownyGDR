@@ -16,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import it.CustomConfig.CustomConfig;
+import it.TownyGDR.Util.Exception.Zona.ExceptionSectorInvalidStringLoad;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -36,10 +37,8 @@ import it.CustomConfig.CustomConfig;
  * se un zona viene creata e questa fuori esce dal settore senza rientrare
  * in un altro viene generato un settore che contiene la parte)
  * 
- * 
- * 
- * 
- * Manca il salvataggio e il load per i settori anche nelle zone ******************
+ * C'è un toString legato ad un ValueOf per la scrittura del settore con
+ * tutti i dati minimi per la sua identificazione e lettura data la stringa.
  * 
  *********************************************************************/
 @SuppressWarnings("unused")
@@ -91,7 +90,8 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
-	 * Ritorna il settore che contiene la posizione data
+	 * Ritorna il settore che contiene la posizione data, se non esisteva viene creato
+	 * e inserito.
 	 * @param loc
 	 * @return
 	 */
@@ -108,6 +108,8 @@ public class Sector implements Comparable<Sector>{
 
 	/**
 	 * Ritorna la lista a cui appartengono queste coordinate
+	 * I gruppi dei settori è suddiviso in 4, l'algoritmo non tiene in considerazione
+	 * il valore della coppia (x,z) ma solo del loto segno.
 	 * @param x
 	 * @param z
 	 * @return
@@ -126,7 +128,7 @@ public class Sector implements Comparable<Sector>{
 	}
 
 	/**
-	 * Ritorna il settore che contiene la posizione data
+	 * Ritorna il settore che contiene la posizione data dal chuck
 	 * @param loc
 	 * @return
 	 */
@@ -135,7 +137,7 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
-	 * Ritorna il settore che contiene la posizione data
+	 * Ritorna il settore che contiene la posizione data dalla location
 	 * @param loc
 	 * @return
 	 */
@@ -144,7 +146,7 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
-	 * Ritorna TRUE se contiene la posizione data
+	 * Ritorna TRUE se contiene la posizione data dalla location
 	 * @param loc
 	 * @return
 	 */
@@ -153,7 +155,7 @@ public class Sector implements Comparable<Sector>{
 	}
 
 	/**
-	 * Ritorna TRUE se contiene la posizione data
+	 * Ritorna TRUE se contiene la posizione data dalle coordinate del chunk/Elemento Area
 	 * @param loc
 	 * @return
 	 */
@@ -183,7 +185,8 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
-	 * Ritorna la zona che ha un elemento d'area con le coordinate
+	 * Ritorna la zona che ha un elemento d'area/chuck con le coordinate date
+	 * le coordinate sono quelle che si rieriscono al chunk/elemento d'area
 	 * del chunk x e z.
 	 * @param x
 	 * @param z
@@ -191,17 +194,11 @@ public class Sector implements Comparable<Sector>{
 	 */
 	public Zona getZonaByArea(int x, int z) {
 		//Controlla se le coordinate appartengono a questo settore
-		//Bukkit.getConsoleSender().sendMessage("Passo 1");
-		//Bukkit.getConsoleSender().sendMessage("settore: " + this.toString());
 		if(!this.contain(x, z)) return null;
 		
-		//Bukkit.getConsoleSender().sendMessage("Passo 2");
 		for(Zona tmp : this.zoneInSector) {
-			//Bukkit.getConsoleSender().sendMessage("Passo 3");
 			ArrayList<ElementoArea> aree = tmp.getArea().get(this);
 			for(ElementoArea ele : aree) {
-				//Bukkit.getConsoleSender().sendMessage("Passo 4: " + ele.getX() + " : " + ele.getZ());
-				//Bukkit.getConsoleSender().sendMessage("Passo 5: " + x + " : " + z);
 				if(ele.getX() == x && ele.getZ() == z) {
 					return tmp;
 				}
@@ -211,7 +208,7 @@ public class Sector implements Comparable<Sector>{
 	}
 
 	/**
-	 * Crea un settore per l'area
+	 * Crea un settore per l'elemento d'areaa dato
 	 * @param elementoArea
 	 * @return
 	 */
@@ -220,7 +217,7 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
-	 * Crea un settore per le coordinate date
+	 * Crea un settore per le coordinate date che identificano un chunk/elemento d'area
 	 * @param x
 	 * @param z
 	 * @return
@@ -237,7 +234,7 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
-	 * Ritorna la coordinata Z del settore
+	 * Ritorna la coordinata X del settore
 	 * @return
 	 */
 	public int getX() {
@@ -282,23 +279,30 @@ public class Sector implements Comparable<Sector>{
 	*/
 
 	@Override
+	/**
+	 * Comparazione di 2 settori
+	 */
 	public int compareTo(Sector sector) {
-		return (this.coord_x - sector.coord_x)*11 + (this.coord_z - this.coord_z)*17;
+		//scelto 47 e 53 perchè sono primi e abbastanza alti si azzera in caso di coordinate abbastanza grandi
+		//47*53=2491 improbabile raggiungere questa coordinata di settore
+		return (this.coord_x - sector.coord_x)*47 + (this.coord_z - this.coord_z)*53;
 	}
 	
 	/**
 	 * To string combinato al VauleOf
+	 * Crea una stringa che contiene le informazioni minime per identificae un settore
 	 */
 	public String toString() {
 		return this.coord_x + ";" + this.coord_z;
 	}
 
 	/**
-	 * Ritorna un settore tramite una stringa
+	 * Ritorna un settore tramite una stringa data dal toString
 	 * @param str
 	 * @return
+	 * @throws ExceptionSectorInvalidStringLoad 
 	 */
-	public static Sector valueOf(String str) {
+	public static Sector valueOf(String str) throws ExceptionSectorInvalidStringLoad {
 		if(str == null) return null;
 		Scanner scan = new Scanner(str);
 		scan.useDelimiter(";");
@@ -310,8 +314,11 @@ public class Sector implements Comparable<Sector>{
 			x = scan.nextInt();
 			z = scan.nextInt();
 		}catch(InputMismatchException e){
+			//Dati non vaalidi creo una eccezione
 			scan.close();
-			return null;
+			//return null; //return stupido.
+			String mes = "Stringa data per ottenere il settore non valida!\nValore in input: " + str ;
+			throw new ExceptionSectorInvalidStringLoad(mes);
 		}
 		scan.close();
 		return Sector.getSector(x, z);
@@ -334,15 +341,20 @@ public class Sector implements Comparable<Sector>{
 	}
 	
 	/**
+	 * Inserisci nella variabile di cache la zona
 	 * @param zona
 	 */
 	public void addZona(Zona zona) {
-		if(!this.zoneInSector.contains(zona)) {
-			this.zoneInSector.add(zona);
+		//per precauzione controllo se è null
+		if(zona != null) {
+			if(!this.zoneInSector.contains(zona)) {
+				this.zoneInSector.add(zona);
+			}
 		}
 	}
 
 	/**
+	 * Ritorna tutte le zone che sono dentro al settore
 	 * @return
 	 */
 	public ArrayList<Zona> getZone() {

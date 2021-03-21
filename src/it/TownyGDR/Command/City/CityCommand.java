@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.Zone.Zona;
+import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -58,14 +59,25 @@ public class CityCommand implements CommandExecutor{
 						}else {
 							p.sendMessage("Città NON creata!");
 						}
-					}break;
+						return true;
+					}
 				
 					case "-id":{
-						city = City.getByID(Integer.parseInt(args[1]));
+						try {
+							city = City.getByID(Integer.parseInt(args[1]));
+						}catch(NumberFormatException e){
+							//valore passato al comando non vaido
+							error(p);
+						}catch(ExceptionCityImpossibleLoad e){
+							//non carica la città
+						}
 					}break;
 				}
 				
-				if(city == null) return true;
+				if(city == null) {
+					p.sendMessage("Nessuta città trovata");
+					return true;
+				}
 				
 				
 				switch(args[2]) {

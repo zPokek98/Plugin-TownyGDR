@@ -20,6 +20,8 @@ import it.TownyGDR.TownyGDR;
 import it.TownyGDR.Towny.LuoghiType;
 import it.TownyGDR.Towny.Luogo;
 import it.TownyGDR.Util.Util;
+import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
+import it.TownyGDR.Util.Exception.Zona.ExceptionSectorInvalidStringLoad;
 import it.TownyGDR.Util.Exception.Zona.ExceptionZonaImpossibleToLoad;
 import it.TownyGDR.Util.Exception.Zona.ExceptionZonaNameNotAvaiable;
 import it.TownyGDR.Util.Save.Salva;
@@ -37,16 +39,11 @@ import it.TownyGDR.Util.Save.Salva;
  * ogni area avrà un contrassegno che indica di che tipo è, questi valori
  * saranno rappresentati da una opportuna enumerazione di supporto.
  * 
- * L'area finita ovviamente non sarà costruita da questo oggetto
- * poichè astratto ma da una sua sotto classe che esprimerà tutta la
- * sua natura in quanto Area particolare, qua ci saranno solo le caratteristiche
- * che avranno in comune.
- * 
  * Per il loro salvataggio e poi accesso sarebbe buono avere:
  * - Per ogni area un file .yml in cui si segnano le coordinate
  *   dei vari elementi di area
  * - Natura area
- * - Altre info per l'area specifica.
+ * - Altro...
  * 
  * Dato che le Zone sono necessarie al fine della modalità esse
  * saranno sempre presenti nella RAM in un opportuno ArrayList
@@ -129,7 +126,7 @@ public class Zona implements Salva<CustomConfig>{
 		int id = 0;
 		String[] list = Util.getListNameFile("Zone"); //Lista dei nomi dei file dentro la cartella "Zone"
 		for(String str : list) {
-			str = str.substring(0,str.length() - 4);
+			str = str.substring(0,str.length() - 4); //Cancella ".yml" alla fine
 			CustomConfig customConfig = new CustomConfig("Zone" + File.separatorChar + str , TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
 			int tmp = config.getInt("ID"); //Prendi l'ID nel file letto
@@ -145,12 +142,15 @@ public class Zona implements Salva<CustomConfig>{
 	 * @param elementoArea
 	 */
 	public boolean addElementoArea(ElementoArea elementoArea) {
+		//Controlla se appartiene già alla zona prima di aggungerlo
 		if(this.contain(elementoArea)) {
 			return false;
 		}
 		
-		//prendi il settore per quell'area
+		//prendi il settore per quell'area da aggiungere
 		Sector sec = Sector.getSectorByLocation(elementoArea.getX(), elementoArea.getZ());
+		
+		//Caso particolare per il caso che il settore è stato generato per questa area
 		if(sec.getZone().size() == 0) {
 			sec.addZona(this);
 		}
@@ -158,7 +158,7 @@ public class Zona implements Salva<CustomConfig>{
 		//la zona ha questo settore?
 		ArrayList<ElementoArea> sezione = this.area.get(sec);
 		
-		//Controlla se è Null, se lo è crea e alloca
+		//Controlla se è Null, se lo è significa che la zona non aveva questo settore, crea e alloca
 		if(sezione == null) {
 			sezione = new ArrayList<ElementoArea>();
 			sezione.add(elementoArea);
@@ -203,10 +203,14 @@ public class Zona implements Salva<CustomConfig>{
 	 * @return
 	 */
 	public boolean contain(ElementoArea ele) {
+		//Per tutti i settori dell'area:
 		for(Sector sec : this.area.keySet()) {
+			//Prendi gli elemento d'area all'interno al settore della zona
 			ArrayList<ElementoArea> list = this.area.get(sec);
 			for(ElementoArea el : list) {
+				//confronta i songoli elementi d'area
 				if(el.getX() == ele.getX() && el.getZ() == ele.getZ()) {
+					//trovato, finisci.
 					return true;
 				}
 			}
@@ -221,20 +225,27 @@ public class Zona implements Salva<CustomConfig>{
 	 * @return
 	 */
 	public boolean removeElementoArea(ElementoArea elementoArea) {
-		//prendi il settore per quell'area
+		//prendi il settore per quell'area dato
 		Sector sec = Sector.getSectorByLocation(elementoArea.getX(), elementoArea.getZ());
 		
 		//la zona ha questo settore?
 		ArrayList<ElementoArea> sezione = this.area.get(sec);
 		
-		//Controlla se è Null, non posso rimuover quello che non c'è
+		//Controlla se è Null, non posso rimuover quello che non c'è, dato che la zona non può non essere
+		//contenuta da questo settore
 		if(sezione == null) {
+			//non posso imuovere quello che non c'è
 			return false;
 		}else{
-			//Controlla se l'elemento d'area c'è
+			//Controlla se l'elemento d'area c'è dentro la zona
 			if(sezione.contains(elementoArea)) {
+				//l'elemento d'area è dentro.
+				//lo rimuovo
 				boolean tmp = sezione.remove(elementoArea);
+				
+				//il settore è vuoto dopo aver rimosso l'elemto d'area?
 				if(sezione.size() == 0) {
+					//si elimina il settore dalla zona
 					this.area.remove(sec);
 				}
 				return tmp;
@@ -286,7 +297,7 @@ public class Zona implements Salva<CustomConfig>{
 	}
 
 	@Override
-	public void load(CustomConfig database) throws IOException {
+	public void load(CustomConfig database) throws IOException, ExceptionZonaImpossibleToLoad {
 		CustomConfig customConfig;
 		if(database == null) {
 			customConfig = new CustomConfig("Zone" + File.separatorChar + this.name + "(" + this.id + ")", TownyGDR.getInstance());
@@ -302,12 +313,23 @@ public class Zona implements Salva<CustomConfig>{
 		String tmp = config.getString("Luogo", null);
 		if(tmp != null) {
 			this.luogo = LuoghiType.valueOf(tmp);
-			this.luogoCache = Luogo.getById(luogo, config.getInt("LuogoID"));
+			try{
+				this.luogoCache = Luogo.getById(luogo, config.getInt("LuogoID"));
+			}catch(ExceptionCityImpossibleLoad e){
+				this.type = null;
+				this.luogoCache = null;
+			}
 		}
 		if(config.contains("Area")) {
 			String[] list = config.getConfigurationSection("Area").getKeys(false).stream().toArray(String[] :: new);
 			for(String str : list) {
-				Sector sec = Sector.valueOf(str.replaceFirst("Settore", ""));
+				Sector sec = null;
+				try{
+					sec = Sector.valueOf(str.replaceFirst("Settore", ""));
+				}catch(ExceptionSectorInvalidStringLoad e){
+					//Impossibile leggere il valore
+					throw new ExceptionZonaImpossibleToLoad("Impossibile caricare la zona data");
+				}
 				if(sec != null) {
 					ArrayList<ElementoArea> ele = ElementoArea.loadData(config.getConfigurationSection("Area." + str));
 					this.area.put(sec, ele);
@@ -365,7 +387,7 @@ public class Zona implements Salva<CustomConfig>{
 	}
 
 	/**
-	 * Carica tutte le zone
+	 * Carica tutte le zone per l'avvio del server
 	 * @throws IOException 
 	 * @throws ExceptionZonaImpossibleToLoad 
 	 */
@@ -373,14 +395,19 @@ public class Zona implements Salva<CustomConfig>{
 		String[] files = Util.getListNameFile("Zone");
 		for(String str : files) {
 			//rimuovi l'estenzione
-			str = str.substring(0,str.length() - 4);
+			str = str.substring(0,str.length() - 4); //togli ".yml"
 			CustomConfig customConfig = new CustomConfig("Zone" + File.separatorChar +str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
+			
+			//prendi il nome della zona e il tipo
 			String nome = config.getString("Nome");
 			ZonaType type = ZonaType.valueOf(config.getString("Type"));
+			
 			Zona tmp = null;
 			try {
 				tmp = new Zona(nome, type);
+				
+				//prova a caricare la zona.
 				tmp.load(customConfig);
 			} catch (ExceptionZonaNameNotAvaiable e) {
 				//Errore
@@ -419,11 +446,11 @@ public class Zona implements Salva<CustomConfig>{
 
 
 	/**
-	 * Salva tutte le zone
+	 * Salva tutte le zone, per la chiususra del server
 	 */
 	public static void saveAll() {
 		for(Zona zon : ListZona) {
-			try {
+			try{
 				zon.save(null);
 			}catch (IOException e){
 				//Errore

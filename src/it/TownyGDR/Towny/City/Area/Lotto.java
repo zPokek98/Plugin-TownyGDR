@@ -24,6 +24,8 @@ import it.TownyGDR.Towny.Zone.ElementoArea;
  * Appezzamento di terra di una data grandezza per i membri della città
  * un lotto è assegnato a uno o più membri.
  * 
+ * ## Aggiungere elementi d'area e anche rimozione(non cio cazzi=)
+ * 
  *********************************************************************/
 public class Lotto{
 	

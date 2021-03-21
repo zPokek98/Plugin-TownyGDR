@@ -7,7 +7,7 @@ import it.TownyGDR.Util.Exception.ExceptionLoad;
 
 /*********************************************************************
  * @author: Elsalamander
- * @data: 18 mar 2021
+ * @data: 21 mar 2021
  * @version: v1.0
  * 
  *
@@ -15,24 +15,15 @@ import it.TownyGDR.Util.Exception.ExceptionLoad;
  * Descrizione:
  * 
  *********************************************************************/
-public class ExceptionZonaImpossibleToLoad extends ExceptionLoad{
+public class ExceptionSectorInvalidStringLoad extends ExceptionLoad{
 
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Costruttore con messaggio personalizzato
-	 * @param message
-	 */
-	public ExceptionZonaImpossibleToLoad(String message) {
+	public ExceptionSectorInvalidStringLoad(String message) {
 		super(message);
 	}
-	
-	/**
-	 * Costruttore con messaggio standard
-	 * @param message
-	 */
-	public ExceptionZonaImpossibleToLoad() {
-		super("Impossibile Caricare la Zona!!!");
-	}
 
+	public ExceptionSectorInvalidStringLoad() {
+		super("Stringa data per ottenere il settore non valida!");
+	}
 }
