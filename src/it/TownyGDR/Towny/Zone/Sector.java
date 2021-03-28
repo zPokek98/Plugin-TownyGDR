@@ -285,7 +285,7 @@ public class Sector implements Comparable<Sector>{
 	public int compareTo(Sector sector) {
 		//scelto 47 e 53 perchè sono primi e abbastanza alti si azzera in caso di coordinate abbastanza grandi
 		//47*53=2491 improbabile raggiungere questa coordinata di settore
-		return (this.coord_x - sector.coord_x)*47 + (this.coord_z - this.coord_z)*53;
+		return (this.coord_x - sector.coord_x)*47 + (this.coord_z - sector.coord_z)*53;
 	}
 	
 	/**

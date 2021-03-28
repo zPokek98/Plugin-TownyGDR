@@ -54,7 +54,6 @@ import it.TownyGDR.Util.Save.Salva;
  * città caricate e non presenti nel server,(ho scelto che le città devono avere
  * anche un nome univoco, quindi una possibile ricerca è data dal nome della città).
  * 
- * ### implementa funzione per unicita del nome città
  * 
  * La città risiede su una zona e la sua area è vincolata da essa
  * la gestione dell'area della città e demandata alla classe Area.
@@ -78,7 +77,6 @@ import it.TownyGDR.Util.Save.Salva;
  * regole imposte del sindaco/i in quanto comportarsi nella città.
  * 
  * Manca da fare:
- * - Creazione lotti e acquisizione dal membro.
  * 
  * 
  * 
@@ -122,13 +120,15 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * "createCity"
 	 */
 	private City(String nome, PlayerData pd, Zona zon) {
-		this.id 		 = -1;
+		this.id 		 = City.getMaxID() + 1;;
 		this.name 		 = nome;
 		this.descrizione = "";
-		this.membri 	 = new ArrayList<Membro>();
-		this.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
 		
 		this.area 		 = new Area(zon);
+		this.membri 	 = new ArrayList<Membro>();
+		pd.setCity(this);
+		this.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
+		
 		zon.setLuogo(this);
 		
 		this.municipio	 = new Municipio();
@@ -144,7 +144,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * "createCity"
 	 */
 	private City() {
-		this.id 		 = -1;
+		this.id 		 = City.getMaxID() + 1;;
 		this.name 		 = null;
 		this.descrizione = "";
 		this.membri 	 = new ArrayList<Membro>();
@@ -191,7 +191,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		City city = new City(nomeCitta, pd, zon);
 		
 		//Prendi l'id massimo fra le città
-		city.id = City.getMaxID() + 1;
+		//city.id = City.getMaxID() + 1;
 		
 		//Il fondatore è automaticamente il sindaco
 		//city.membri.add(new Membro(pd.getUUID(), MembroType.Sindaco));
@@ -199,9 +199,6 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		
 		//Area inizliale? Al momento non c'è claim ??????????????
 		//...
-		
-		//Imposta il player come membro di questa città
-		pd.setCity(city);
 		
 		try{
 			city.save(null); //può anche essere null l'argomento
@@ -609,4 +606,37 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 			}
 		}
 	}
+
+	/**
+	 * Ritorna il membro della città se esiste tramite un UUID
+	 * @param uuid
+	 * @return
+	 */
+	public Membro getMembroByUUID(UUID uuid) {
+		for(Membro mem : this.membri) {
+			if(mem.getUUID().equals(uuid)) {
+				return mem;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the descrizione
+	 */
+	public String getDescrizione() {
+		return descrizione;
+	}
+
+	/**
+	 * @param descrizione the descrizione to set
+	 */
+	public void setDescrizione(String descrizione) {
+		this.descrizione = descrizione;
+	}
+	
+	
+	
+	
+	
 }

@@ -6,6 +6,7 @@ package it.TownyGDR.Command.City;
 import java.io.IOException;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,8 @@ import org.bukkit.entity.Player;
 
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.City.Membri.Membro;
+import it.TownyGDR.Towny.Zone.ElementoArea;
 import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
 
@@ -30,6 +33,7 @@ import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
  * 
  * /City -[id] claim
  * 
+ * /City -[id] lotto vendi/compra
  * 
  *********************************************************************/
 public class CityCommand implements CommandExecutor{
@@ -101,19 +105,47 @@ public class CityCommand implements CommandExecutor{
 							p.sendMessage("Area non claimata");
 						}
 					}
+					
+					case "lotto":{
+						switch(args[3]) {
+							case "vendi":{
+								Chunk ck = p.getLocation().getChunk();
+								ElementoArea ele = new ElementoArea(ck.getX(), ck.getZ());
+								
+								Membro mem = PlayerData.getPlayerData(p).getCity().getMembroByUUID(p.getUniqueId());
+								city.getArea().createLottoVendita(ele, 0, mem);
+								
+								p.sendMessage("Creato il lotto");
+							}break;
+							
+							case "compra":{
+								Chunk ck = p.getLocation().getChunk();
+								ElementoArea ele = new ElementoArea(ck.getX(), ck.getZ());
+								
+								Membro mem = PlayerData.getPlayerData(p).getCity().getMembroByUUID(p.getUniqueId());
+								mem.getLotto().compraLotto(city.getArea().getByElementoArea(ele), mem);
+								p.sendMessage("Lotto comprato");
+							}
+							
+							
+						}
+						
+						
+						
+					}break;
 				}
 				
 			}else{
 				//console
 				
 			}	
-			
+			return true;
 		}catch(ArrayIndexOutOfBoundsException e) {
 			//e.printStackTrace();
 			error(sender);
 			return true;
 		}		
-		return false;
+
 	}
 
 	/**

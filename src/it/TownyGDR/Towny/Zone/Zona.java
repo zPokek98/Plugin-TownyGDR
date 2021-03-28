@@ -278,6 +278,14 @@ public class Zona implements Salva<CustomConfig>{
 		config.set("Type", this.type.toString());
 		if(this.luogo != null) {
 			config.set("Luogo", this.luogo.toString());
+			if(this.luogoCache == null) {
+				 try{
+					this.luogoCache = Luogo.getById(this.luogo, id);
+				}catch(ExceptionCityImpossibleLoad e){
+					Bukkit.getConsoleSender().sendMessage("Errore");
+				}
+				 
+			}
 			config.set("LuogoID", this.luogoCache.getId());
 		}
 		
@@ -314,7 +322,7 @@ public class Zona implements Salva<CustomConfig>{
 		if(tmp != null) {
 			this.luogo = LuoghiType.valueOf(tmp);
 			try{
-				this.luogoCache = Luogo.getById(luogo, config.getInt("LuogoID"));
+				this.luogoCache = Luogo.getById(this.luogo, config.getInt("LuogoID"));
 			}catch(ExceptionCityImpossibleLoad e){
 				this.type = null;
 				this.luogoCache = null;

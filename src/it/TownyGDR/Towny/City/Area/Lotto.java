@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Membri.Membro;
 import it.TownyGDR.Towny.Zone.ElementoArea;
@@ -24,7 +25,6 @@ import it.TownyGDR.Towny.Zone.ElementoArea;
  * Appezzamento di terra di una data grandezza per i membri della città
  * un lotto è assegnato a uno o più membri.
  * 
- * ## Aggiungere elementi d'area e anche rimozione(non cio cazzi=)
  * 
  *********************************************************************/
 public class Lotto{
@@ -38,11 +38,25 @@ public class Lotto{
 	 * @param x
 	 * @param z
 	 */
-	private Lotto(City city) {
-		this.id = -1;
+	public Lotto(City city) {
+		this.id = getMaxID(city) + 1;
 		this.lotto = new ArrayList<ElementoArea>();
-		this .admin = new ArrayList<Membro>();
+		this.admin = new ArrayList<Membro>();
 		city.getArea().addLotto(this);
+	}
+
+	/**
+	 * @param city 
+	 * @return
+	 */
+	private static int getMaxID(City city) {
+		int max = 0;
+		for(Lotto lt : city.getArea().getLotti()) {
+			if(lt.getId() > max) {
+				max = lt.getId();
+			}
+		}
+		return max;
 	}
 
 	/**
@@ -98,9 +112,13 @@ public class Lotto{
 	 * @param configurationSection
 	 */
 	public void save(ConfigurationSection config) {
+		if(this.lotto.size() == 0) {
+			return;
+		}
+		
 		String str = "";
 		for(ElementoArea area : this.lotto) {
-			str += area.getX() + ";" + area.getZ() + "|";
+			str += area.getX() + ";" + area.getZ() + "@";
 		}
 		str = str.substring(0, str.length() - 1);
 		config.set("Lotti." + this.id, str);
@@ -146,6 +164,10 @@ public class Lotto{
 	 * @return
 	 */
 	public static Lotto loadDataById(int id_, City city) {
+		if(id_ == -1) {
+			return new Lotto(city);
+		}
+		
 		for(Lotto lot : city.getArea().getLotti()) {
 			if(lot.getId() == id_) {
 				return lot;
@@ -165,7 +187,7 @@ public class Lotto{
 		if(str != null) {
 			Lotto lot = new Lotto(city);
 			Scanner scan = new Scanner(str);
-			scan.useDelimiter("|");
+			scan.useDelimiter("@");
 			while(scan.hasNext()) {
 				Scanner tp = new Scanner(scan.next());
 				tp.useDelimiter(";");
@@ -188,4 +210,53 @@ public class Lotto{
 		return null;
 	}
 
+	/**
+	 * aggiungi un elemento d'area al lotto
+	 * @param ele
+	 * @return
+	 */
+	public boolean addElementoArea(ElementoArea ele) {
+		return this.lotto.add(ele);
+	}
+	
+	/**
+	 * rimuovi l'elento d'area
+	 * @param ele
+	 * @return
+	 */
+	public boolean removeElementoArea(ElementoArea ele) {
+		return this.lotto.remove(ele);
+	}
+	
+	/**
+	 * compra un lotto/aggiungi il lotto dato a quelli gia presenti, ogni membro del lotto
+	 * può comprare un lotto
+	 * @param lv
+	 * @param mem
+	 * @return
+	 */
+	public boolean compraLotto(LottoVendita lv, Membro mem) {
+		//mi serve i dati del player
+		PlayerData pd = PlayerData.getFromUUID(mem.getUUID());
+		
+		//controlla i soldi
+		if(pd.getBalance() >= lv.getPrezzo()) {
+			//aggiungi al lotto
+			this.lotto.add(lv.getEle());
+			
+			//dai i soldi a chi vende il lotto
+			PlayerData.getFromUUID(lv.getSid().getUUID()).addMoney(lv.getPrezzo());
+			
+			pd.withdrawMoney(lv.getPrezzo());
+			
+			//rimuovi l'area dalla vendita
+			pd.getCity().getArea().removeLottoVendita(lv);
+		}
+		return false;
+	}
+	
+	
+	
+	
+	
 }

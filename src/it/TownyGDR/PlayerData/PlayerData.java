@@ -273,7 +273,8 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 * Ritorna i soldi del player.
 	 */
 	public double getBalance() {
-		return TownyGDR.econ.getBalance(player);
+		return 10000000;
+		//return TownyGDR.econ.getBalance(player);
 	}
 	
 	/**
@@ -283,7 +284,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean addMoney(double val) {
 		if(val > 0) {
-			/*EconomyResponse result = */TownyGDR.econ.depositPlayer(player, val);
+			/*EconomyResponse result = *///TownyGDR.econ.depositPlayer(player, val);
 			return true;
 		}
 		return false;
@@ -296,7 +297,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean withdrawMoney(double val) {
 		if(val > 0) {
-			TownyGDR.econ.withdrawPlayer(player, val);
+			//TownyGDR.econ.withdrawPlayer(player, val);
 			return true;
 		}
 		return false;

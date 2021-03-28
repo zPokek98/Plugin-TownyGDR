@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Area.Lotto;
 
@@ -46,6 +47,7 @@ public class Membro{
 		this.type = new ArrayList<MembroType>();
 		this.type.add(ruolo);
 		this.uuid = uuid;
+		this.lotto = new Lotto(PlayerData.getFromUUID(uuid).getCity());
 	}
 	
 	/**
@@ -80,7 +82,9 @@ public class Membro{
 			str = str.substring(0, str.length() - 1);
 			config.set(mem.getUUID() + ".Ruolo", str);
 			if(mem.lotto != null) {
-				config.set(mem.getUUID() + ".Lotto", mem.lotto.getId());
+				if(mem.lotto.getSize() != 0) {
+					config.set(mem.getUUID() + ".Lotto", mem.lotto.getId());
+				}
 			}
 			
 		}
@@ -113,7 +117,7 @@ public class Membro{
 			membro.type   = type;
 			
 			//ottieni i lotti del player
-			membro.lotto  = Lotto.loadDataById(config.getInt(".Lotto"), city);
+			membro.lotto  = Lotto.loadDataById(config.getInt(str + ".Lotto", -1), city);
 			if(membro.lotto != null) {
 				membro.lotto.addMembro(membro);
 			}
@@ -129,5 +133,6 @@ public class Membro{
 	public Lotto getLotto() {
 		return this.lotto;
 	}
+	
 
 }

@@ -78,7 +78,7 @@ import net.milkbowl.vault.permission.Permission;
  * 		- [-]: City
  * 			- [x]: Area
  * 				- [x]: Area
- * 				- [-]: Lotto
+ * 				- [x]: Lotto
  * 			- [x]: Membro							("Elsalamander" Da finire)
  * 				- [x]: MembroType "Enumerazione"	("Elsalamander")
  * 			- [ ]: Edifici

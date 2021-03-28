@@ -3,6 +3,7 @@
  */
 package it.TownyGDR.Towny.City.Area;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -15,6 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Membri.Membro;
+import it.TownyGDR.Towny.City.Membri.MembroType;
 import it.TownyGDR.Towny.Zone.ElementoArea;
 import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Save.Salva;
@@ -44,6 +46,7 @@ public class Area implements Salva<ConfigurationSection>{
 	private ArrayList<ElementoArea> area; //Elementi area claimati dalla città
 	
 	private ArrayList<Lotto> LottiCity;
+	private ArrayList<LottoVendita> daVendere;
 	
 	
 
@@ -55,6 +58,7 @@ public class Area implements Salva<ConfigurationSection>{
 		this.zona = zona;
 		this.area = new ArrayList<ElementoArea>();
 		this.LottiCity = new ArrayList<Lotto>();
+		this.daVendere = new ArrayList<LottoVendita>();
 	}
 	
 	//*********************************************************************** Funzioni Oggetto
@@ -176,6 +180,8 @@ public class Area implements Salva<ConfigurationSection>{
 			lot.save(config);
 		}
 		
+		LottoVendita.save(config, this.daVendere);
+		
 		//Salva id zona
 		config.set("ZonaId", this.zona.getID());
 		
@@ -189,6 +195,8 @@ public class Area implements Salva<ConfigurationSection>{
 		}
 		tmp =  tmp.substring(0, tmp.length() - 1);
 		config.set("Forma", tmp);
+		
+		
 	}
 
 	@Override
@@ -221,6 +229,8 @@ public class Area implements Salva<ConfigurationSection>{
 		
 		//Carica i lotti, non serve sono caricati quando vengono caricati i membri
 		
+		//carica i lotti da vendere
+		this.daVendere = LottoVendita.load(config);
 	}
 
 	/**
@@ -259,10 +269,43 @@ public class Area implements Salva<ConfigurationSection>{
 		return this.LottiCity;
 	}
 	
+	/**
+	 * Crea un lotto pre la vendita e aggiungi alla lista da vendere
+	 * @param ele
+	 * @param prezzo
+	 * @param mem
+	 * @return
+	 */
+	public LottoVendita createLottoVendita(ElementoArea ele, double prezzo, Membro mem) {
+		if(mem.getType().contains(MembroType.Sindaco)) {
+			LottoVendita lv = new LottoVendita(ele, prezzo, mem);
+			this.daVendere.add(lv);
+			return lv;
+		}
+		return null;
+	}
+
+	/**
+	 * rimuovi il lotto in vendita
+	 * @param lv
+	 */
+	public void removeLottoVendita(LottoVendita lv) {
+		this.daVendere.remove(lv);
+	}
 	
-	
-	
-	
+	/**
+	 * Ritorna il lotto in vendita data la sua posizione
+	 * @param ele
+	 * @return
+	 */
+	public LottoVendita getByElementoArea(ElementoArea ele) {
+		for(LottoVendita lv : this.daVendere) {
+			if(lv.getEle().equals(ele)) {
+				return lv;
+			}
+		}
+		return null;
+	}
 	
 	
 	
