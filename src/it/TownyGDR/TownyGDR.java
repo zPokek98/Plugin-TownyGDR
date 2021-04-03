@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import it.Library;
 import it.MySQL.MySQL;
 import it.TownyGDR.Command.City.CityCommand;
+import it.TownyGDR.Command.City.CityCommandManager;
 import it.TownyGDR.Command.Zona.ZonaCommand;
 import it.TownyGDR.Event.EventPlayerManager;
 import it.TownyGDR.PlayerData.PlayerData;
@@ -294,6 +295,7 @@ public class TownyGDR extends JavaPlugin{
 	private void registerCommand() {
 		this.getCommand("Zona").setExecutor(new ZonaCommand());
 		this.getCommand("City").setExecutor(new CityCommand());
+		this.getCommand("City").setExecutor(new CityCommandManager());
 	}
 
 	/**

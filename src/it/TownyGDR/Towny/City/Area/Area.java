@@ -133,16 +133,17 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @param loc
 	 * @return
 	 */
-	public boolean containLocation(Location loc) {
-		Chunk chunk = loc.getChunk();
-		int x = chunk.getX();
-		int z = chunk.getZ();
+	public boolean containLocation(int x, int z) {
 		for(ElementoArea ele : this.area) {
 			if(ele.getX() == x && ele.getZ() == z) {
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public boolean containLocation(Location loc) {
+		return containLocation(loc.getChunk().getX(), loc.getChunk().getZ());
 	}
 
 	/**
@@ -278,9 +279,12 @@ public class Area implements Salva<ConfigurationSection>{
 	 */
 	public LottoVendita createLottoVendita(ElementoArea ele, double prezzo, Membro mem) {
 		if(mem.getType().contains(MembroType.Sindaco)) {
-			LottoVendita lv = new LottoVendita(ele, prezzo, mem);
-			this.daVendere.add(lv);
-			return lv;
+			//controlla che è dentro la città
+			if(this.containLocation(ele.getX(), ele.getZ())) {
+				LottoVendita lv = new LottoVendita(ele, prezzo, mem);
+				this.daVendere.add(lv);
+				return lv;
+			}
 		}
 		return null;
 	}

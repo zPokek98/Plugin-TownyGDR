@@ -214,6 +214,11 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 * @return
 	 */
 	private static boolean checkIsFreeName(String nomeCitta) {
+		//controlla se il nome contiene degli spazi indesiderati
+		if(nomeCitta.contains(" ")) {
+			return false;
+		}
+		
 		//Dato che le città posso anche non essere cariche nella RAM cerco in tutti i file di salvataggio
 		String[] files = Util.getListNameFile("City");
 		for(String str : files) {
@@ -223,7 +228,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 			FileConfiguration config = customConfig.getConfig();
 			//confronta i nomi
 			if(config.getString("Nome").equalsIgnoreCase(str)) {
-				return true;
+				return false;
 			}
 		}
 		return true;
@@ -418,7 +423,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	/**
 	 * @return
 	 */
-	private String getName() {
+	public String getName() {
 		return this.name;
 	}
 
@@ -491,6 +496,22 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		for(Membro mem : this.membri) {
 			if(mem.getUUID().equals(uniqueId)) {
 				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Ritorna se questo UUID è di un Sindaco della città
+	 * @param uniqueId
+	 * @return
+	 */
+	public boolean hasSindaco(UUID uniqueId) {
+		for(Membro mem : this.membri) {
+			if(mem.getUUID().equals(uniqueId)) {
+				if(mem.getType().contains(MembroType.Sindaco)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -633,6 +654,19 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 	 */
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
+	}
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	public static City getByName(String name) {
+		for(City city : City.ListCity) {
+			if(city.getName().equalsIgnoreCase(name)) {
+				return city;
+			}
+		}
+		return null;
 	}
 	
 	

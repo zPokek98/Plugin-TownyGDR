@@ -124,8 +124,6 @@ public class LottoVendita{
 		if(scan != null) {
 			scan.close();
 		}
-		
-		
 		return lv;
 	}
 

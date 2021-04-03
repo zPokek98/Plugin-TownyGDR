@@ -3,9 +3,13 @@
  */
 package it.TownyGDR.PlayerData;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
+import it.TownyGDR.Util.Exception.ExceptionLoad;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -27,7 +31,7 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
  * 
  * 
  *********************************************************************/
-public abstract class Etnia {
+public abstract class Etnia{
 	
 	//Variabili per tutte le etnie
 	protected String name;
@@ -66,6 +70,15 @@ public abstract class Etnia {
 		return this.casate;
 	}
 	
-	
+	public void save(ConfigurationSection database){
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static Etnia load(ConfigurationSection database){
+		return null;
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

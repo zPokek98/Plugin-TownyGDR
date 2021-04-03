@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import it.CustomConfig.CustomConfig;
 import it.TownyGDR.TownyGDR;
+import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
 import it.TownyGDR.PlayerData.Statistiche.Stats.KDA;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.City.City;
@@ -39,7 +40,7 @@ import net.milkbowl.vault.economy.EconomyResponse;
  *********************************************************************/
 @SuppressWarnings("unused")
 public class PlayerData implements Salva<CustomConfig>, Taggable{
-	
+
 	//Variabile di cache per il playerData per eventuali get, e ottimizzazione tempi
 	private static ArrayList<PlayerData> ListPlayerData = new ArrayList<PlayerData>(); //mi obbliga a creare la
 																					   //funzione "equals"
@@ -56,8 +57,13 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	private Player player;	//Puntatore cache all'oggetto player per otterene il player secondo il server
 	private UUID   uuid;    //UUID del giocatore senza ricorrere a funzioni strane, usato poi per il 
 							//salvataggio e localizzazione del suo file e righa nel database.
+	
+	private Etnia etnia;	//Etnia giocatore
+	private Casata casata;	//Casata del giocatore
+	
 	private long   idCity;	//Id della città se ne fa parte, caso contrario -1.
 	private City   city;	//Puntatore oggetto città se è in una, caso contrario null.
+	
 	//Statistiche
 	private KDA    kda;		//Kill/Death/"Assist?" del player
 	
@@ -78,6 +84,9 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		this.idCity = -1;
 		this.city   = null;
 		this.kda    = new KDA();
+		
+		this.etnia = null;
+		this.casata = null;
 		
 		//Aggiungilo alla cache.
 		ListPlayerData.add(this);
@@ -107,6 +116,31 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public boolean equals(PlayerData pd) {
 		return this.uuid.equals(pd.getUUID());
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlayerData other = (PlayerData) obj;
+		if (uuid == null) {
+			if (other.uuid != null)
+				return false;
+		} else if (!uuid.equals(other.uuid))
+			return false;
+		return true;
 	}
 	
 	/**
@@ -149,7 +183,13 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		this.kda.save(config.getConfigurationSection("Statistiche.KDA"));
 		if(config.contains("Statistiche.KDA.tmp")) config.set("Statistiche.KDA.tmp", null);
 		
+		if(this.etnia != null) {
+			this.etnia.save(config);
+		}
 		
+		if(this.casata != null) {
+			this.casata.save(config);
+		}
 		
 		//Salva i dati nel file.
 		if(!customConfig.save()) {
@@ -184,6 +224,9 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 				this.idCity = -1;
 			}
 		}
+		
+		this.etnia = Etnia.load(config);
+		this.casata = Casata.load(config);
 		
 		//Carica le statistiche
 		if(!config.contains("Statistiche")) {
