@@ -21,19 +21,29 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Naviana.NavianaCasata;
  *********************************************************************/
 public class Naviana extends Etnia{
 	
-	public Naviana() {
-		this.name = "Naviana";
-		this.desc = "Etnia Naviana";
-		this.casate = new ArrayList<CasataType>();
-		this.casate.add(NavianaCasata.Darnis);
-		this.casate.add(NavianaCasata.Egeril);
-		this.casate.add(NavianaCasata.Fen);
-		this.casate.add(NavianaCasata.Forven);
-		this.casate.add(NavianaCasata.Leowell);
-		this.casate.add(NavianaCasata.River);
-		this.casate.add(NavianaCasata.Singer);
-		
+	private static String nome = "Naviana";
+	private static ArrayList<CasataType> casate = new ArrayList<CasataType>();
+	static{
+		casate.add(NavianaCasata.Darnis);
+		casate.add(NavianaCasata.Egeril);
+		casate.add(NavianaCasata.Fen);
+		casate.add(NavianaCasata.Forven);
+		casate.add(NavianaCasata.Leowell);
+		casate.add(NavianaCasata.River);
+		casate.add(NavianaCasata.Singer);
+	}
 
+	public static ArrayList<CasataType> getCasate(){
+		return casate;
+	}
+	
+	public static String getNameEtnia() {
+		return nome;
+	}
+	
+	public Naviana() {
+		this.name = nome;
+		this.desc = "Etnia Naviana";
 		
 	}
 }

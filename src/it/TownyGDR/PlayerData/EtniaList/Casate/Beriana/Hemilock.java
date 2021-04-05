@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Hemilock  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Hemilock() {
+		super("Hemilock");
+	}
+
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import it.TownyGDR.PlayerData.Etnia;
 import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
+import it.TownyGDR.PlayerData.EtniaList.Casate.Dragoniana.DragonianaCasata;
 import it.TownyGDR.PlayerData.EtniaList.Casate.Shariana.SharianaCasata;
 
 /*********************************************************************
@@ -20,15 +21,30 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Shariana.SharianaCasata;
  * 
  *********************************************************************/
 public class Shariana extends Etnia{
+	
+	private static String nome = "Shariana";
+	private static ArrayList<CasataType> casate = new ArrayList<CasataType>();
+	static{
+		casate.add(SharianaCasata.Iril);
+		casate.add(SharianaCasata.Malel);
+		casate.add(SharianaCasata.Marine);
+		casate.add(SharianaCasata.Tanak);
+	}
 
 	public Shariana() {
-		this.name = "Shariana";
+		this.name = nome;
 		this.desc = "Etnia Shariana";
-		this.casate = new ArrayList<CasataType>();
-		this.casate.add(SharianaCasata.Iril);
-		this.casate.add(SharianaCasata.Malel);
-		this.casate.add(SharianaCasata.Marine);
-		this.casate.add(SharianaCasata.Tanak);
 		
+	}
+	
+	public static String getNameEtnia() {
+		return nome;
+	}
+
+	/**
+	 * @return
+	 */
+	public static ArrayList<CasataType> getCasate() {
+		return casate;
 	}
 }

@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class River extends Casata {
 
+	/**
+	 * @param nome
+	 */
+	public River() {
+		super("River");
+	}
+
 }

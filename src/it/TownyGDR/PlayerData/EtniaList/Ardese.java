@@ -24,16 +24,29 @@ import it.TownyGDR.Util.Exception.ExceptionLoad;
  * 
  *********************************************************************/
 public class Ardese extends Etnia{
-
-	public Ardese() {
-		this.name = "Ardese";
-		this.desc = "Etnia Ardese";
-		this.casate = new ArrayList<CasataType>();
-		this.casate.add(ArdeseCasate.Brial);
-		this.casate.add(ArdeseCasate.Maedon);
-		this.casate.add(ArdeseCasate.Nekromount);
-		this.casate.add(ArdeseCasate.Tunnor);
-		
+	
+	private static String nome = "Ardese";
+	private static ArrayList<CasataType> casate = new ArrayList<CasataType>();
+	static{
+		casate.add(ArdeseCasate.Brial);
+		casate.add(ArdeseCasate.Maedon);
+		casate.add(ArdeseCasate.Nekromount);
+		casate.add(ArdeseCasate.Tunnor);
 	}
+
+	public static ArrayList<CasataType> getCasate(){
+		return casate;
+	}
+	
+	public static String getNameEtnia() {
+		return nome;
+	}
+	
+	public Ardese() {
+		this.name = nome;
+		this.desc = "Etnia Ardese";
+	}
+	
+	
 	
 }

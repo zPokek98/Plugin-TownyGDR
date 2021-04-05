@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.TownyGDR.Command.City.Set;
+package it.TownyGDR.Command.City.Set.Invite;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import it.TownyGDR.Command.CommandManager;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.City.Membri.Invite;
 import it.TownyGDR.Util.Exception.Command.CommandPermissionError;
 import it.TownyGDR.Util.Exception.Command.CommandSenderError;
 import it.TownyGDR.Util.Exception.Command.CommandSyntaxError;
@@ -25,24 +26,29 @@ import it.TownyGDR.Util.Exception.Command.CommandSyntaxError;
  *
  * @text
  * Descrizione:
+ * Gli inviti sono gestiti dalla classe Invite
  * 
  *********************************************************************/
-public class CityCommandKick extends CommandManager {
+public class CityCommandInvite extends CommandManager {
 
 	private static ArrayList<String> perm = new ArrayList<String>();
-	static {
-		perm.add("City.kick");
+	
+	
+	static{
+		perm.add("City.invite");
 	}
 	
 	/**
 	 * @param perm
 	 */
-	public CityCommandKick() {
+	public CityCommandInvite() {
 		super(perm);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
+	/**
+	 * City invite <nomePlayer>
+	 */
 	public boolean onCommand(CommandSender sender, Command command, String arg, String[] args) throws CommandSyntaxError, CommandPermissionError, CommandSenderError {
 		//Controlla che è un player
 		if(sender instanceof Player) {
@@ -59,17 +65,12 @@ public class CityCommandKick extends CommandManager {
 					//è un sindaco?
 					City city = pd.getCity();
 					if(city.hasSindaco(pd.getUUID())) {
-						//prendi il giocatore da kickare
+						//prendi il giocatore invitato
 						Player pi = Bukkit.getPlayer(args[2]);
+						PlayerData pdi = PlayerData.getPlayerData(pi);
 						if(pi != null) {
-							PlayerData pdi = PlayerData.getPlayerData(pi);
+							Invite.addInvite(pd, pdi, city);
 							
-							//Controlla che è dentro la città
-							if(city.hasMembro(pdi.getUUID())) {
-								city.removeMembro(city.getMembroByUUID(pdi.getUUID()));
-							}else{
-								p.sendMessage("Il player inserito non fa parte della citta'");
-							}
 						}else{
 							p.sendMessage("Il player inserito non esiste o non è online");
 						}
@@ -77,7 +78,6 @@ public class CityCommandKick extends CommandManager {
 				}else{
 					p.sendMessage("Non sei dentro una citta'/Sindaco");
 				}
-				
 				return true;
 			}else{
 				throw new CommandPermissionError();
@@ -87,5 +87,7 @@ public class CityCommandKick extends CommandManager {
 			throw new CommandSenderError();
 		}
 	}
+	
+
 
 }

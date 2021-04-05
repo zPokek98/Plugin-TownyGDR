@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import it.TownyGDR.TownyGDR;
 import it.TownyGDR.PlayerData.PlayerData;
@@ -49,7 +50,8 @@ public class Invite {
 				
 				//Manda i messaggi
 				sender.getPlayer().sendMessage("Il player e' stato invitato!");
-				invitato.getPlayer().sendMessage("Sei stato invitato nella citta': " + onCity.getName());
+				Player send = invitato.getPlayer();
+				send.sendMessage("Sei stato invitato nella citta': " + onCity.getName());
 				Bukkit.getScheduler().runTaskLater(TownyGDR.getInstance(), new TaskInvito(invitato), 1200);
 			}
 		}else{
@@ -62,6 +64,54 @@ public class Invite {
 			invitato.getPlayer().sendMessage("Sei stato invitato nella citta': " + onCity.getName());
 			Bukkit.getScheduler().runTaskLater(TownyGDR.getInstance(), new TaskInvito(invitato), 1200);
 			
+		}
+	}
+	
+	
+	public static void accept(PlayerData invitato) {
+		//controlla che esiste il suo invito.
+		Data data = map.get(invitato);
+		if(data != null) {
+			//se c'è l'invito deve essere valido.
+			
+			//controlla se fa parte di una città o no
+			if(invitato.getCity() != null) {
+				//fa già parte di una città!
+				Player send = invitato.getPlayer();
+				send.sendMessage("Se vuoi accettare prima e' meglio che esci dalla citta' attuale!");
+				send.sendMessage("Esci dalla città con /city leave");
+				send.sendMessage("Poi ripeti il comando /city inviteaccept, per accettare l'invito!");
+				
+			}else{
+				//non fa parte di una città
+				data.city.addMembro(invitato);
+				
+				Player send = invitato.getPlayer();
+				send.sendMessage("Ora fai parte della citta': " + data.city.getName());
+				
+				map.remove(invitato);
+			}
+		}else{
+			Player send = invitato.getPlayer();
+			send.sendMessage("Non hai inviti al momento!");
+		}
+	}
+	
+	public static void deny(PlayerData invitato) {
+		//controlla che esiste il suo invito.
+		Data data = map.get(invitato);
+		if(data != null) {
+			//se c'è l'invito deve essere valido.
+			
+			//rimuovi l'invito
+			map.remove(invitato);
+			
+			Player send = invitato.getPlayer();
+			send.sendMessage("Hai rifiutato l'invito!");
+			
+		}else{
+			Player send = invitato.getPlayer();
+			send.sendMessage("Non hai inviti al momento!");
 		}
 	}
 	

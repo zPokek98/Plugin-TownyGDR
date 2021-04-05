@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Marine  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Marine() {
+		super("Marine");
+	}
+
 }

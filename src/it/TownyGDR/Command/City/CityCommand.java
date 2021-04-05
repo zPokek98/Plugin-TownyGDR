@@ -36,6 +36,7 @@ import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
  * /City -[id] lotto vendi/compra
  * 
  *********************************************************************/
+/*
 public class CityCommand implements CommandExecutor{
 
 	@Override
@@ -123,7 +124,7 @@ public class CityCommand implements CommandExecutor{
 								ElementoArea ele = new ElementoArea(ck.getX(), ck.getZ());
 								
 								Membro mem = PlayerData.getPlayerData(p).getCity().getMembroByUUID(p.getUniqueId());
-								mem.getLotto().compraLotto(city.getArea().getByElementoArea(ele), mem);
+								mem.getLotto().compraLotto(city.getArea().LottoVenditagetByElementoArea(ele), mem);
 								p.sendMessage("Lotto comprato");
 							}
 							
@@ -147,11 +148,13 @@ public class CityCommand implements CommandExecutor{
 		}		
 
 	}
-
+*/
 	/**
 	 * @param sender
 	 */
+/*
 	private void error(CommandSender sender) {
 		sender.sendMessage("Sintassi non valida per eseguire il commando!");
 	}
 }
+*/

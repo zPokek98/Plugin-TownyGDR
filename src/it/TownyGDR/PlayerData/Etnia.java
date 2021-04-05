@@ -5,9 +5,17 @@ package it.TownyGDR.PlayerData;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import it.TownyGDR.PlayerData.EtniaList.Ardese;
+import it.TownyGDR.PlayerData.EtniaList.Beriana;
+import it.TownyGDR.PlayerData.EtniaList.Dragoniana;
+import it.TownyGDR.PlayerData.EtniaList.Naviana;
+import it.TownyGDR.PlayerData.EtniaList.Selvaggia;
+import it.TownyGDR.PlayerData.EtniaList.Shariana;
 import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
 import it.TownyGDR.Util.Exception.ExceptionLoad;
 
@@ -33,17 +41,27 @@ import it.TownyGDR.Util.Exception.ExceptionLoad;
  *********************************************************************/
 public abstract class Etnia{
 	
+	protected static Map<String, ArrayList<CasataType>> map = new TreeMap<String, ArrayList<CasataType>>();
+	static{
+		map.put(Ardese.getNameEtnia(), Ardese.getCasate());
+		map.put(Beriana.getNameEtnia(), Beriana.getCasate());
+		map.put(Dragoniana.getNameEtnia(), Dragoniana.getCasate());
+		map.put(Naviana.getNameEtnia(), Naviana.getCasate());
+		map.put(Selvaggia.getNameEtnia(), Selvaggia.getCasate());
+		map.put(Shariana.getNameEtnia(), Shariana.getCasate());
+		
+	}
+	
 	//Variabili per tutte le etnie
 	protected String name;
 	protected String desc;
 	
-	protected ArrayList<CasataType> casate;
+	protected static ArrayList<CasataType> casate;
 	
 	
 	protected Etnia() {
 		this.name = null;
 		this.desc = null;
-		this.casate = null;
 	}
 	
 	/**
@@ -66,19 +84,41 @@ public abstract class Etnia{
 	 * Ritorna le casate che stanno sotto a questa etnia
 	 * @return
 	 */
-	public ArrayList<CasataType> getCasate(){
-		return this.casate;
+	public static ArrayList<CasataType> getCasateByEtnia(Etnia etnia){
+		return map.get(etnia.getName());
 	}
 	
-	public void save(ConfigurationSection database){
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Ritorna un oggetto Etnia tramite il nome
+	 * @param str
+	 * @return
+	 */
+	public static Etnia getByName(String str) {
+		switch(str) {
+			case "Ardese": 		return new Ardese();
+			case "Beriana": 	return new Beriana();
+			case "Dragoniana": 	return new Dragoniana();
+			case "Naviana": 	return new Naviana();
+			case "Selvaggia": 	return new Selvaggia();
+			case "Shariana": 	return new Shariana();
+		}
+		return null;
+	}
+	
+	public void save(ConfigurationSection config){
+		config.set("Etnia", this.name);
 	}
 
-	public static Etnia load(ConfigurationSection database){
+	public static Etnia load(ConfigurationSection config){
+		String str = config.getString("Etnia", null);
+		if(str != null) {
+			return Etnia.getByName(str);
+		}
 		return null;
-		// TODO Auto-generated method stub
-		
+	}
+	
+	public static Map<String, ArrayList<CasataType>> getMapEtnia(){
+		return map;
 	}
 	
 }

@@ -256,7 +256,28 @@ public class Lotto{
 	}
 	
 	
-	
+	public boolean contains(ElementoArea ele) {
+		for(ElementoArea el : this.lotto) {
+			if(el.equals(ele)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<Membro> getMembro() {
+		return this.admin;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<ElementoArea> getListAree() {
+		return this.lotto;
+	}
 	
 	
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import it.TownyGDR.PlayerData.Etnia;
 import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
+import it.TownyGDR.PlayerData.EtniaList.Casate.Ardese.ArdeseCasate;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -19,11 +20,24 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
  * 
  *********************************************************************/
 public class Selvaggia extends Etnia{
+	
+	private static String nome = "Selvaggia";
+	private static ArrayList<CasataType> casate = new ArrayList<CasataType>();
+	static{
+		//...
+	}
+
+	public static ArrayList<CasataType> getCasate(){
+		return casate;
+	}
+	
+	public static String getNameEtnia() {
+		return nome;
+	}
 
 	public Selvaggia() {
-		this.name = "Selvaggia";
+		this.name = nome;
 		this.desc = "Etnia Selvaggia";
-		this.casate = new ArrayList<CasataType>();
 
 	}
 }

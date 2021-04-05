@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Dandu extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Dandu() {
+		super("Dandu");
+	}
+
 }

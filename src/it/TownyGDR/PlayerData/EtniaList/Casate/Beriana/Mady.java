@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Mady  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Mady() {
+		super("Mady");
+	}
+
 }

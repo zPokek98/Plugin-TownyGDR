@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Drengot  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Drengot() {
+		super("Drengot");
+	}
+
 }

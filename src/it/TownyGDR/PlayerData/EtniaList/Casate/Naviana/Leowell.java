@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Leowell  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Leowell() {
+		super("Leowell");
+	}
+
 }

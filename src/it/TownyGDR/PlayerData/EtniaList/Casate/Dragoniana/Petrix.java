@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Petrix  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Petrix() {
+		super("Petrix");
+	}
+
 }

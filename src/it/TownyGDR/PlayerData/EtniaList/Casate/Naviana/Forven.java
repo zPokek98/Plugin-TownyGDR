@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Forven extends Casata {
 
+	/**
+	 * @param nome
+	 */
+	public Forven() {
+		super("Forven");
+	}
+
 }

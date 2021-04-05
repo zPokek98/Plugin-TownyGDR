@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import it.TownyGDR.PlayerData.Etnia;
 import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
+import it.TownyGDR.PlayerData.EtniaList.Casate.Ardese.ArdeseCasate;
 import it.TownyGDR.PlayerData.EtniaList.Casate.Beriana.BerianaCasata;
 
 /*********************************************************************
@@ -20,15 +21,27 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Beriana.BerianaCasata;
  * 
  *********************************************************************/
 public class Beriana extends Etnia{
+	
+	private static String nome = "Beriana";
+	private static ArrayList<CasataType> casate = new ArrayList<CasataType>();
+	static{
+		casate.add(BerianaCasata.Gwael);
+		casate.add(BerianaCasata.Hemilock);
+		casate.add(BerianaCasata.Mady);
+		casate.add(BerianaCasata.Rhoben);
+	}
+
+	public static ArrayList<CasataType> getCasate(){
+		return casate;
+	}
+	
+	public static String getNameEtnia() {
+		return nome;
+	}
 
 	public Beriana() {
-		this.name = "Beriana";
+		this.name = nome;
 		this.desc = "Etnia Beriana";
-		this.casate = new ArrayList<CasataType>();
-		this.casate.add(BerianaCasata.Gwael);
-		this.casate.add(BerianaCasata.Hemilock);
-		this.casate.add(BerianaCasata.Mady);
-		this.casate.add(BerianaCasata.Rhoben);
 		
 	}
 }

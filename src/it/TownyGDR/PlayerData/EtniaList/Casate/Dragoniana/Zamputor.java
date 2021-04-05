@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Zamputor  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Zamputor() {
+		super("Zamputor");
+	}
+
 }

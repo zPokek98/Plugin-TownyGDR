@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Hol extends Casata {
 
+	/**
+	 * @param nome
+	 */
+	public Hol() {
+		super("Hol");
+	}
+
 }

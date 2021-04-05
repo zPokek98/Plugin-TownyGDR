@@ -302,7 +302,7 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @param ele
 	 * @return
 	 */
-	public LottoVendita getByElementoArea(ElementoArea ele) {
+	public LottoVendita LottoVenditagetByElementoArea(ElementoArea ele) {
 		for(LottoVendita lv : this.daVendere) {
 			if(lv.getEle().equals(ele)) {
 				return lv;
@@ -311,6 +311,33 @@ public class Area implements Salva<ConfigurationSection>{
 		return null;
 	}
 	
+	/**
+	 * Ritorno il lotto della città che contiene questo elemento d'area
+	 * @param ele
+	 * @return
+	 */
+	public Lotto getLottoByElementoArea(ElementoArea ele) {
+		for(Lotto lv : this.LottiCity) {
+			if(lv.contains(ele)) {
+				return lv;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return
+	 */
+	public Zona getZona() {
+		return this.zona;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList<ElementoArea> getClaimedArea() {
+		return this.area;
+	}
 	
 	
 }

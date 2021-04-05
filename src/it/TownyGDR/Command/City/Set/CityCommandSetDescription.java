@@ -31,7 +31,7 @@ public class CityCommandSetDescription extends CommandManager {
 
 	private static ArrayList<String> perm = new ArrayList<String>();
 	static {
-		perm.add("City.help");
+		perm.add("City.set.description");
 	}
 	
 	/**

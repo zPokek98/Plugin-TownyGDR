@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Brial  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Brial() {
+		super("Brial");
+	}
+
 }

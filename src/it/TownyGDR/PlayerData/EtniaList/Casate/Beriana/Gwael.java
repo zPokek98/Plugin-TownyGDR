@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Gwael  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Gwael() {
+		super("Gwael");
+	}
+
 }

@@ -3,9 +3,9 @@
  */
 package it.TownyGDR.Command.City.Set;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ import it.TownyGDR.Util.Exception.Command.CommandSyntaxError;
 
 /*********************************************************************
  * @author: Elsalamander
- * @data: 3 apr 2021
+ * @data: 5 apr 2021
  * @version: v1.0
  * 
  *
@@ -27,22 +27,26 @@ import it.TownyGDR.Util.Exception.Command.CommandSyntaxError;
  * Descrizione:
  * 
  *********************************************************************/
-public class CityCommandKick extends CommandManager {
+public class CityCommandSave extends CommandManager {
 
 	private static ArrayList<String> perm = new ArrayList<String>();
-	static {
-		perm.add("City.kick");
+	
+	
+	static{
+		perm.add("City.save");
 	}
 	
 	/**
 	 * @param perm
 	 */
-	public CityCommandKick() {
+	public CityCommandSave() {
 		super(perm);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
+	/**
+	 * City invite <nomePlayer>
+	 */
 	public boolean onCommand(CommandSender sender, Command command, String arg, String[] args) throws CommandSyntaxError, CommandPermissionError, CommandSenderError {
 		//Controlla che è un player
 		if(sender instanceof Player) {
@@ -59,25 +63,18 @@ public class CityCommandKick extends CommandManager {
 					//è un sindaco?
 					City city = pd.getCity();
 					if(city.hasSindaco(pd.getUUID())) {
-						//prendi il giocatore da kickare
-						Player pi = Bukkit.getPlayer(args[2]);
-						if(pi != null) {
-							PlayerData pdi = PlayerData.getPlayerData(pi);
-							
-							//Controlla che è dentro la città
-							if(city.hasMembro(pdi.getUUID())) {
-								city.removeMembro(city.getMembroByUUID(pdi.getUUID()));
-							}else{
-								p.sendMessage("Il player inserito non fa parte della citta'");
-							}
-						}else{
-							p.sendMessage("Il player inserito non esiste o non è online");
+						
+						try{
+							city.save(null);
+							p.sendMessage("La città è stata salvata!");
+						}catch (IOException e){
+							p.sendMessage("La città NON è stata salvata, ERROR");
 						}
+						
 					}
 				}else{
 					p.sendMessage("Non sei dentro una citta'/Sindaco");
 				}
-				
 				return true;
 			}else{
 				throw new CommandPermissionError();
@@ -87,5 +84,7 @@ public class CityCommandKick extends CommandManager {
 			throw new CommandSenderError();
 		}
 	}
+	
+
 
 }

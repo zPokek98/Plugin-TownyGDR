@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Nekromount  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Nekromount() {
+		super("Nekromount");
+	}
+
 }

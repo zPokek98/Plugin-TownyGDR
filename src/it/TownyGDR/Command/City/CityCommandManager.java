@@ -11,12 +11,20 @@ import org.bukkit.entity.Player;
 
 import com.mojang.datafixers.util.Pair;
 
+import it.TownyGDR.Command.CommandManager;
 import it.TownyGDR.Command.City.Set.CityCommandClaim;
 import it.TownyGDR.Command.City.Set.CityCommandCreateCity;
+import it.TownyGDR.Command.City.Set.CityCommandGetInfo;
 import it.TownyGDR.Command.City.Set.CityCommandHelp;
-import it.TownyGDR.Command.City.Set.CityCommandInvite;
 import it.TownyGDR.Command.City.Set.CityCommandKick;
+import it.TownyGDR.Command.City.Set.CityCommandSave;
 import it.TownyGDR.Command.City.Set.CityCommandSetDescription;
+import it.TownyGDR.Command.City.Set.Invite.CityCommandInvite;
+import it.TownyGDR.Command.City.Set.Invite.CityCommandInviteAccept;
+import it.TownyGDR.Command.City.Set.Invite.CityCommandInviteDeny;
+import it.TownyGDR.Command.City.Set.Lotto.CityCommandLottoCompra;
+import it.TownyGDR.Command.City.Set.Lotto.CityCommandLottoGetInfo;
+import it.TownyGDR.Command.City.Set.Lotto.CityCommandLottoVendi;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Area.Area;
 import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
@@ -49,6 +57,21 @@ import net.md_5.bungee.api.ChatColor;
  * 
  ************************************************************************************/
 public class CityCommandManager implements CommandExecutor{
+	
+	private static CommandManager create = new CityCommandCreateCity();
+	private static CommandManager invite = new CityCommandInvite();
+	private static CommandManager inviteAccept = new CityCommandInviteAccept();
+	private static CommandManager inviteDeny = new CityCommandInviteDeny();
+	private static CommandManager kick = new CityCommandKick();
+	private static CommandManager claim = new CityCommandClaim();
+	private static CommandManager help = new CityCommandHelp();
+	private static CommandManager description  = new CityCommandSetDescription();
+	private static CommandManager lottoVendi = new CityCommandLottoVendi();
+	private static CommandManager lottoCompra = new CityCommandLottoCompra();
+	private static CommandManager lottoGetInfo = new CityCommandLottoGetInfo();
+	private static CommandManager save = new CityCommandSave();
+	private static CommandManager getInfo = new CityCommandGetInfo();
+	
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String arg, String[] args) {
@@ -74,47 +97,59 @@ public class CityCommandManager implements CommandExecutor{
 				switch(args[offset]) {
 					case "create":{
 						//Crea la citta
-						CityCommandCreateCity com = new CityCommandCreateCity();
-						return com.onCommand(sender, command, arg, args);
+						return create.onCommand(sender, command, arg, args);
 						
 					}//break;
 					
 					case "invite":{
-						CityCommandInvite com = new CityCommandInvite();
-						return com.onCommand(sender, command, arg, args);
+						return invite.onCommand(sender, command, arg, args);
+					}
+					
+					case "inviteaccept":{
+						return inviteAccept.onCommand(sender, command, arg, args);
+					}
+					
+					case "invitedeny":{
+						return inviteDeny.onCommand(sender, command, arg, args);
 					}
 					
 					case "kick":{
-						CityCommandKick com = new CityCommandKick();
-						return com.onCommand(sender, command, arg, args);
+						return kick.onCommand(sender, command, arg, args);
 					}
 					
 					case "claim":{
-						CityCommandClaim com = new CityCommandClaim();
-						return com.onCommand(sender, command, arg, args);
+						return claim.onCommand(sender, command, arg, args);
 					}
 					
 					case "help":{
-						CityCommandHelp com = new CityCommandHelp();
-						return com.onCommand(sender, command, arg, args);
+						return help.onCommand(sender, command, arg, args);
 					}
 					
+					//in realtà questo è solo per gli admin :)
 					case "save":{
-						
+						return save.onCommand(sender, command, arg, args);
 					}
 					
 					case "getInfo":{
-						
+						return getInfo.onCommand(sender, command, arg, args);
 					}
 					
 					case "lotto":{
 						switch(args[offset + 1]) {
 							case "vendi":{
-								
+								return lottoVendi.onCommand(sender, command, arg, args);
 							}
 							
 							case "compra":{
-								
+								return lottoCompra.onCommand(sender, command, arg, args);
+							}
+							
+							case "info":{
+								return lottoGetInfo.onCommand(sender, command, arg, args);
+							}
+							
+							default:{
+								throw new CommandSyntaxError();
 							}
 						}
 					}
@@ -123,11 +158,14 @@ public class CityCommandManager implements CommandExecutor{
 					case "set":{
 						switch(args[offset + 1]) {
 							case "description":{
-								CityCommandSetDescription com = new CityCommandSetDescription();
-								return com.onCommand(sender, command, arg, args);
+								return description.onCommand(sender, command, arg, args);
 							}
 						}
 						
+					}
+					
+					default:{
+						throw new CommandSyntaxError();
 					}
 				}
 				
@@ -139,7 +177,7 @@ public class CityCommandManager implements CommandExecutor{
 			//...
 			
 		}catch(CommandSenderError e){
-			//Erroe è un comando solo per i playern on per la console!
+			//Erroe è un comando solo per i player! Non per la console!
 			//...
 			
 		}catch(CommandPermissionError e){

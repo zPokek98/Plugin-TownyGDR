@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Tunnor  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Tunnor() {
+		super("Tunnor");
+	}
+
 }

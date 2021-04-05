@@ -92,6 +92,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		ListPlayerData.add(this);
 	}
 	
+
 	/**
 	 * Ritorna l'oggetto player per il server.
 	 * @return
@@ -106,6 +107,20 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public UUID getUUID() {
 		return this.uuid;
+	}
+	
+	/**
+	 * @return the etnia
+	 */
+	public Etnia getEtnia() {
+		return etnia;
+	}
+
+	/**
+	 * @return the casata
+	 */
+	public Casata getCasata() {
+		return casata;
 	}
 	
 	/**

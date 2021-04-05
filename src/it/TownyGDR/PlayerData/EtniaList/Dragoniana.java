@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import it.TownyGDR.PlayerData.Etnia;
 import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
+import it.TownyGDR.PlayerData.EtniaList.Casate.Ardese.ArdeseCasate;
 import it.TownyGDR.PlayerData.EtniaList.Casate.Dragoniana.DragonianaCasata;
 
 /*********************************************************************
@@ -20,20 +21,32 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Dragoniana.DragonianaCasata;
  * 
  *********************************************************************/
 public class Dragoniana extends Etnia{
+	
+	private static String nome = "Dragoniana";
+	private static ArrayList<CasataType> casate = new ArrayList<CasataType>();
+	static{
+		casate.add(DragonianaCasata.Dandu);
+		casate.add(DragonianaCasata.Dragoy);
+		casate.add(DragonianaCasata.Drengot);
+		casate.add(DragonianaCasata.Hol);
+		casate.add(DragonianaCasata.Petrix);
+		casate.add(DragonianaCasata.Renix);
+		casate.add(DragonianaCasata.Roy);
+		casate.add(DragonianaCasata.Trevor);
+		casate.add(DragonianaCasata.Zamputor);
+	}
+
+	public static ArrayList<CasataType> getCasate(){
+		return casate;
+	}
+	
+	public static String getNameEtnia() {
+		return nome;
+	}
 
 	public Dragoniana() {
-		this.name = "Dragoniana";
+		this.name = nome;
 		this.desc = "Etnia Dragoniana";
-		this.casate = new ArrayList<CasataType>();
-		this.casate.add(DragonianaCasata.Dandu);
-		this.casate.add(DragonianaCasata.Dragoy);
-		this.casate.add(DragonianaCasata.Drengot);
-		this.casate.add(DragonianaCasata.Hol);
-		this.casate.add(DragonianaCasata.Petrix);
-		this.casate.add(DragonianaCasata.Renix);
-		this.casate.add(DragonianaCasata.Roy);
-		this.casate.add(DragonianaCasata.Trevor);
-		this.casate.add(DragonianaCasata.Zamputor);
 		
 	}
 }

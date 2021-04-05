@@ -3,6 +3,8 @@
  */
 package it.TownyGDR.PlayerData.EtniaList.Casate.Naviana;
 
+import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
+
 /*********************************************************************
  * @author: Elsalamander
  * @data: 10 mar 2021
@@ -13,6 +15,13 @@ package it.TownyGDR.PlayerData.EtniaList.Casate.Naviana;
  * Descrizione:
  * 
  *********************************************************************/
-public class Fen {
+public class Fen extends Casata{
+
+	/**
+	 * @param nome
+	 */
+	public Fen() {
+		super("Fen");
+	}
 
 }

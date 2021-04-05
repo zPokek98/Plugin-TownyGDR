@@ -17,4 +17,11 @@ import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
  *********************************************************************/
 public class Egeril  extends Casata{
 
+	/**
+	 * @param nome
+	 */
+	public Egeril() {
+		super("Egeril");
+	}
+
 }
