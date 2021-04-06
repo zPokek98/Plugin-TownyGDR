@@ -6,15 +6,26 @@ package it.TownyGDR.PlayerData;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftHumanEntity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import it.CustomConfig.CustomConfig;
 import it.TownyGDR.TownyGDR;
 import it.TownyGDR.PlayerData.EtniaList.Casate.Casata;
+import it.TownyGDR.PlayerData.EtniaList.Casate.CasataType;
 import it.TownyGDR.PlayerData.Statistiche.Stats.KDA;
 import it.TownyGDR.Tag.Taggable;
 import it.TownyGDR.Towny.City.City;
@@ -22,6 +33,13 @@ import it.TownyGDR.Util.Util;
 import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
 import it.TownyGDR.Util.Save.Salva;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Content;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 /*********************************************************************
@@ -44,6 +62,9 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	//Variabile di cache per il playerData per eventuali get, e ottimizzazione tempi
 	private static ArrayList<PlayerData> ListPlayerData = new ArrayList<PlayerData>(); //mi obbliga a creare la
 																					   //funzione "equals"
+	
+	private static ArrayList<PlayerData> ListFirstJoin = new ArrayList<PlayerData>(); 	//Lista di support
+																						//per il primo join
 	//Contenitore dei Tag per il player
 	private static ArrayList<String> TagList = new ArrayList<String>();
 	static{		//Immetti i tag nel contenitore dei Tag
@@ -109,19 +130,6 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		return this.uuid;
 	}
 	
-	/**
-	 * @return the etnia
-	 */
-	public Etnia getEtnia() {
-		return etnia;
-	}
-
-	/**
-	 * @return the casata
-	 */
-	public Casata getCasata() {
-		return casata;
-	}
 	
 	/**
 	 * Ritorna se è lo stesso player con il confronto degli uuid
@@ -301,6 +309,8 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 			tmp = new PlayerData(p);
 			Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + String.format("[%s]Nuovo giocatore! Nome: %s ", TownyGDR.getInstance().getDescription().getName(), p.getName()));
 			//salvo per la prima volta il player
+			
+			tmp.firstJoin();
 			try{
 				tmp.save();
 			}catch (IOException e){
@@ -309,7 +319,8 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		}
 		return tmp;
 	}
-	
+
+
 	/**
 	 * Controlla se questo player con l'uuid esiste un suo salvataggio
 	 * @param uuid
@@ -399,6 +410,198 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		return null;
 	}
 	
+	//*************************************************************************************** Etnie/Casate
+	/**
+	 * @return the etnia
+	 */
+	public Etnia getEtnia() {
+		return etnia;
+	}
+
+	/**
+	 * @return the casata
+	 */
+	public Casata getCasata() {
+		return casata;
+	}
+	
+	/**
+	 * Prima volta che joina il player, mostra il libro
+	 * con le istruzioni e poi le gui di selezione per le etnie
+	 * e casate
+	 */
+	private void firstJoin() {
+		//Aggiungi alla lista del primo join
+		ListFirstJoin.add(this);
+		
+		//apri il libro
+		this.openBook();
+	}
+	/**
+	 * Eseguire un comando esce dal libro
+	 * Aprire un link non esce dal libro
+	 */
+	private void openBook() {        
+        //Crea il libro
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+		
+        //meta del libro
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        
+        meta.setAuthor("Elsalamander");
+        meta.setTitle("Istruzioni");
+        
+        //Testo delle pagine
+        TextComponent lc = new TextComponent();
+        
+        //Prima pagina
+        lc.addExtra(  "Ogni player deve "
+        			+ "selezionare una Etnia "
+        			+ "a cui fare parte e "
+        			+ "poi una Casata, ogni "
+        			+ "Etnia ha una al di "
+        			+ "sotto una lista di "
+        			+ "casate diverse\n"
+        			+ "\n"
+        			+ "La scelta verrà "
+        			+ "\"avviata\" dopo "
+        			+ "aver cliccato sul "
+        			+ "testo indicato...");
+        //Aggiungi la pagina
+        meta.spigot().addPage(lc.getExtra().toArray(new BaseComponent[lc.getExtra().size()]));
+        
+        //Seconda pagina
+        lc = new TextComponent();
+        lc.addExtra(  "Dopo aver scelto la "
+    				+ "Etnia e Casata "
+    				+ "siete liberi di "
+    				+ "giocare alla Towny\n"
+    				+ "\n"
+    				+ "Fine.\n\n");
+        lc.addExtra(new ComponentBuilder("Selezione Etnia Casata").italic(true).bold(true).color(ChatColor.RED)
+        			.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/firstJoin " + this.uuid))
+        			.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("lore")))
+        			.create()[0]);
+        meta.spigot().addPage(lc.getExtra().toArray(new BaseComponent[lc.getExtra().size()]));
+        
+        //ClickEvent.Action.RUN_COMMAND
+        //il comando che esegue e quello "scriverebbe il giocatore"
+        
+        //imposta il meta
+        book.setItemMeta(meta);
+        
+        //apri il libro
+        this.player.openBook(book);
+	}
+	
+	public static ArrayList<PlayerData> getListFirstJoin(){
+		return ListFirstJoin;
+	}
+	
+	public static void removeListFirstJoin(PlayerData pd){
+		ListFirstJoin.remove(pd);
+	}
+	
+	/**
+	 * Gui 0
+	 */
+	public void openSelectionFirstJoin() {
+		
+		Map<String, ArrayList<CasataType>> et = Etnia.getMapEtnia();
+		
+		int slot = ((int)(et.keySet().size() / 8) + 1) * 9;
+		
+		Inventory gui = TownyGDR.getInstance().getServer().createInventory(this.player, slot, "Selezione Etnia");
+		
+		ItemStack item = null;
+		List<String> lore = null;
+		int i = 0;
+		for(String str : et.keySet()) {
+			item = new ItemStack(Material.TOTEM_OF_UNDYING);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(str);
+			
+			//lore
+			lore = new ArrayList<String>();
+			lore.add("Questa Etnia ha le seguenti casate:");
+			for(CasataType ty : et.get(str)) {
+				lore.add("- " + ty.toString());
+			}
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+			
+			gui.setItem(i, item);
+			
+			i++;
+		}
+		this.player.openInventory(gui);
+	}
+	
+	/**
+	 * Gui 1
+	 * @param etnia
+	 */
+	public void openSelectionFirstJoin(Etnia etnia) {
+		Map<String, ArrayList<CasataType>> et = Etnia.getMapEtnia();
+		
+		ArrayList<CasataType> ty = et.get(etnia.getName());
+		this.etnia = etnia;
+		
+		int slot = ((int)(ty.size() / 8) + 1) * 9;
+		
+		Inventory gui = TownyGDR.getInstance().getServer().createInventory(this.player, slot, "Selezione Casata");
+		
+		ItemStack item = null;
+		List<String> lore = null;
+		int i = 0;
+		for(CasataType t : ty) {
+			item = new ItemStack(Material.REDSTONE_TORCH);
+			ItemMeta meta = item.getItemMeta();
+			meta.setDisplayName(t.toString());
+			
+			item.setItemMeta(meta);
+			
+			gui.setItem(i, item);
+			
+			i++;
+		}
+		this.player.openInventory(gui);
+	}
+	
+	public void interactSelectionGui(InventoryClickEvent event, int nGui, Etnia etnia) {
+		Map<String, ArrayList<CasataType>> et = Etnia.getMapEtnia();
+		
+		if(nGui == 0) {
+			//prima gui			
+			int slot = event.getSlot();
+			
+			if(et.keySet().size() >= slot + 1) {
+				
+				this.etnia = Etnia.getByName(et.keySet().toArray(String[] :: new)[slot]);
+				this.player.closeInventory();
+				openSelectionFirstJoin(this.etnia);
+			}else{
+				event.setCancelled(true);
+			}
+			
+		}else if(nGui == 1) {
+			//seconda gui			
+			int slot = event.getSlot();
+			
+			ArrayList<CasataType> ty = et.get(etnia.getName());
+			
+			if(ty.size() >= slot + 1) {				
+				this.casata = Casata.getByName(ty.get(slot).toString());
+				
+				PlayerData.removeListFirstJoin(this);
+				
+				this.player.closeInventory();
+			}else{
+				event.setCancelled(true);
+			}
+		}
+	}
+	
 	
 	//******************************************************************************************* Statistiche
 	/**
@@ -446,6 +649,18 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		
 		return "(Error Invalid code: " + str + ")";
 	}
+
+
+	/**
+	 * @param pd 
+	 * 
+	 */
+	public static void cacheRemove(PlayerData pd) {
+		PlayerData.ListPlayerData.remove(pd);
+	}
+
+
+
 
 	
 

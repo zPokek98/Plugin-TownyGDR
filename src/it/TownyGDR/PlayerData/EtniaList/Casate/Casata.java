@@ -158,11 +158,11 @@ public abstract class Casata{
 	}
 	
 	public void save(ConfigurationSection config){
-		config.set("Etnia", this.name);
+		config.set("Casata", this.name);
 	}
 
 	public static Casata load(ConfigurationSection config){
-		String str = config.getString("Etnia", null);
+		String str = config.getString("Casata", null);
 		if(str != null) {
 			return Casata.getByName(str);
 		}

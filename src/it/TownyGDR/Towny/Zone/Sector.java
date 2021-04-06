@@ -223,8 +223,8 @@ public class Sector implements Comparable<Sector>{
 	 * @return
 	 */
 	protected static Sector createSector(int x_, int z_) {
-		int x = x_ > 0 ? x_ : x_ - SizeSector;
-		int z = z_ > 0 ? z_ : z_ - SizeSector;
+		int x = x_ >= 0 ? x_ : x_ - SizeSector;
+		int z = z_ >= 0 ? z_ : z_ - SizeSector;
 		
 		//divisione intera sulla x
 		int coord_x = x / SizeSector;

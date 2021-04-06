@@ -17,8 +17,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import it.Library;
 import it.MySQL.MySQL;
 import it.TownyGDR.Command.City.CityCommandManager;
+import it.TownyGDR.Command.PlayerData.PlayerDataFirstJoin;
 import it.TownyGDR.Command.Zona.ZonaCommand;
+import it.TownyGDR.Event.EventBlockManager;
+import it.TownyGDR.Event.EventEnchantmentManager;
+import it.TownyGDR.Event.EventEntityManager;
+import it.TownyGDR.Event.EventInventoryManager;
 import it.TownyGDR.Event.EventPlayerManager;
+import it.TownyGDR.Event.EventServerManager;
+import it.TownyGDR.Event.EventVehicleManager;
+import it.TownyGDR.Event.EventWeatherManager;
+import it.TownyGDR.Event.EventWorldManager;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.Luogo;
 import it.TownyGDR.Towny.City.City;
@@ -284,8 +293,15 @@ public class TownyGDR extends JavaPlugin{
 	 */
 	private void registerEvent() {
 		PluginManager pl = this.getServer().getPluginManager();
+		pl.registerEvents(new EventBlockManager(), this);
+		pl.registerEvents(new EventEnchantmentManager(), this);
+		pl.registerEvents(new EventEntityManager(), this);
+		pl.registerEvents(new EventInventoryManager(), this);
 		pl.registerEvents(new EventPlayerManager(), this);
-		
+		pl.registerEvents(new EventServerManager(), this);
+		pl.registerEvents(new EventVehicleManager(), this);
+		pl.registerEvents(new EventWeatherManager(), this);
+		pl.registerEvents(new EventWorldManager(), this);
 	}
 	
 	/**
@@ -295,6 +311,8 @@ public class TownyGDR extends JavaPlugin{
 		this.getCommand("Zona").setExecutor(new ZonaCommand());
 		//this.getCommand("City").setExecutor(new CityCommand());
 		this.getCommand("City").setExecutor(new CityCommandManager());
+		this.getCommand("firstJoin").setExecutor(new PlayerDataFirstJoin());
+		
 	}
 
 	/**

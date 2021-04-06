@@ -65,7 +65,9 @@ public class EventPlayerManager implements Listener{
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		try{
-			(PlayerData.getPlayerData(event.getPlayer())).save();
+			PlayerData pd = PlayerData.getPlayerData(event.getPlayer());
+			pd.save();
+			PlayerData.cacheRemove(pd);
 		}catch(IOException e){
 			Bukkit.getConsoleSender().sendMessage("Impossibile salvare i dati di: " + event.getPlayer().getName());
 		}

@@ -11,3 +11,6 @@ commands:
      
    City:
       usage: /<command>
+      
+   firstJoin:
+      usage: /<command>

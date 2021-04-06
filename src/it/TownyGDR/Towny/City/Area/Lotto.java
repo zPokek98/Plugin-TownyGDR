@@ -251,6 +251,7 @@ public class Lotto{
 			
 			//rimuovi l'area dalla vendita
 			pd.getCity().getArea().removeLottoVendita(lv);
+			return true;
 		}
 		return false;
 	}
