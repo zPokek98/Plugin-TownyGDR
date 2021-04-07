@@ -5,7 +5,12 @@ package it.TownyGDR.Towny;
 
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
+
+import it.TownyGDR.TownyGDR;
 import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.Task.TaskLocation;
 import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
 
 /*********************************************************************
@@ -21,6 +26,9 @@ import it.TownyGDR.Util.Exception.City.ExceptionCityImpossibleLoad;
  * 
  *********************************************************************/
 public abstract class Luogo {
+	
+	private static BukkitTask taskLocation;
+	private static TaskLocation taskLocationObj;
 
 	/**
 	 * Ritorna che tipo di luogo è
@@ -67,6 +75,15 @@ public abstract class Luogo {
 			}
 		}
 		
+	}
+
+	/**
+	 * @param townyGDR
+	 */
+	public static void startTask(TownyGDR townyGDR) {
+		taskLocationObj = new TaskLocation();
+		
+		taskLocation = Bukkit.getScheduler().runTaskTimerAsynchronously(townyGDR, taskLocationObj, 0, 10);
 	}
 	
 }

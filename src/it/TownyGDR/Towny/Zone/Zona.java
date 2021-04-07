@@ -152,6 +152,19 @@ public class Zona implements Salva<CustomConfig>{
 		//Caso particolare per il caso che il settore è stato generato per questa area
 		if(sec.getZone().size() == 0) {
 			sec.addZona(this);
+		}else{
+			//contiene già questa zona?
+			ArrayList<Zona> tmp = sec.getZone();
+			boolean check = false;
+			for(Zona z : tmp) {
+				if(z.getID() == this.id) {
+					check = true;
+					break;
+				}
+			}
+			if(!check) {
+				sec.addZona(this);
+			}
 		}
 		
 		//la zona ha questo settore?

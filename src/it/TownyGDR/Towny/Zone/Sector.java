@@ -59,7 +59,7 @@ public class Sector implements Comparable<Sector>{
 	
 	//Size Settore, deve essere un numero DISPARI dato che useremo un chunk come centro
 	//e andando per discreti bisogna avere un numero dispari
-	private static final int SizeSector = 21; 
+	private static final int SizeSector = 20; 
 	
 	//Variabili oggetto
 	private int coord_x;
@@ -163,16 +163,28 @@ public class Sector implements Comparable<Sector>{
 		int tmp_x   = x;
 		int tmp_z   = z;
 		
-		int l   = (SizeSector - 1)/2;
+		
+		int x_ = x >= 0 ? x : x - SizeSector;
+		int z_ = z >= 0 ? z : z - SizeSector;
+		
+		//divisione intera sulla x
+		int coord_x = x_ / SizeSector;
+		int coord_z = z_ / SizeSector;
+		
+		return this.coord_x == coord_x && this.coord_z == coord_z;
+		
+		/*
+		int l = SizeSector/2;
 		//Controllo asse X
-		if(  this.coord_x - l < tmp_x && this.coord_x + l > tmp_x  ) {
+		if(  (this.coord_x + 0.5)* SizeSector - l <= tmp_x && (this.coord_x + 0.5) * SizeSector + l >= tmp_x  ) {
 			//Controllo asse Z
-			if(  this.coord_z - l < tmp_z && this.coord_z + l > tmp_z  ) {
+			if(  (this.coord_z + 0.5) * SizeSector - l <= tmp_z && (this.coord_z + 0.5) * SizeSector + l >= tmp_z  ) {
 				//rientra!
 				return true;
 			}
 		}
 		return false;
+		*/
 	}
 	
 	/**

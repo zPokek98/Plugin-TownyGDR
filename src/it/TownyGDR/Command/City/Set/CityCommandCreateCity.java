@@ -5,6 +5,7 @@ package it.TownyGDR.Command.City.Set;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,7 +54,9 @@ public class CityCommandCreateCity extends CommandManager{
 				PlayerData pd = PlayerData.getPlayerData(p);
 				
 				//crea una città con il nome dato
-				City city = City.createCity(pd, args[1], Zona.getZonaByLocation(p.getLocation()));
+				Zona zon = Zona.getZonaByLocation(p.getLocation());
+				
+				City city = City.createCity(pd, args[1], zon);
 				
 				//feedback
 				if(city != null) {

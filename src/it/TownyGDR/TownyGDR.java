@@ -20,6 +20,7 @@ import it.TownyGDR.Command.City.CityCommandManager;
 import it.TownyGDR.Command.PlayerData.PlayerDataFirstJoin;
 import it.TownyGDR.Command.Zona.ZonaCommand;
 import it.TownyGDR.Event.EventBlockManager;
+import it.TownyGDR.Event.EventCustomManager;
 import it.TownyGDR.Event.EventEnchantmentManager;
 import it.TownyGDR.Event.EventEntityManager;
 import it.TownyGDR.Event.EventInventoryManager;
@@ -186,38 +187,41 @@ public class TownyGDR extends JavaPlugin{
         if(!setupChat()) /*getServer().getPluginManager().disablePlugin(this)*/;
 		
 		//prendi l'oggetto mySQL
-        send.sendMessage(ChatColor.GRAY + String.format("[%s]Load MySQL...", getDescription().getName()));
+        send.sendMessage(ChatColor.GRAY + String.format("[%s] Load MySQL...", getDescription().getName()));
 		this.database = this.library.getMySQL();
 		
 		//registra gli eventi
-		send.sendMessage(ChatColor.GRAY + String.format("[%s]Load Eventi...", getDescription().getName()));
+		send.sendMessage(ChatColor.GRAY + String.format("[%s] Load Eventi...", getDescription().getName()));
 		this.registerEvent();
 		
 		//registra comandi
-		send.sendMessage(ChatColor.GRAY + String.format("[%s]Load Command...", getDescription().getName()));
+		send.sendMessage(ChatColor.GRAY + String.format("[%s] Load Command...", getDescription().getName()));
 		this.registerCommand();
 		
 		//Carica le zone
-		send.sendMessage(ChatColor.GRAY + String.format("[%s]Load Zone...", getDescription().getName()));
+		send.sendMessage(ChatColor.GRAY + String.format("[%s] Load Zone...", getDescription().getName()));
 		try{
 			Zona.initZona();
 		}catch (IOException e){
 			e.printStackTrace();
 		} catch (ExceptionZonaImpossibleToLoad e) {
 			//Impossibile caricare la zona
-			send.sendMessage(ChatColor.RED + String.format("[%s]Impossibile caricare la zona!!!", getDescription().getName()));
-			send.sendMessage(ChatColor.RED + String.format("[%s]Chiusura server...", getDescription().getName()));
+			send.sendMessage(ChatColor.RED + String.format("[%s] Impossibile caricare la zona!!!", getDescription().getName()));
+			send.sendMessage(ChatColor.RED + String.format("[%s] Chiusura server...", getDescription().getName()));
 			getServer().getPluginManager().disablePlugin(this);
 		}
 		
 		//Carica le città anche se probabilmente sono già state caricate tremite le zone
-		send.sendMessage(ChatColor.GRAY +  String.format("[%s]Load City...", getDescription().getName()));
+		send.sendMessage(ChatColor.GRAY +  String.format("[%s] Load City...", getDescription().getName()));
 		try{
 			City.initCity();
 		}catch (ExceptionCityImpossibleLoad e){
 			//Impossibile caricare una città...
 			getServer().getPluginManager().disablePlugin(this);
 		}
+		
+		//Avvia i task
+		Luogo.startTask(this);
 		
 	}
 
@@ -302,6 +306,9 @@ public class TownyGDR extends JavaPlugin{
 		pl.registerEvents(new EventVehicleManager(), this);
 		pl.registerEvents(new EventWeatherManager(), this);
 		pl.registerEvents(new EventWorldManager(), this);
+		
+		pl.registerEvents(new EventCustomManager(), this);
+		
 	}
 	
 	/**

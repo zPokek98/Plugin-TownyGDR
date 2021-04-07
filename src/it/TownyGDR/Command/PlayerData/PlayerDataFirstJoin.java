@@ -4,6 +4,7 @@
 package it.TownyGDR.Command.PlayerData;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -32,7 +33,7 @@ public class PlayerDataFirstJoin implements CommandExecutor{
 		if(sender instanceof Player) {
 			Player p = (Player) sender;
 			//Controlla che questo player è nella lista dei primi join
-			ArrayList<PlayerData> list = PlayerData.getListFirstJoin();
+			CopyOnWriteArrayList<PlayerData> list = PlayerData.getListFirstJoin();
 			
 			PlayerData pd = PlayerData.getPlayerData(p);
 			

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -60,10 +61,10 @@ import net.milkbowl.vault.economy.EconomyResponse;
 public class PlayerData implements Salva<CustomConfig>, Taggable{
 
 	//Variabile di cache per il playerData per eventuali get, e ottimizzazione tempi
-	private static ArrayList<PlayerData> ListPlayerData = new ArrayList<PlayerData>(); //mi obbliga a creare la
+	private static CopyOnWriteArrayList<PlayerData> ListPlayerData = new CopyOnWriteArrayList<PlayerData>(); //mi obbliga a creare la
 																					   //funzione "equals"
 	
-	private static ArrayList<PlayerData> ListFirstJoin = new ArrayList<PlayerData>(); 	//Lista di support
+	private static CopyOnWriteArrayList<PlayerData> ListFirstJoin = new CopyOnWriteArrayList<PlayerData>(); 	//Lista di support
 																						//per il primo join
 	//Contenitore dei Tag per il player
 	private static ArrayList<String> TagList = new ArrayList<String>();
@@ -494,7 +495,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
         this.player.openBook(book);
 	}
 	
-	public static ArrayList<PlayerData> getListFirstJoin(){
+	public static CopyOnWriteArrayList<PlayerData> getListFirstJoin(){
 		return ListFirstJoin;
 	}
 	
@@ -577,7 +578,8 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 			
 			if(et.keySet().size() >= slot + 1) {
 				
-				this.etnia = Etnia.getByName(et.keySet().toArray(String[] :: new)[slot]);
+				//int size = et.keySet().size();
+				this.etnia = Etnia.getByName(et.keySet().stream().toArray(String[] :: new)[0]);
 				this.player.closeInventory();
 				openSelectionFirstJoin(this.etnia);
 			}else{
@@ -657,6 +659,14 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 */
 	public static void cacheRemove(PlayerData pd) {
 		PlayerData.ListPlayerData.remove(pd);
+	}
+
+
+	/**
+	 * @return
+	 */
+	public static CopyOnWriteArrayList<PlayerData> getListPlayerData() {
+		return PlayerData.ListPlayerData;
 	}
 
 
