@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -225,7 +226,8 @@ public class TaskLocation implements Runnable{
 	
 	@Override
 	public void run() {
-		while(!stop) {
+		//while(!stop)
+		{
 			Iterator<PlayerData> iter = map.keySet().iterator();
 			
 			//Sincronizza per l'iteratore
