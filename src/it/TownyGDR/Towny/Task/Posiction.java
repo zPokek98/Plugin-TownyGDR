@@ -29,11 +29,13 @@ public class Posiction {
 	private Sector sec;
 	private ElementoArea ele;
 	private Luogo luogo;
+	private Location location;
 	
-	public Posiction(Sector sec, ElementoArea ele, Luogo luogo) {
+	public Posiction(Sector sec, ElementoArea ele, Luogo luogo, Location location) {
 		this.sec = sec;
 		this.ele = ele;
 		this.luogo = luogo;
+		this.location = location;
 	}
 	
 	/**
@@ -51,12 +53,19 @@ public class Posiction {
 			Sector sec = Sector.getSectorByLocation(loc);
 			ElementoArea ele = new ElementoArea(loc.getChunk());
 			
-			return new Posiction(sec, ele, zon == null ? null : zon.getLuogo());
+			return new Posiction(sec, ele, zon == null ? null : zon.getLuogo(), loc);
 		}else{
 			return pos;
 		}
 	}
 	
+	/**
+	 * @return the location
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
 	/**
 	 * @return the sec
 	 */

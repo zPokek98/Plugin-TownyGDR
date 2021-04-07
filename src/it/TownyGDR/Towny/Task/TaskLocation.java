@@ -3,13 +3,12 @@
  */
 package it.TownyGDR.Towny.Task;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import it.TownyGDR.TownyGDR;
@@ -115,6 +114,29 @@ import it.TownyGDR.Towny.Zone.Zona;
  * - La chiave, ovvero PlayerData deve implementare Comperable
  * 	 e realizzare in modo efficente un hashCode.
  *   (Idea di base usare l'hashCode dell'UUID)
+ *   
+ * 
+ * ----------------------------------------------------- /\ Scelta della mappatura playerData e posizione /\
+ * 
+ * Ora dobbiamo però abbiamo un problema:
+ * La lista dei player o meglio la lista del playerData deve essere gestita in modo da essere
+ * anchessa thread-safe, quindi la cambio da ArrayList<PlayerData> a CopyOnWriteArrayList<PlayerData>
+ * 
+ * Questo oggetto mi garantisce letture/scrittura da thread diversi(asincroni)
+ * 
+ * Per l'iteratore è analogo alla ConcurrentHashMap.
+ * DEVO METTERLO DENTRO UN BLOCCO syncronized
+ * 
+ * 
+ * ----------------------------------------------------- /\ Scelta della lista cache playerData /\
+ * 
+ * Ora manca un ultimo problema: la chiamata ad eventi è una funzione sincrona al Task principale
+ * Per avviarlo si farà riferimento alla Scheduler principale con:
+ * 
+ * TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
+ *													() -> TownyGDR.getInstance().getServer().getPluginManager()
+ *													.callEvent( "Evento da lanciare" ));
+ * 
  * 
  * 
  * La scelta di fare un Task Asincrono non ha solo vantaggi, infatti
@@ -166,14 +188,19 @@ public class TaskLocation implements Runnable{
 			while(iter.hasNext())
 			{
 				PlayerData pd = iter.next();
-				Chunk ck = pd.getPlayer().getLocation().getChunk();
+				Player p = pd.getPlayer();
+				if(p == null ) {
+					continue;
+				}
+				Location loc = p.getLocation();
+				Chunk ck = loc.getChunk();
 				Sector s = Sector.getSectorByLocation(ck);
 				ElementoArea e = new ElementoArea(ck);
 				Zona zona = Zona.getZonaByLocation(ck.getX(), ck.getZ());
 				if(zona != null) {
-					map.putIfAbsent(pd, new Posiction(s, e, zona.getLuogo()));
+					map.putIfAbsent(pd, new Posiction(s, e, zona.getLuogo(), loc));
 				}else{
-					map.putIfAbsent(pd, new Posiction(s, e, null));
+					map.putIfAbsent(pd, new Posiction(s, e, null, loc));
 				}
 			 }
 		 }
@@ -213,6 +240,10 @@ public class TaskLocation implements Runnable{
 					
 					//Ottieni puntatore player
 					Player p = pd.getPlayer();
+
+					if(p == null ) {
+						continue;
+					}
 					
 					//controlla che è online
 					if(!p.isOnline()) {
@@ -227,14 +258,17 @@ public class TaskLocation implements Runnable{
 					}
 					
 					//Ottieni i dati della posizione del player
-					Chunk ck = p.getLocation().getChunk();
+					
+					Location loc = p.getLocation();
+					Chunk ck = loc.getChunk();
 					Sector s = Sector.getSectorByLocation(ck);
 					ElementoArea e = new ElementoArea(ck);
 					Zona zona = Zona.getZonaByLocation(ck.getX(), ck.getZ());
 					Luogo luogo = zona == null ? null : zona.getLuogo();
 					
-					Posiction pos = new Posiction(s, e, luogo);
-					//La zona è cambiata?(o meglio è uscito o entrato in un'altra fazione?)
+					Posiction pos = new Posiction(s, e, luogo, loc);
+					
+					//La zona è cambiata?(o meglio è uscito o entrato in un'altra citta?)
 					if((map.get(pd).getLuogo() == null && luogo != null) ||
 					   (map.get(pd).getLuogo() != null && luogo != null && !map.get(pd).getLuogo().equals(luogo))) {
 						//è entrato in una citta
@@ -257,6 +291,12 @@ public class TaskLocation implements Runnable{
 						}
 					}
 					
+					//Si è mosso di un millimetro?
+					Location tmpLocation = map.get(pd).getLocation();
+					if(!loc.equals(tmpLocation) || loc.getPitch() != tmpLocation.getPitch() || loc.getYaw() != tmpLocation.getYaw()) {
+						this.movePlayer(pd, map.get(pd));
+					}
+					
 					//Aggiorna la Entry assegnata al player
 					map.put(pd, pos);
 				}
@@ -269,4 +309,37 @@ public class TaskLocation implements Runnable{
 	public void stop() {
 		this.stop = true;
 	}
+	
+	
+	private void movePlayer(PlayerData pd, Posiction posiction) {
+		//Si è mosso il player fai qualcosa?
+		
+		
+		//Controllo se il player è apposto
+		this.firstJoinCheck(pd, posiction);
+	}
+	
+	private void firstJoinCheck(PlayerData pd, Posiction posiction) {
+		// eseguo un controllo per i player che nella selezione etnia e casata non hanno completato...
+		// Controlla se è nella lista
+		CopyOnWriteArrayList<PlayerData> listJoin = PlayerData.getListFirstJoin();
+		
+		synchronized(listJoin) {
+			if(listJoin.contains(pd)) {
+				//è uno che si è mosso è deve completare il firstJoin
+				//apri la gui di selezione
+				//quale selezione?
+				if(pd.getEtnia() == null) {
+					TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
+													() -> pd.openSelectionFirstJoin());
+				}else{
+					TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
+													() -> pd.openSelectionFirstJoin(pd.getEtnia()));
+				}
+			}
+		}
+	}
+	
+	
+	
 }

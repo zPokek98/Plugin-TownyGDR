@@ -85,5 +85,13 @@ public abstract class Luogo {
 		
 		taskLocation = Bukkit.getScheduler().runTaskTimerAsynchronously(townyGDR, taskLocationObj, 0, 10);
 	}
+
+	/**
+	 * 
+	 */
+	public static void stopTask() {
+		taskLocationObj.stop();
+		taskLocation.cancel();
+	}
 	
 }

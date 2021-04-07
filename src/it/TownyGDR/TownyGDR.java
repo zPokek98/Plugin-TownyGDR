@@ -248,6 +248,9 @@ public class TownyGDR extends JavaPlugin{
 		//Salva le zone
 		Zona.saveAll();
 		
+		//Ferma i task dei luoghi
+		Luogo.stopTask();
+		
 		//Salva tutti i luoghi
 		Luogo.saveAll();
 		

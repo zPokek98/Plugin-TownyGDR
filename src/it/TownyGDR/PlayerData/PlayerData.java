@@ -55,6 +55,10 @@ import net.milkbowl.vault.economy.EconomyResponse;
  * Verrano racchiuse tutte le informazioni riguardanti il player
  * e le sue statistiche di rilevanza e altri dati.
  * 
+ * La struttura della cache per il playerData è fatta da un "CopyOnWriteArrayList"
+ * è uguale ad un ArrayList solo con l'aggiunta che esso è strutturato
+ * in modo da essere thread-safe nei precessi, dato che mi serve il suo
+ * iteratore in task async usati.
  * 
  *********************************************************************/
 @SuppressWarnings("unused")
@@ -271,7 +275,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	 * @return
 	 */
 	public static PlayerData loadPlayerData(UUID uuid) {
-		PlayerData pd = new PlayerData(null);
+		PlayerData pd = new PlayerData(Bukkit.getPlayer(uuid));
 		pd.uuid = uuid;
 		pd.load(new CustomConfig("PlayerData/" + pd.uuid , true, TownyGDR.getInstance()));
 		return pd;
@@ -309,13 +313,20 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 		if(tmp == null) {
 			tmp = new PlayerData(p);
 			Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + String.format("[%s]Nuovo giocatore! Nome: %s ", TownyGDR.getInstance().getDescription().getName(), p.getName()));
-			//salvo per la prima volta il player
 			
+			//salvo per la prima volta il player
 			tmp.firstJoin();
 			try{
 				tmp.save();
 			}catch (IOException e){
 				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + String.format("[%s] Impossibile salvare i dati di : %s", TownyGDR.getInstance().getDescription().getName(), p.getName()));
+			}
+		}else{
+			//Controlla se è definita la etnia e casata
+			if(!ListFirstJoin.contains(tmp)) {
+				if(tmp.getEtnia() == null || tmp.getCasata() == null) {
+					ListFirstJoin.add(tmp);
+				}
 			}
 		}
 		return tmp;
@@ -501,6 +512,11 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	
 	public static void removeListFirstJoin(PlayerData pd){
 		ListFirstJoin.remove(pd);
+		for(int i = 0; i < ListFirstJoin.size() - 1; i++) {
+			if( ListFirstJoin.get(i).equals(pd)) {
+				ListFirstJoin.remove(i);
+			}
+		}
 	}
 	
 	/**
