@@ -5,6 +5,8 @@ package it.TownyGDR.Command.City.Set;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,12 +67,12 @@ public class CityCommandGetInfo  extends CommandManager {
 					City city = pd.getCity();
 					if(city.hasSindaco(pd.getUUID())) {
 						
-						p.sendMessage("------ Info Citta' ------");
-						p.sendMessage("ID: " + city.getId());
-						p.sendMessage("Nome: " + city.getName());
-						p.sendMessage("Descrizione: " + city.getDescrizione());
-						p.sendMessage("Zona ID: " + city.getArea().getZona().getID());
-						p.sendMessage("Area Size: " + city.getArea().getSize());
+						p.sendMessage(ChatColor.GOLD + "------ Info Citta' ------");
+						p.sendMessage(ChatColor.GOLD + "ID: " + city.getId());
+						p.sendMessage(ChatColor.GOLD + "Nome: " + city.getName());
+						p.sendMessage(ChatColor.GOLD + "Descrizione: " + city.getDescrizione());
+						p.sendMessage(ChatColor.GOLD + "Zona ID: " + city.getArea().getZona().getID());
+						p.sendMessage(ChatColor.GOLD + "Area Size: " + city.getArea().getSize());
 						
 						//lista aree
 						String area = "";
@@ -78,7 +80,7 @@ public class CityCommandGetInfo  extends CommandManager {
 							area +=  ele.getX() + " : " + ele.getZ() + ";";
 						}
 						area = area.length() > 0 ? area.substring(0, area.length() - 1) : area;
-						p.sendMessage("Area: " + area);
+						p.sendMessage(ChatColor.GOLD + "Area: " + area);
 						
 						//lista sindaci
 						String sind = "";
@@ -86,20 +88,27 @@ public class CityCommandGetInfo  extends CommandManager {
 							sind += PlayerData.getFromUUID(m.getUUID()).getPlayer().getName() + ";";
 						}
 						sind = sind.length() > 0 ? sind.substring(0, sind.length() - 1) : sind;
-						p.sendMessage("Membri: " + sind);
+						p.sendMessage(ChatColor.GOLD + "Membri: " + sind);
 						
 						//lista membri
 						String membri = "";
 						for(Membro m : city.getMembri()) {
-							membri += PlayerData.getFromUUID(m.getUUID()).getPlayer().getName() + ";";
+							PlayerData pdtmp = PlayerData.getFromUUID(m.getUUID());
+							String name = null;
+							if(pdtmp == null) {
+								name = pdtmp.getPlayer().getName();
+							}else{
+								name = Bukkit.getOfflinePlayer(m.getUUID()).getName();
+							}
+							membri += name + ";";
 						}
 						membri = membri.length() > 0 ? membri.substring(0, membri.length() - 1) : membri;
-						p.sendMessage("Membri: " + membri);
+						p.sendMessage(ChatColor.GOLD + "Membri: " + membri);
 						
-						p.sendMessage("------ Info Citta' End ------");
+						p.sendMessage(ChatColor.GOLD + "------ Info Citta' End ------");
 					}
 				}else{
-					p.sendMessage("Non sei dentro una citta'/Sindaco");
+					p.sendMessage(ChatColor.DARK_RED + "Non sei dentro una citta'/Sindaco");
 				}
 				return true;
 			}else{

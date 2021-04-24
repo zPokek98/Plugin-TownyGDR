@@ -102,6 +102,10 @@ public class ElementoArea {
 		this.chunk   = chunk;
 	}
 	
+	
+	
+	
+	
 	//
 	///**
 	// * Costruttore PRIVATO, serve per la prima instanzazione per
@@ -113,6 +117,31 @@ public class ElementoArea {
 	//	this.chunk   = null;
 	//}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + coord_x;
+		result = prime * result + coord_z;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ElementoArea other = (ElementoArea) obj;
+		if (coord_x != other.coord_x)
+			return false;
+		if (coord_z != other.coord_z)
+			return false;
+		return true;
+	}
+
 	/**
 	 * Salva l'elemento d'area.
 	 * La classe non ha l'implementazione Salva<T> dato che non si puo

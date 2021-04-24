@@ -277,7 +277,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 	public static PlayerData loadPlayerData(UUID uuid) {
 		PlayerData pd = new PlayerData(Bukkit.getPlayer(uuid));
 		pd.uuid = uuid;
-		pd.load(new CustomConfig("PlayerData/" + pd.uuid , true, TownyGDR.getInstance()));
+		pd.load(new CustomConfig("PlayerData" + File.separatorChar + pd.uuid , true, TownyGDR.getInstance()));
 		return pd;
 	}
 	
@@ -322,6 +322,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
 				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + String.format("[%s] Impossibile salvare i dati di : %s", TownyGDR.getInstance().getDescription().getName(), p.getName()));
 			}
 		}else{
+			tmp.player = p;
 			//Controlla se è definita la etnia e casata
 			if(!ListFirstJoin.contains(tmp)) {
 				if(tmp.getEtnia() == null || tmp.getCasata() == null) {
@@ -492,7 +493,7 @@ public class PlayerData implements Salva<CustomConfig>, Taggable{
     				+ "Fine.\n\n");
         lc.addExtra(new ComponentBuilder("Selezione Etnia Casata").italic(true).bold(true).color(ChatColor.RED)
         			.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/firstJoin " + this.uuid))
-        			.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("lore")))
+        			.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Clicca per selezionare etnia e casata")))
         			.create()[0]);
         meta.spigot().addPage(lc.getExtra().toArray(new BaseComponent[lc.getExtra().size()]));
         

@@ -166,7 +166,7 @@ public class TownyGDR extends JavaPlugin{
 		//this.config = this.getConfig();
 		
 		//Cattura il mondo
-		TownyWorld = Bukkit.getWorld("Towny");
+		TownyWorld = Bukkit.getWorld("World");
 		
 		//Carica la libreria
 		try {

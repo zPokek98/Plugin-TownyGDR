@@ -14,6 +14,5 @@ package it.TownyGDR.Towny;
  * 
  *********************************************************************/
 public enum LuoghiType {
-	City
-
+	City;
 }

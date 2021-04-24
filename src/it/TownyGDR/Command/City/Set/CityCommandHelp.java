@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,20 +34,30 @@ public class CityCommandHelp extends CommandManager{
 
 	private static ArrayList<String> perm = new ArrayList<String>();
 	private static Map<Integer, ArrayList<String>> helpMap = new TreeMap<Integer, ArrayList<String>>();
-	private static String helpHeader = "---------------------------------------";
-	private static String helpTail = "---------------------------------------";
+	private static String helpHeader = ChatColor.GOLD + "---------------------------------------";
+	private static String helpTail = ChatColor.GOLD + "---------------------------------------";
 	static {
 		perm.add("City.help");
 		
 		ArrayList<String> tmp = new ArrayList<String>();
 		
-		tmp.add("/City create <nomeCitta>: Crea la città");
-		tmp.add("/City invite <nomePlayer>: Invita il player nella città");
-		tmp.add("/City kick <nomePlayer>: Kicka il player dalla città");
-		tmp.add("/City set description <descrizione>");
-		tmp.add("/City claim: Claimare la posizione attuale");
-		tmp.add("/City help: Per la lista dei comandi");
+		tmp.add(ChatColor.AQUA + "/City create <nomeCitta> " + ChatColor.YELLOW + ": Crea la città");
+		tmp.add(ChatColor.AQUA + "/City invite <nomePlayer>" + ChatColor.YELLOW + ": Invita il player nella città");
+		tmp.add(ChatColor.AQUA + "/City inviteAccept" + ChatColor.YELLOW + ": Accetta l'invito alla città");
+		tmp.add(ChatColor.AQUA + "/City invite <nomePlayer>" + ChatColor.YELLOW + ": Rifiuta l'invito alla città");
+		tmp.add(ChatColor.AQUA + "/City kick <nomePlayer>" + ChatColor.YELLOW + ": Kicka il player dalla città");
+		tmp.add(ChatColor.AQUA + "/City set description <descrizione>");
+		tmp.add(ChatColor.AQUA + "/City claim " + ChatColor.YELLOW + ": Claimare la posizione attuale");
+		tmp.add(ChatColor.AQUA + "/City help " + ChatColor.YELLOW + ": Per la lista dei comandi");
 		helpMap.put(0, tmp);
+		
+		tmp = new ArrayList<String>();
+		tmp.add(ChatColor.AQUA + "/City lotto vendi <prezzo> " + ChatColor.YELLOW + ": Per vendere un lotto");
+		tmp.add(ChatColor.AQUA + "/City lotto compra " + ChatColor.YELLOW + ": Per comprare il lotto in cui si è");
+		tmp.add(ChatColor.AQUA + "/City lotto getinfo " + ChatColor.YELLOW + ": Informazioni sul lotto in cui si è");
+		tmp.add(ChatColor.AQUA + "/City getinfo " + ChatColor.YELLOW + ": Informazioni sulla città in cui si è");
+		
+		helpMap.put(1, tmp);
 	}
 	
 	/**
@@ -72,7 +83,7 @@ public class CityCommandHelp extends CommandManager{
 				int page = 0;
 				//secondo argomento
 				if(args.length >= 3) {
-					page = Integer.parseInt(args[2]);
+					page = Integer.parseInt(args[1]);
 				}
 				
 				//Lista

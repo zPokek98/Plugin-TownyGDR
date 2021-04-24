@@ -71,7 +71,14 @@ public class CityCommandLottoVendi extends CommandManager {
 						Membro mem = city.getMembroByUUID(p.getUniqueId());
 						
 						//crea il lotto da vendere
-						LottoVendita lotto = city.getArea().createLottoVendita(ele, 0, mem);
+						Double prezzo = 0.0;
+						try{
+							prezzo = Double.parseDouble(args[2]);
+						}catch(NumberFormatException e) {
+							throw new CommandSyntaxError();
+						}
+						
+						LottoVendita lotto = city.getArea().createLottoVendita(ele, prezzo, mem);
 						
 						//feedBack
 						if(lotto != null) {

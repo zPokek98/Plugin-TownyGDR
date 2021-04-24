@@ -96,10 +96,8 @@ public class CityCommandManager implements CommandExecutor{
 				//Comando per i player
 				switch(args[offset]) {
 					case "create":{
-						//Crea la citta
 						return create.onCommand(sender, command, arg, args);
-						
-					}//break;
+					}
 					
 					case "invite":{
 						return invite.onCommand(sender, command, arg, args);
@@ -200,7 +198,6 @@ public class CityCommandManager implements CommandExecutor{
 	 * @throws CommandSenderError 
 	 */
 	private Pair<City, Integer> getCity(String[] args, CommandSender sender) throws CommandSyntaxError, CommandSenderError {
-		
 		City city = null;
 		
 		switch(args[0]) {

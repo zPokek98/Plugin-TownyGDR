@@ -25,7 +25,7 @@ public class EventCustomManager implements Listener{
 	@EventHandler
 	public void onEventEnterInCity(EventEnterInCity e) {
 		Title tit = new Title();
-		tit.send(e.getPlayerData().getPlayer(), e.getCity().getName(), "", 0, 1, 01);
+		tit.send(e.getPlayerData().getPlayer(), e.getCity().getName(), "", 0, 1, 0);
 	}
 	
 	@EventHandler

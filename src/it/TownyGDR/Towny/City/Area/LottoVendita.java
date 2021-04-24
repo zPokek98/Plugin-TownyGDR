@@ -11,12 +11,23 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 
+import it.TownyGDR.TownyGDR;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Membri.Membro;
 import it.TownyGDR.Towny.Zone.ElementoArea;
+import it.TownyGDR.Towny.Zone.Zona;
 import it.TownyGDR.Util.Exception.ExceptionLoad;
 import it.TownyGDR.Util.Save.Salva;
 
@@ -43,10 +54,40 @@ public class LottoVendita{
 	private double prezzo;
 	private Membro sid;
 	
+	private Sign cartello;
+	
 	public LottoVendita(ElementoArea ele, double prezzo, Membro sindaco) {
 		this.ele = ele;
 		this.prezzo = prezzo;
 		this.sid = sindaco;
+		
+		//Piazza un cartello in mezzo
+		int x = ele.getX() * 16 + 7;
+		int z = ele.getZ() * 16 + 7;
+		World world = TownyGDR.getTownyWorld();
+		Block b = world.getHighestBlockAt(x, z);
+		
+		Sign sign = null;
+		
+		if(b instanceof Sign) {
+			// c'è gia un cartello, sovvrascrivi
+			//BlockState signState = b.getState();
+			//sign = (Sign) signState;
+		}else{
+			b = (new Location(world, x, world.getHighestBlockYAt(x, z) + 1, z)).getBlock();
+			b.setType(Material.BIRCH_SIGN);
+		}
+		BlockState signState = b.getState();
+		sign = (Sign) signState;
+		Player p = PlayerData.getFromUUID(sindaco.getUUID()).getPlayer();
+		
+		sign.setLine(0, ChatColor.DARK_RED + 	"Lotto in vendita");
+		sign.setLine(1,							"Da " + p.getName());
+		sign.setLine(2, 						"Per: " + prezzo);
+		
+		sign.update();
+		
+		this.cartello = sign;
 	}
 	
 
@@ -55,6 +96,14 @@ public class LottoVendita{
 	 */
 	public Membro getSid() {
 		return sid;
+	}
+
+
+	/**
+	 * @return the cartello
+	 */
+	public Sign getCartello() {
+		return cartello;
 	}
 
 
@@ -125,6 +174,27 @@ public class LottoVendita{
 			scan.close();
 		}
 		return lv;
+	}
+
+
+	/**
+	 * @param event
+	 * @param sign
+	 */
+	public static void clickSign(PlayerInteractEvent event, Sign sign) {
+		Location loc = sign.getLocation();
+		Zona zon = Zona.getZonaByLocation(loc);
+		City city = (City)zon.getLuogo();
+		LottoVendita lv = city.getArea().LottoVenditagetByElementoArea(new ElementoArea(loc.getChunk()));
+		
+		Player p = event.getPlayer();
+		Membro mem = city.getMembroByUUID(p.getUniqueId());
+		if(mem.getLotto().compraLotto(lv, mem)) {
+			p.sendMessage("Lotto comprato!");
+		}else{
+			p.sendMessage("Lotto NON comprato!");
+		}
+		
 	}
 
 

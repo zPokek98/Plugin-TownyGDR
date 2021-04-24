@@ -156,6 +156,29 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		ListCity.add(this);
 	}
 	
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		City other = (City) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
 	/**
 	 * Creare una città da zero
 	 * Tutte le impostazioni della città saranno quelle di default
@@ -391,7 +414,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 		if(!ListCity.contains(city)) {
 			ListCity.add(city);
 		}
-		return null;
+		return city;
 	}
 	
 	/**
@@ -407,7 +430,7 @@ public class City extends Luogo implements Salva<CustomConfig>, Taggable{
 			//per ogni "file"
 			str = str.substring(0,str.length() - 4); //elimina ".yml" alla fine
 			
-			CustomConfig customConfig = new CustomConfig("City/" + str, TownyGDR.getInstance());
+			CustomConfig customConfig = new CustomConfig("City" + File.separatorChar + str, TownyGDR.getInstance());
 			FileConfiguration config = customConfig.getConfig();
 			//trova il file che contiene come parametro su "ID" il valore dato alla funzione
 			if(config.getInt("ID") == id) {

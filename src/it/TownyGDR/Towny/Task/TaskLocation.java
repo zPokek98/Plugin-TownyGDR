@@ -52,7 +52,7 @@ import it.TownyGDR.Towny.Zone.Zona;
  * con funzioni non sincrone è ConcurrentHashMap
  * 
  * La nostra prima scelta dovrebbe sempre essere quella di utilizzare 
- * la ConcurrentHashMapclasse se desideriamo utilizzare una mappa in un 
+ * la ConcurrentHashMap classe se desideriamo utilizzare una mappa in un 
  * ambiente simultaneo. ConcurrentHashMap supportare l'accesso simultaneo 
  * alle sue coppie chiave-valore in base alla progettazione. Non è necessario 
  * eseguire ulteriori modifiche al codice per abilitare la sincronizzazione 
@@ -78,7 +78,7 @@ import it.TownyGDR.Towny.Zone.Zona;
  * 
  * Anche HashMap sincronizzato funziona in modo molto simile a ConcurrentHashMap,
  * con poche differenze.
- * SynchronizedHashMapconsente a un solo thread di eseguire operazioni di 
+ * SynchronizedHashMap consente a un solo thread di eseguire operazioni di 
  * lettura/scrittura alla volta perché tutti i suoi metodi sono dichiarati
  * sincronizzati. ConcurrentHashMapconsente a più thread di lavorare in modo
  * indipendente su diversi segmenti nella mappa. Ciò consente un maggiore grado
@@ -162,6 +162,7 @@ import it.TownyGDR.Towny.Zone.Zona;
 public class TaskLocation implements Runnable{
 	
 	protected static ConcurrentHashMap<PlayerData, Posiction> map;
+	@SuppressWarnings("unused")
 	private boolean stop;
 	
 	/**
@@ -226,8 +227,8 @@ public class TaskLocation implements Runnable{
 	
 	@Override
 	public void run() {
+		
 		//while(!stop)
-		{
 			Iterator<PlayerData> iter = map.keySet().iterator();
 			
 			//Sincronizza per l'iteratore
@@ -268,28 +269,48 @@ public class TaskLocation implements Runnable{
 					Zona zona = Zona.getZonaByLocation(ck.getX(), ck.getZ());
 					Luogo luogo = zona == null ? null : zona.getLuogo();
 					
+					/*
+					Bukkit.getConsoleSender().sendMessage("Posizione: "
+							+ pd.getPlayer().getName()
+							+ " Location:"
+							+ loc.toString()
+							+ " IDZONA: "
+							+ (zona == null ? null : zona.getID())
+							+ " IDLUOGO: "
+							+ (zona == null ? null : zona.getLuogo().getId()));
+					*/
+					//Stupida meccanica delle città...
+					if(luogo instanceof City) {
+						luogo = ((City)luogo).getArea().containLotto(e) ? luogo : null;
+					}
+					
 					Posiction pos = new Posiction(s, e, luogo, loc);
 					
-					//La zona è cambiata?(o meglio è uscito o entrato in un'altra citta?)
-					if((map.get(pd).getLuogo() == null && luogo != null) ||
-					   (map.get(pd).getLuogo() != null && luogo != null && !map.get(pd).getLuogo().equals(luogo))) {
+					//La zona è cambiata?(o meglio è entrato in una citta?)
+					if(map.get(pd).getLuogo() == null && luogo != null) {
 						//è entrato in una citta
 						//tit.send(pd.getPlayer(), faz.getNome(), "", 1, 3, 1);
 						if(luogo instanceof City) {
-							//Bukkit.getPluginManager().callEvent(new EventEnterInCity(pd, (City)luogo, pos));
-							TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
-													() -> TownyGDR.getInstance().getServer().getPluginManager()
-													.callEvent(new EventEnterInCity(pd, (City)luogo, pos)));
+							City city = (City) luogo;
+							if(city.getArea().containLotto(e)) {
+								//Bukkit.getPluginManager().callEvent(new EventEnterInCity(pd, (City)luogo, pos));
+								TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
+														() -> TownyGDR.getInstance().getServer().getPluginManager()
+														.callEvent(new EventEnterInCity(pd, city, pos)));
+							}
 						}
-						
+					
 					}else if(map.get(pd).getLuogo() != null && luogo == null){
 						//è uscito da una citta
 						//tit.send(pd.getPlayer(), "WildNess", "", 1, 3, 1);
 						if(map.get(pd).getLuogo() instanceof City) {
-							//Bukkit.getPluginManager().callEvent(new EventExitInCity(pd, (City)(map.get(pd).getLuogo()), pos));
-							TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
-									() -> TownyGDR.getInstance().getServer().getPluginManager()
-									.callEvent(new EventExitInCity(pd, (City)(map.get(pd).getLuogo()), pos)));
+							City city =  (City)(map.get(pd).getLuogo());
+							if(!city.getArea().containLotto(e)) {
+								//Bukkit.getPluginManager().callEvent(new EventExitInCity(pd, (City)(map.get(pd).getLuogo()), pos));
+								TownyGDR.getInstance().getServer().getScheduler().runTask(TownyGDR.getInstance(), 
+										() -> TownyGDR.getInstance().getServer().getPluginManager()
+										.callEvent(new EventExitInCity(pd, city, pos)));
+							}
 						}
 					}
 					
@@ -303,9 +324,7 @@ public class TaskLocation implements Runnable{
 					map.put(pd, pos);
 				}
 			}
-			this.upDate();
-		}
-		
+			this.upDate();		
 	}
 
 	public void stop() {

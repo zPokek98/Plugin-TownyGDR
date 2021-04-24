@@ -122,12 +122,12 @@ class Data{
 		this.sender = sender;
 		this.invitato = invitato;
 		this.city = onCity;
-		this.time = LocalDateTime.now();
+		//this.time = LocalDateTime.now();
 	}
 	protected PlayerData sender;
 	protected PlayerData invitato;
 	protected City city;
-	protected LocalDateTime time;
+	//protected LocalDateTime time;
 }
 
 class TaskInvito implements Runnable{

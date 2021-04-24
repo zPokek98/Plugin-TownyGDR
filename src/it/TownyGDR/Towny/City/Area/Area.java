@@ -9,10 +9,18 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
+import it.TownyGDR.TownyGDR;
 import it.TownyGDR.PlayerData.PlayerData;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Membri.Membro;
@@ -47,8 +55,6 @@ public class Area implements Salva<ConfigurationSection>{
 	
 	private ArrayList<Lotto> LottiCity;
 	private ArrayList<LottoVendita> daVendere;
-	
-	
 
 	//*********************************************************************** Costruttori
 	/**
@@ -61,6 +67,13 @@ public class Area implements Salva<ConfigurationSection>{
 		this.daVendere = new ArrayList<LottoVendita>();
 	}
 	
+	/**
+	 * @return the daVendere
+	 */
+	public ArrayList<LottoVendita> getDaVendere() {
+		return daVendere;
+	}
+
 	//*********************************************************************** Funzioni Oggetto
 	/**
 	 * Ritorna la dimensione dell'area in numero di Chunk
@@ -98,10 +111,10 @@ public class Area implements Salva<ConfigurationSection>{
 			if(pd.getBalance() >= Area.CostoSoldi) {
 				//Ha i soldi
 				//Ha un minimo di player?
-				Bukkit.getConsoleSender().sendMessage("passo 2");
+				//Bukkit.getConsoleSender().sendMessage("passo 2");
 				if((city.getMembri().size() <= this.getSize() * Area.ChunkSuMembri) || this.getSize() == 0) {
 					//ha abbastanza membri
-					Bukkit.getConsoleSender().sendMessage("passo 3");
+					//Bukkit.getConsoleSender().sendMessage("passo 3");
 					//Togli i soldi
 					pd.withdrawMoney(Area.CostoSoldi);
 					
@@ -122,7 +135,12 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @return
 	 */
 	public boolean containLotto(ElementoArea lot) {
-		return this.area.contains(lot);
+		for(ElementoArea ele : this.area) {
+			if(ele.getX() == lot.getX() && ele.getZ() == lot.getZ()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -204,6 +222,7 @@ public class Area implements Salva<ConfigurationSection>{
 	public void load(ConfigurationSection config) {
 		//Carica id zona
 		this.zona = Zona.getByID(config.getInt("ZonaId"));
+		this.zona.loadCityCache();
 		
 		//Carica l'area
 		if(config.contains("Forma")) {
@@ -281,8 +300,11 @@ public class Area implements Salva<ConfigurationSection>{
 		if(mem.getType().contains(MembroType.Sindaco)) {
 			//controlla che è dentro la città
 			if(this.containLocation(ele.getX(), ele.getZ())) {
+				//crea il lotto da vendere.
 				LottoVendita lv = new LottoVendita(ele, prezzo, mem);
 				this.daVendere.add(lv);
+				
+				//ritorna il lotto da vendere creato
 				return lv;
 			}
 		}
@@ -294,6 +316,7 @@ public class Area implements Salva<ConfigurationSection>{
 	 * @param lv
 	 */
 	public void removeLottoVendita(LottoVendita lv) {
+		lv.getCartello().getBlock().setType(Material.AIR);
 		this.daVendere.remove(lv);
 	}
 	

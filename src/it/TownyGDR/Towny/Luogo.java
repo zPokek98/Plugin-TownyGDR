@@ -83,7 +83,7 @@ public abstract class Luogo {
 	public static void startTask(TownyGDR townyGDR) {
 		taskLocationObj = new TaskLocation();
 		
-		taskLocation = Bukkit.getScheduler().runTaskTimerAsynchronously(townyGDR, taskLocationObj, 0, 10);
+		taskLocation = Bukkit.getScheduler().runTaskTimerAsynchronously(townyGDR, taskLocationObj, 0, 20);
 	}
 
 	/**

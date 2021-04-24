@@ -259,6 +259,7 @@ public class Zona implements Salva<CustomConfig>{
 				if(sezione.size() == 0) {
 					//si elimina il settore dalla zona
 					this.area.remove(sec);
+					sec.removeZona(this);
 				}
 				return tmp;
 			}
@@ -340,6 +341,7 @@ public class Zona implements Salva<CustomConfig>{
 				this.luogoCache = null;
 			}
 		}
+		
 		if(config.contains("Area")) {
 			String[] list = config.getConfigurationSection("Area").getKeys(false).stream().toArray(String[] :: new);
 			for(String str : list) {
@@ -474,6 +476,25 @@ public class Zona implements Salva<CustomConfig>{
 				zon.save(null);
 			}catch (IOException e){
 				//Errore
+			}
+		}
+	}
+
+
+	/**
+	 * 
+	 */
+	public void loadCityCache() {
+		CustomConfig customConfig = new CustomConfig("Zone" + File.separatorChar + this.name + "(" + this.id + ")", TownyGDR.getInstance());
+		FileConfiguration config = customConfig.getConfig();
+		String tmp = config.getString("Luogo", null);
+		if(tmp != null) {
+			this.luogo = LuoghiType.valueOf(tmp);
+			try{
+				this.luogoCache = Luogo.getById(this.luogo, config.getInt("LuogoID"));
+			}catch(ExceptionCityImpossibleLoad e){
+				this.type = null;
+				this.luogoCache = null;
 			}
 		}
 	}

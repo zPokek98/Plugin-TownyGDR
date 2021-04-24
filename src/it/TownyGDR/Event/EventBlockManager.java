@@ -1,8 +1,14 @@
 package it.TownyGDR.Event;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -20,15 +26,71 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.NotePlayEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.inventory.ItemStack;
+
+import it.TownyGDR.PlayerData.PlayerData;
+import it.TownyGDR.Towny.City.City;
+import it.TownyGDR.Towny.City.Area.Area;
+import it.TownyGDR.Towny.City.Area.Lotto;
+import it.TownyGDR.Towny.City.Area.LottoVendita;
+import it.TownyGDR.Towny.Task.Posiction;
+import it.TownyGDR.Towny.Zone.ElementoArea;
+import it.TownyGDR.Towny.Zone.Sector;
 
 public class EventBlockManager implements Listener{
 	
 	
 
-	@EventHandler
-	public void onBlockBreakEvent(BlockBreakEvent event)
-	{
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onBlockBreakEvent(BlockBreakEvent event){
+		//Controlla se è un cartello
+		//Ottieni lo stato del blocco
+		Block clickBlock = event.getBlock();
+		Location l = clickBlock.getLocation();
+		
+		if(clickBlock != null && clickBlock.getState() instanceof Sign) {
+			Sign sign = (Sign) clickBlock.getState();
+			if(sign.getLines()[0].equalsIgnoreCase("Lotto in vendita")) {
+				
+				event.setDropItems(false); //elimina il drop
+				
+				City city = Area.getCityFromArea(l.getChunk());
+				ArrayList<LottoVendita> list = city.getArea().getDaVendere();
+				for(LottoVendita ven : list) {
+					if(ven.getCartello().getLocation().equals(l)) {
+						event.setCancelled(true); //elimina evento
+						return;
+					}
+				}
+			}
+		}
+		
+		PlayerData pd = PlayerData.getPlayerData(event.getPlayer());
+		if(pd.getCity() != null) {
+			Posiction pos = Posiction.getPosPlayerData(pd);
+			City city = pd.getCity();
+			
+			ArrayList<Lotto> lotti = city.getArea().getLotti();
+			boolean check = false;
+			for(Lotto lot : lotti) {
+				if(lot.getListAree().contains(new ElementoArea(l.getChunk()))){
+						if(lot.getMembro().contains(city.getMembroByUUID(pd.getUUID()))){
+						//ok
+						//può costruire
+						check = true;
+					}else{
+						//non deve costruire
+						//...
+						//è gia false check
+					}
+				}
+			}
+			if(!check && pos.getLuogo() != null) {
+				event.setCancelled(true);
+			}
+				
+		}else{
+			//event.setCancelled(true);
+		}
 		
 	}
 	
@@ -112,10 +174,38 @@ public class EventBlockManager implements Listener{
 		
 	}
 	
-	@EventHandler
-	public void onBlockPlaceEvent(BlockPlaceEvent event)
-	{
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onBlockPlaceEvent(BlockPlaceEvent event){
 		
+		Location loc = event.getBlock().getLocation();
+		
+		PlayerData pd = PlayerData.getPlayerData(event.getPlayer());
+		if(pd.getCity() != null) {
+			Posiction pos = Posiction.getPosPlayerData(pd);
+			City city = pd.getCity();
+			
+			ArrayList<Lotto> lotti = city.getArea().getLotti();
+			boolean check = false;
+			for(Lotto lot : lotti) {
+				if(lot.getListAree().contains(new ElementoArea(loc.getChunk()))){
+						if(lot.getMembro().contains(city.getMembroByUUID(pd.getUUID()))){
+						//ok
+						//può costruire
+						check = true;
+					}else{
+						//non deve costruire
+						//...
+						//è gia false check
+					}
+				}
+			}
+			if(!check && pos.getLuogo() != null) {
+				event.setCancelled(true);
+			}
+				
+		}else{
+			//event.setCancelled(true);
+		}
 	}
 	
 	@EventHandler

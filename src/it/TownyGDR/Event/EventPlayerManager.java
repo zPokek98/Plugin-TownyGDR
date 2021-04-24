@@ -6,9 +6,12 @@ package it.TownyGDR.Event;
 import java.io.IOException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
@@ -41,9 +44,9 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.event.player.PlayerUnregisterChannelEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
-import org.bukkit.inventory.ItemStack;
 
 import it.TownyGDR.PlayerData.PlayerData;
+import it.TownyGDR.Towny.City.Area.LottoVendita;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -68,6 +71,8 @@ public class EventPlayerManager implements Listener{
 			PlayerData pd = PlayerData.getPlayerData(event.getPlayer());
 			pd.save();
 			PlayerData.cacheRemove(pd);
+			
+			
 		}catch(IOException e){
 			Bukkit.getConsoleSender().sendMessage("Impossibile salvare i dati di: " + event.getPlayer().getName());
 		}
@@ -198,8 +203,34 @@ public class EventPlayerManager implements Listener{
 	*/
 	
 	@EventHandler
-	public void onPlayerInteractEvent(PlayerInteractEvent event)
-	{
+	public void onPlayerInteractEvent(PlayerInteractEvent event){
+		//Controlla se è un cartello
+		
+		//Ottieni lo stato del blocco
+		Block clickBlock = event.getClickedBlock();
+		
+		if(clickBlock != null && clickBlock.getState() instanceof Sign) {
+			
+			Sign sign = (Sign) clickBlock.getState();
+			
+			//cliccato un cartello
+			switch(event.getAction()) {
+				case LEFT_CLICK_BLOCK:{
+					
+				}break;
+				
+				case RIGHT_CLICK_BLOCK:{
+					//che cartello è?
+					if(sign.getLines()[0].equalsIgnoreCase("Lotto in vendita")) {
+						LottoVendita.clickSign(event, sign);
+					}
+					
+				}break;
+				
+				default: break;
+			}
+		}
+		
 		
 	}
 	

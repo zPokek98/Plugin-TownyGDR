@@ -244,6 +244,8 @@ public class Lotto{
 			//aggiungi al lotto
 			this.lotto.add(lv.getEle());
 			
+			mem.getLotto().addElementoArea(lv.getEle());
+			
 			//dai i soldi a chi vende il lotto
 			PlayerData.getFromUUID(lv.getSid().getUUID()).addMoney(lv.getPrezzo());
 			

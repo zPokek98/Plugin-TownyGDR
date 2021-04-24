@@ -366,6 +366,18 @@ public class Sector implements Comparable<Sector>{
 	}
 
 	/**
+	 * @param zona
+	 */
+	public void removeZona(Zona zona) {
+		//per precauzione controllo se è null
+		if(zona != null) {
+			if(this.zoneInSector.contains(zona)) {
+				this.zoneInSector.remove(zona);
+			}
+		}
+	}
+	
+	/**
 	 * Ritorna tutte le zone che sono dentro al settore
 	 * @return
 	 */
