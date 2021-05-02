@@ -58,19 +58,19 @@ import net.md_5.bungee.api.ChatColor;
  ************************************************************************************/
 public class CityCommandManager implements CommandExecutor{
 	
-	private static CommandManager create = new CityCommandCreateCity();
-	private static CommandManager invite = new CityCommandInvite();
-	private static CommandManager inviteAccept = new CityCommandInviteAccept();
-	private static CommandManager inviteDeny = new CityCommandInviteDeny();
-	private static CommandManager kick = new CityCommandKick();
-	private static CommandManager claim = new CityCommandClaim();
-	private static CommandManager help = new CityCommandHelp();
-	private static CommandManager description  = new CityCommandSetDescription();
-	private static CommandManager lottoVendi = new CityCommandLottoVendi();
-	private static CommandManager lottoCompra = new CityCommandLottoCompra();
-	private static CommandManager lottoGetInfo = new CityCommandLottoGetInfo();
-	private static CommandManager save = new CityCommandSave();
-	private static CommandManager getInfo = new CityCommandGetInfo();
+	private static CommandManager create 			= new CityCommandCreateCity();
+	private static CommandManager invite 			= new CityCommandInvite();
+	private static CommandManager inviteAccept 		= new CityCommandInviteAccept();
+	private static CommandManager inviteDeny 		= new CityCommandInviteDeny();
+	private static CommandManager kick 				= new CityCommandKick();
+	private static CommandManager claim 			= new CityCommandClaim();
+	private static CommandManager help 				= new CityCommandHelp();
+	private static CommandManager description  		= new CityCommandSetDescription();
+	private static CommandManager lottoVendi 		= new CityCommandLottoVendi();
+	private static CommandManager lottoCompra 		= new CityCommandLottoCompra();
+	private static CommandManager lottoGetInfo 		= new CityCommandLottoGetInfo();
+	private static CommandManager save				= new CityCommandSave();
+	private static CommandManager getInfo 			= new CityCommandGetInfo();
 	
 
 	@Override

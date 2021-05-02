@@ -18,6 +18,7 @@ import it.Library;
 import it.MySQL.MySQL;
 import it.TownyGDR.Command.City.CityCommandManager;
 import it.TownyGDR.Command.PlayerData.PlayerDataFirstJoin;
+import it.TownyGDR.Command.Region.RegionCommand;
 import it.TownyGDR.Command.Zona.ZonaCommand;
 import it.TownyGDR.Event.EventBlockManager;
 import it.TownyGDR.Event.EventCustomManager;
@@ -113,7 +114,8 @@ import net.milkbowl.vault.permission.Permission;
  * 			- [x]: ZonaType
  * 			- [x]: Type
  * 				- [x]: ZonaCittadina
- * 			
+ * 
+ * 		- [ ]: Regione
  * 
  * Per evoluzioni e capire cosa si è fatto, solo per cose rilevnti o completamento
  * scriver cosa si è fatto e chi l'ha fatto in modo da capire chi e cosa ha fatto
@@ -166,7 +168,8 @@ public class TownyGDR extends JavaPlugin{
 		//this.config = this.getConfig();
 		
 		//Cattura il mondo
-		TownyWorld = Bukkit.getWorld("World");
+		//TownyWorld = Bukkit.getWorld("World");
+		TownyWorld = Bukkit.getWorld("Towny");
 		
 		//Carica la libreria
 		try {
@@ -322,6 +325,7 @@ public class TownyGDR extends JavaPlugin{
 		//this.getCommand("City").setExecutor(new CityCommand());
 		this.getCommand("City").setExecutor(new CityCommandManager());
 		this.getCommand("firstJoin").setExecutor(new PlayerDataFirstJoin());
+		this.getCommand("region").setExecutor(new RegionCommand());
 		
 	}
 

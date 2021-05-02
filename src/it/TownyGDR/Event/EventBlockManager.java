@@ -28,6 +28,7 @@ import org.bukkit.event.block.NotePlayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
 import it.TownyGDR.PlayerData.PlayerData;
+import it.TownyGDR.Towny.Luogo;
 import it.TownyGDR.Towny.City.City;
 import it.TownyGDR.Towny.City.Area.Area;
 import it.TownyGDR.Towny.City.Area.Lotto;
@@ -35,6 +36,7 @@ import it.TownyGDR.Towny.City.Area.LottoVendita;
 import it.TownyGDR.Towny.Task.Posiction;
 import it.TownyGDR.Towny.Zone.ElementoArea;
 import it.TownyGDR.Towny.Zone.Sector;
+import it.TownyGDR.Towny.Zone.Zona;
 
 public class EventBlockManager implements Listener{
 	
@@ -70,26 +72,52 @@ public class EventBlockManager implements Listener{
 			City city = pd.getCity();
 			
 			ArrayList<Lotto> lotti = city.getArea().getLotti();
-			boolean check = false;
-			for(Lotto lot : lotti) {
-				if(lot.getListAree().contains(new ElementoArea(l.getChunk()))){
-						if(lot.getMembro().contains(city.getMembroByUUID(pd.getUUID()))){
-						//ok
-						//può costruire
-						check = true;
-					}else{
-						//non deve costruire
-						//...
-						//è gia false check
+			
+			//è il sindaco della città?
+			if(city.getSindaco().contains(city.getMembroByUUID(pd.getUUID()))) {
+				//può tutto xD
+				
+			}else{
+				boolean check = false;
+				for(Lotto lot : lotti) {
+					if(lot.getListAree().contains(new ElementoArea(l.getChunk()))){
+							if(lot.getMembro().contains(city.getMembroByUUID(pd.getUUID()))){
+							//ok
+							//può costruire
+							check = true;
+						}else{
+							//non deve costruire
+							//...
+							//è gia false check
+						}
 					}
 				}
+				if(!check && pos.getLuogo() != null) {
+					event.setCancelled(true);
+				}
 			}
-			if(!check && pos.getLuogo() != null) {
+			
+		}else{
+			//non è membro una città
+			//è fisicamente dentro una città?
+			Posiction pos = Posiction.getPosPlayerData(pd);
+			ElementoArea ele = new ElementoArea(l.getChunk());
+			Luogo luogo = null;
+			
+			if(pos.getEle().equals(ele)) {
+				//immediato
+				luogo = pos.getLuogo();
+			}else {
+				//può essere null se il player non è dentro una zona di una fazione
+				Zona zon = Zona.getZonaByLocation(l);
+				ele = new ElementoArea(l.getChunk());
+				luogo = zon == null ? null : zon.getLuogo();
+			}
+			if(luogo != null && luogo instanceof City) {
+				//fisicamente dentro una città
+				//annulla
 				event.setCancelled(true);
 			}
-				
-		}else{
-			//event.setCancelled(true);
 		}
 		
 	}
@@ -185,26 +213,52 @@ public class EventBlockManager implements Listener{
 			City city = pd.getCity();
 			
 			ArrayList<Lotto> lotti = city.getArea().getLotti();
-			boolean check = false;
-			for(Lotto lot : lotti) {
-				if(lot.getListAree().contains(new ElementoArea(loc.getChunk()))){
-						if(lot.getMembro().contains(city.getMembroByUUID(pd.getUUID()))){
-						//ok
-						//può costruire
-						check = true;
-					}else{
-						//non deve costruire
-						//...
-						//è gia false check
+			
+			//è il sindaco della città?
+			if(city.getSindaco().contains(city.getMembroByUUID(pd.getUUID()))) {
+				//può tutto xD
+				
+			}else{
+				boolean check = false;
+				for(Lotto lot : lotti) {
+					if(lot.getListAree().contains(new ElementoArea(loc.getChunk()))){
+							if(lot.getMembro().contains(city.getMembroByUUID(pd.getUUID()))){
+							//ok
+							//può costruire
+							check = true;
+						}else{
+							//non deve costruire
+							//...
+							//è gia false check
+						}
 					}
 				}
+				if(!check && pos.getLuogo() != null) {
+					event.setCancelled(true);
+				}
 			}
-			if(!check && pos.getLuogo() != null) {
+			
+		}else{
+			//non è membro una città
+			//è fisicamente dentro una città?
+			Posiction pos = Posiction.getPosPlayerData(pd);
+			ElementoArea ele = new ElementoArea(loc.getChunk());
+			Luogo luogo = null;
+			
+			if(pos.getEle().equals(ele)) {
+				//immediato
+				luogo = pos.getLuogo();
+			}else {
+				//può essere null se il player non è dentro una zona di una fazione
+				Zona zon = Zona.getZonaByLocation(loc);
+				ele = new ElementoArea(loc.getChunk());
+				luogo = zon == null ? null : zon.getLuogo();
+			}
+			if(luogo != null && luogo instanceof City) {
+				//fisicamente dentro una città
+				//annulla
 				event.setCancelled(true);
 			}
-				
-		}else{
-			//event.setCancelled(true);
 		}
 	}
 	

@@ -13,6 +13,7 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
 import it.TownyGDR.TownyGDR;
+import it.TownyGDR.Towny.Region.SectorRegion;
 
 /*********************************************************************
  * @author: Elsalamander
@@ -237,6 +238,25 @@ public class ElementoArea {
 		}
 		if(scan != null) scan.close();
 		return arr;
+	}
+
+	/**
+	 * @param section
+	 * @param tmp
+	 * @param list
+	 */
+	public static void save(ConfigurationSection config,  SectorRegion sec, ArrayList<ElementoArea> list) {
+		//Creazione List per formalità
+		List<String> tmp = new ArrayList<String>();
+		for(ElementoArea ele : list) {
+			tmp.add(ele.coord_x + ":" + ele.coord_z);
+		}
+		
+		//elimina i dati sotto ListAree
+		config.set("Settore" + sec.toString() +".List", null);
+		
+		//aggiungi alla lista su ListAree
+		config.set("Settore" + sec.toString() +".List", tmp);
 	}
 
 }
